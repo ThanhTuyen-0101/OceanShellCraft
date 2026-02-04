@@ -1,9 +1,28 @@
 ﻿@{
     ViewData["Title"] = "Home Page";
+    // Thêm một biến C# để hiển thị ngày giờ
+    var currentHour = DateTime.Now.Hour;
+    var greeting = currentHour < 12 ? "Chào buổi sáng!" : "Chào buổi chiều!";
 }
 
 <div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
-    <p class="btn btn-outline-warning"> Thêm được rồi nè ~ check</p>
+    <h1 class="display-4">@greeting</h1>
+    <p class="lead">Hôm nay là ngày <strong>@DateTime.Now.ToString("dd/MM/yyyy")</strong></p>
+
+    <div class="my-4">
+        <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+        <p class="btn btn-outline-warning" id="statusBtn"> Thêm được rồi nè ~ check</p>
+    </div>
+
+    <div id="welcomeMessage" class="alert alert-info d-none">
+        Chúc bạn một ngày làm việc code thật năng suất! 🚀
+    </div>
 </div>
+
+<script>
+    // Thêm một chút tương tác nhỏ
+    document.getElementById("statusBtn").addEventListener("click", function() {
+        const msg = document.getElementById("welcomeMessage");
+        msg.classList.toggle("d-none");
+    });
+</script>

@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("OceanShellCraft")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+3e39dc8fec81a762e198c87318c6834c46ef5fd0")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+4c1f1282f41cab66b388f830bb7a489a24db2df6")]
 [assembly: System.Reflection.AssemblyProductAttribute("OceanShellCraft")]
 [assembly: System.Reflection.AssemblyTitleAttribute("OceanShellCraft")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
