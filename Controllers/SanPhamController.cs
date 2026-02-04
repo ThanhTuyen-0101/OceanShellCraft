@@ -1,10 +1,17 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;           // Giải quyết lỗi EntityFrameworkCore
+using System.ComponentModel.DataAnnotations.Schema; // Giải quyết lỗi [Column]
+using OceanShellCraft.Models;
 
 namespace OceanShellCraft.Controllers
 {
     public class SanPhamController : Controller
     {
         private readonly MyNgheDbContext _context;
+        public SanPhamController(MyNgheDbContext context)
+        {
+            _context = context;
+        }
         public IActionResult Index()
         {
             return View();

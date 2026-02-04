@@ -1,4 +1,5 @@
-﻿namespace OceanShellCraft.Models
+﻿using System.ComponentModel.DataAnnotations.Schema;
+namespace OceanShellCraft.Models
 {
     public class SanPham
     {
