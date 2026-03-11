@@ -1,34 +1,66 @@
 {
   "Version": 1,
-  "WorkspaceRootPath": "D:\\ANhu\\Study\\OfficialDocuments\\Y3_S2\\ASP\\OceanShellCarft\\",
+  "WorkspaceRootPath": "D:\\ANhu\\Study\\OfficialDocuments\\Y3_S2\\ASP\\OceanShellCraft\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{DF14BA65-DC71-786E-DCCB-8DC38CA43FA9}|OceanShellCraft.csproj|d:\\anhu\\study\\officialdocuments\\y3_s2\\asp\\oceanshellcarft\\views\\home\\index.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
-      "RelativeMoniker": "D:0:0:{DF14BA65-DC71-786E-DCCB-8DC38CA43FA9}|OceanShellCraft.csproj|solutionrelative:views\\home\\index.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+      "AbsoluteMoniker": "D:0:0:{DF14BA65-DC71-786E-DCCB-8DC38CA43FA9}|OceanShellCraft.csproj|d:\\anhu\\study\\officialdocuments\\y3_s2\\asp\\oceanshellcraft\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{DF14BA65-DC71-786E-DCCB-8DC38CA43FA9}|OceanShellCraft.csproj|solutionrelative:program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{DF14BA65-DC71-786E-DCCB-8DC38CA43FA9}|OceanShellCraft.csproj|d:\\anhu\\study\\officialdocuments\\y3_s2\\asp\\oceanshellcarft\\models\\mynghedbcontext.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{DF14BA65-DC71-786E-DCCB-8DC38CA43FA9}|OceanShellCraft.csproj|solutionrelative:models\\mynghedbcontext.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{DF14BA65-DC71-786E-DCCB-8DC38CA43FA9}|OceanShellCraft.csproj|d:\\anhu\\study\\officialdocuments\\y3_s2\\asp\\oceanshellcarft\\controllers\\sanphamcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{DF14BA65-DC71-786E-DCCB-8DC38CA43FA9}|OceanShellCraft.csproj|solutionrelative:controllers\\sanphamcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{DF14BA65-DC71-786E-DCCB-8DC38CA43FA9}|OceanShellCraft.csproj|d:\\anhu\\study\\officialdocuments\\y3_s2\\asp\\oceanshellcarft\\models\\sanpham.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{DF14BA65-DC71-786E-DCCB-8DC38CA43FA9}|OceanShellCraft.csproj|solutionrelative:models\\sanpham.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{DF14BA65-DC71-786E-DCCB-8DC38CA43FA9}|OceanShellCraft.csproj|d:\\anhu\\study\\officialdocuments\\y3_s2\\asp\\oceanshellcarft\\models\\danhmuc.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{DF14BA65-DC71-786E-DCCB-8DC38CA43FA9}|OceanShellCraft.csproj|solutionrelative:models\\danhmuc.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{DF14BA65-DC71-786E-DCCB-8DC38CA43FA9}|OceanShellCraft.csproj|d:\\anhu\\study\\officialdocuments\\y3_s2\\asp\\oceanshellcarft\\controllers\\trangchucontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "AbsoluteMoniker": "D:0:0:{DF14BA65-DC71-786E-DCCB-8DC38CA43FA9}|OceanShellCraft.csproj|d:\\anhu\\study\\officialdocuments\\y3_s2\\asp\\oceanshellcraft\\controllers\\trangchucontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{DF14BA65-DC71-786E-DCCB-8DC38CA43FA9}|OceanShellCraft.csproj|solutionrelative:controllers\\trangchucontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{DF14BA65-DC71-786E-DCCB-8DC38CA43FA9}|OceanShellCraft.csproj|d:\\anhu\\study\\officialdocuments\\y3_s2\\asp\\oceanshellcarft\\views\\shared\\_layout.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "AbsoluteMoniker": "D:0:0:{DF14BA65-DC71-786E-DCCB-8DC38CA43FA9}|OceanShellCraft.csproj|d:\\anhu\\study\\officialdocuments\\y3_s2\\asp\\oceanshellcraft\\models\\sanpham.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{DF14BA65-DC71-786E-DCCB-8DC38CA43FA9}|OceanShellCraft.csproj|solutionrelative:models\\sanpham.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{DF14BA65-DC71-786E-DCCB-8DC38CA43FA9}|OceanShellCraft.csproj|d:\\anhu\\study\\officialdocuments\\y3_s2\\asp\\oceanshellcraft\\models\\danhmuc.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{DF14BA65-DC71-786E-DCCB-8DC38CA43FA9}|OceanShellCraft.csproj|solutionrelative:models\\danhmuc.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{DF14BA65-DC71-786E-DCCB-8DC38CA43FA9}|OceanShellCraft.csproj|d:\\anhu\\study\\officialdocuments\\y3_s2\\asp\\oceanshellcraft\\models\\mynghedbcontext.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{DF14BA65-DC71-786E-DCCB-8DC38CA43FA9}|OceanShellCraft.csproj|solutionrelative:models\\mynghedbcontext.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{DF14BA65-DC71-786E-DCCB-8DC38CA43FA9}|OceanShellCraft.csproj|d:\\anhu\\study\\officialdocuments\\y3_s2\\asp\\oceanshellcraft\\views\\sanpham\\danhsach.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{DF14BA65-DC71-786E-DCCB-8DC38CA43FA9}|OceanShellCraft.csproj|solutionrelative:views\\sanpham\\danhsach.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{DF14BA65-DC71-786E-DCCB-8DC38CA43FA9}|OceanShellCraft.csproj|d:\\anhu\\study\\officialdocuments\\y3_s2\\asp\\oceanshellcraft\\views\\shared\\_layout.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
       "RelativeMoniker": "D:0:0:{DF14BA65-DC71-786E-DCCB-8DC38CA43FA9}|OceanShellCraft.csproj|solutionrelative:views\\shared\\_layout.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{DF14BA65-DC71-786E-DCCB-8DC38CA43FA9}|OceanShellCraft.csproj|d:\\anhu\\study\\officialdocuments\\y3_s2\\asp\\oceanshellcraft\\views\\_viewstart.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{DF14BA65-DC71-786E-DCCB-8DC38CA43FA9}|OceanShellCraft.csproj|solutionrelative:views\\_viewstart.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{DF14BA65-DC71-786E-DCCB-8DC38CA43FA9}|OceanShellCraft.csproj|d:\\anhu\\study\\officialdocuments\\y3_s2\\asp\\oceanshellcraft\\views\\_viewimports.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{DF14BA65-DC71-786E-DCCB-8DC38CA43FA9}|OceanShellCraft.csproj|solutionrelative:views\\_viewimports.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{DF14BA65-DC71-786E-DCCB-8DC38CA43FA9}|OceanShellCraft.csproj|d:\\anhu\\study\\officialdocuments\\y3_s2\\asp\\oceanshellcraft\\appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}",
+      "RelativeMoniker": "D:0:0:{DF14BA65-DC71-786E-DCCB-8DC38CA43FA9}|OceanShellCraft.csproj|solutionrelative:appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{DF14BA65-DC71-786E-DCCB-8DC38CA43FA9}|OceanShellCraft.csproj|d:\\anhu\\study\\officialdocuments\\y3_s2\\asp\\oceanshellcraft\\controllers\\homecontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{DF14BA65-DC71-786E-DCCB-8DC38CA43FA9}|OceanShellCraft.csproj|solutionrelative:controllers\\homecontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{DF14BA65-DC71-786E-DCCB-8DC38CA43FA9}|OceanShellCraft.csproj|d:\\anhu\\study\\officialdocuments\\y3_s2\\asp\\oceanshellcraft\\controllers\\sanphamcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{DF14BA65-DC71-786E-DCCB-8DC38CA43FA9}|OceanShellCraft.csproj|solutionrelative:controllers\\sanphamcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{DF14BA65-DC71-786E-DCCB-8DC38CA43FA9}|OceanShellCraft.csproj|d:\\anhu\\study\\officialdocuments\\y3_s2\\asp\\oceanshellcraft\\views\\trangchu\\privacy.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{DF14BA65-DC71-786E-DCCB-8DC38CA43FA9}|OceanShellCraft.csproj|solutionrelative:views\\trangchu\\privacy.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{DF14BA65-DC71-786E-DCCB-8DC38CA43FA9}|OceanShellCraft.csproj|d:\\anhu\\study\\officialdocuments\\y3_s2\\asp\\oceanshellcraft\\views\\trangchu\\index.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{DF14BA65-DC71-786E-DCCB-8DC38CA43FA9}|OceanShellCraft.csproj|solutionrelative:views\\trangchu\\index.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{DF14BA65-DC71-786E-DCCB-8DC38CA43FA9}|OceanShellCraft.csproj|d:\\anhu\\study\\officialdocuments\\y3_s2\\asp\\oceanshellcraft\\models\\errorviewmodel.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{DF14BA65-DC71-786E-DCCB-8DC38CA43FA9}|OceanShellCraft.csproj|solutionrelative:models\\errorviewmodel.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     }
   ],
   "DocumentGroupContainers": [
@@ -38,16 +70,193 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 0,
+          "SelectedChildIndex": 2,
           "Children": [
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{e1b7d1f8-9b3c-49b1-8f4f-bfc63a88835d}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:128:0:{75188d03-9892-4ae2-abf1-207126247ce5}"
+            },
             {
               "$type": "Document",
               "DocumentIndex": 0,
+              "Title": "Program.cs",
+              "DocumentMoniker": "D:\\ANhu\\Study\\OfficialDocuments\\Y3_S2\\ASP\\OceanShellCraft\\Program.cs",
+              "RelativeDocumentMoniker": "Program.cs",
+              "ToolTip": "D:\\ANhu\\Study\\OfficialDocuments\\Y3_S2\\ASP\\OceanShellCraft\\Program.cs",
+              "RelativeToolTip": "Program.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABgAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-03-11T07:48:46.512Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 4,
+              "Title": "MyNgheDbContext.cs",
+              "DocumentMoniker": "D:\\ANhu\\Study\\OfficialDocuments\\Y3_S2\\ASP\\OceanShellCraft\\Models\\MyNgheDbContext.cs",
+              "RelativeDocumentMoniker": "Models\\MyNgheDbContext.cs",
+              "ToolTip": "D:\\ANhu\\Study\\OfficialDocuments\\Y3_S2\\ASP\\OceanShellCraft\\Models\\MyNgheDbContext.cs",
+              "RelativeToolTip": "Models\\MyNgheDbContext.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAQAAAASAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-02-04T06:20:38.376Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
+              "Title": "DanhMuc.cs",
+              "DocumentMoniker": "D:\\ANhu\\Study\\OfficialDocuments\\Y3_S2\\ASP\\OceanShellCraft\\Models\\DanhMuc.cs",
+              "RelativeDocumentMoniker": "Models\\DanhMuc.cs",
+              "ToolTip": "D:\\ANhu\\Study\\OfficialDocuments\\Y3_S2\\ASP\\OceanShellCraft\\Models\\DanhMuc.cs",
+              "RelativeToolTip": "Models\\DanhMuc.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAkAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-02-04T00:46:08.05Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "SanPham.cs",
+              "DocumentMoniker": "D:\\ANhu\\Study\\OfficialDocuments\\Y3_S2\\ASP\\OceanShellCraft\\Models\\SanPham.cs",
+              "RelativeDocumentMoniker": "Models\\SanPham.cs",
+              "ToolTip": "D:\\ANhu\\Study\\OfficialDocuments\\Y3_S2\\ASP\\OceanShellCraft\\Models\\SanPham.cs",
+              "RelativeToolTip": "Models\\SanPham.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABUAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-02-04T00:45:17.822Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "TrangChuController.cs",
+              "DocumentMoniker": "D:\\ANhu\\Study\\OfficialDocuments\\Y3_S2\\ASP\\OceanShellCraft\\Controllers\\TrangChuController.cs",
+              "RelativeDocumentMoniker": "Controllers\\TrangChuController.cs",
+              "ToolTip": "D:\\ANhu\\Study\\OfficialDocuments\\Y3_S2\\ASP\\OceanShellCraft\\Controllers\\TrangChuController.cs",
+              "RelativeToolTip": "Controllers\\TrangChuController.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAwAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-02-04T00:53:43.796Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 5,
+              "Title": "DanhSach.cshtml",
+              "DocumentMoniker": "D:\\ANhu\\Study\\OfficialDocuments\\Y3_S2\\ASP\\OceanShellCraft\\Views\\SanPham\\DanhSach.cshtml",
+              "RelativeDocumentMoniker": "Views\\SanPham\\DanhSach.cshtml",
+              "ToolTip": "D:\\ANhu\\Study\\OfficialDocuments\\Y3_S2\\ASP\\OceanShellCraft\\Views\\SanPham\\DanhSach.cshtml",
+              "RelativeToolTip": "Views\\SanPham\\DanhSach.cshtml",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABcAAAAGAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2026-03-11T07:55:28.072Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 7,
+              "Title": "_ViewStart.cshtml",
+              "DocumentMoniker": "D:\\ANhu\\Study\\OfficialDocuments\\Y3_S2\\ASP\\OceanShellCraft\\Views\\_ViewStart.cshtml",
+              "RelativeDocumentMoniker": "Views\\_ViewStart.cshtml",
+              "ToolTip": "D:\\ANhu\\Study\\OfficialDocuments\\Y3_S2\\ASP\\OceanShellCraft\\Views\\_ViewStart.cshtml",
+              "RelativeToolTip": "Views\\_ViewStart.cshtml",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2026-03-11T07:36:11.76Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 8,
+              "Title": "_ViewImports.cshtml",
+              "DocumentMoniker": "D:\\ANhu\\Study\\OfficialDocuments\\Y3_S2\\ASP\\OceanShellCraft\\Views\\_ViewImports.cshtml",
+              "RelativeDocumentMoniker": "Views\\_ViewImports.cshtml",
+              "ToolTip": "D:\\ANhu\\Study\\OfficialDocuments\\Y3_S2\\ASP\\OceanShellCraft\\Views\\_ViewImports.cshtml",
+              "RelativeToolTip": "Views\\_ViewImports.cshtml",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2026-03-11T07:36:11.052Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 9,
+              "Title": "appsettings.json",
+              "DocumentMoniker": "D:\\ANhu\\Study\\OfficialDocuments\\Y3_S2\\ASP\\OceanShellCraft\\appsettings.json",
+              "RelativeDocumentMoniker": "appsettings.json",
+              "ToolTip": "D:\\ANhu\\Study\\OfficialDocuments\\Y3_S2\\ASP\\OceanShellCraft\\appsettings.json",
+              "RelativeToolTip": "appsettings.json",
+              "ViewState": "AgIAAA0AAAAAAAAAAAAAAAMAAAAzAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001642|",
+              "WhenOpened": "2026-03-11T07:46:25.12Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 6,
+              "Title": "_Layout.cshtml",
+              "DocumentMoniker": "D:\\ANhu\\Study\\OfficialDocuments\\Y3_S2\\ASP\\OceanShellCraft\\Views\\Shared\\_Layout.cshtml",
+              "RelativeDocumentMoniker": "Views\\Shared\\_Layout.cshtml",
+              "ToolTip": "D:\\ANhu\\Study\\OfficialDocuments\\Y3_S2\\ASP\\OceanShellCraft\\Views\\Shared\\_Layout.cshtml",
+              "RelativeToolTip": "Views\\Shared\\_Layout.cshtml",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAowCMAAAAHAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2026-02-04T01:05:29.551Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 10,
+              "Title": "HomeController.cs",
+              "DocumentMoniker": "D:\\ANhu\\Study\\OfficialDocuments\\Y3_S2\\ASP\\OceanShellCraft\\Controllers\\HomeController.cs",
+              "RelativeDocumentMoniker": "Controllers\\HomeController.cs",
+              "ToolTip": "D:\\ANhu\\Study\\OfficialDocuments\\Y3_S2\\ASP\\OceanShellCraft\\Controllers\\HomeController.cs",
+              "RelativeToolTip": "Controllers\\HomeController.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-03-11T07:36:16.421Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 11,
+              "Title": "SanPhamController.cs",
+              "DocumentMoniker": "D:\\ANhu\\Study\\OfficialDocuments\\Y3_S2\\ASP\\OceanShellCraft\\Controllers\\SanPhamController.cs",
+              "RelativeDocumentMoniker": "Controllers\\SanPhamController.cs",
+              "ToolTip": "D:\\ANhu\\Study\\OfficialDocuments\\Y3_S2\\ASP\\OceanShellCraft\\Controllers\\SanPhamController.cs",
+              "RelativeToolTip": "Controllers\\SanPhamController.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAACYAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-02-04T00:53:24.186Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 12,
+              "Title": "Privacy.cshtml",
+              "DocumentMoniker": "D:\\ANhu\\Study\\OfficialDocuments\\Y3_S2\\ASP\\OceanShellCraft\\Views\\TrangChu\\Privacy.cshtml",
+              "RelativeDocumentMoniker": "Views\\TrangChu\\Privacy.cshtml",
+              "ToolTip": "D:\\ANhu\\Study\\OfficialDocuments\\Y3_S2\\ASP\\OceanShellCraft\\Views\\TrangChu\\Privacy.cshtml",
+              "RelativeToolTip": "Views\\TrangChu\\Privacy.cshtml",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2026-03-11T07:36:09.156Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 13,
               "Title": "Index.cshtml",
-              "DocumentMoniker": "D:\\ANhu\\Study\\OfficialDocuments\\Y3_S2\\ASP\\OceanShellCarft\\Views\\Home\\Index.cshtml",
-              "RelativeDocumentMoniker": "Views\\Home\\Index.cshtml",
-              "ToolTip": "D:\\ANhu\\Study\\OfficialDocuments\\Y3_S2\\ASP\\OceanShellCarft\\Views\\Home\\Index.cshtml",
-              "RelativeToolTip": "Views\\Home\\Index.cshtml",
+              "DocumentMoniker": "D:\\ANhu\\Study\\OfficialDocuments\\Y3_S2\\ASP\\OceanShellCraft\\Views\\TrangChu\\Index.cshtml",
+              "RelativeDocumentMoniker": "Views\\TrangChu\\Index.cshtml",
+              "ToolTip": "D:\\ANhu\\Study\\OfficialDocuments\\Y3_S2\\ASP\\OceanShellCraft\\Views\\TrangChu\\Index.cshtml",
+              "RelativeToolTip": "Views\\TrangChu\\Index.cshtml",
               "ViewState": "AgIAAA8AAAAAAAAAAAAAABcAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
               "WhenOpened": "2026-02-04T08:18:40.045Z",
@@ -55,75 +264,16 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 1,
-              "Title": "MyNgheDbContext.cs",
-              "DocumentMoniker": "D:\\ANhu\\Study\\OfficialDocuments\\Y3_S2\\ASP\\OceanShellCarft\\Models\\MyNgheDbContext.cs",
-              "RelativeDocumentMoniker": "Models\\MyNgheDbContext.cs",
-              "ToolTip": "D:\\ANhu\\Study\\OfficialDocuments\\Y3_S2\\ASP\\OceanShellCarft\\Models\\MyNgheDbContext.cs",
-              "RelativeToolTip": "Models\\MyNgheDbContext.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAgAAAAJAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-02-04T06:20:38.376Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 5,
-              "Title": "TrangChuController.cs",
-              "DocumentMoniker": "D:\\ANhu\\Study\\OfficialDocuments\\Y3_S2\\ASP\\OceanShellCarft\\Controllers\\TrangChuController.cs",
-              "RelativeDocumentMoniker": "Controllers\\TrangChuController.cs",
-              "ToolTip": "D:\\ANhu\\Study\\OfficialDocuments\\Y3_S2\\ASP\\OceanShellCarft\\Controllers\\TrangChuController.cs",
-              "RelativeToolTip": "Controllers\\TrangChuController.cs",
+              "DocumentIndex": 14,
+              "Title": "ErrorViewModel.cs",
+              "DocumentMoniker": "D:\\ANhu\\Study\\OfficialDocuments\\Y3_S2\\ASP\\OceanShellCraft\\Models\\ErrorViewModel.cs",
+              "RelativeDocumentMoniker": "Models\\ErrorViewModel.cs",
+              "ToolTip": "D:\\ANhu\\Study\\OfficialDocuments\\Y3_S2\\ASP\\OceanShellCraft\\Models\\ErrorViewModel.cs",
+              "RelativeToolTip": "Models\\ErrorViewModel.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-02-04T00:53:43.796Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 2,
-              "Title": "SanPhamController.cs",
-              "DocumentMoniker": "D:\\ANhu\\Study\\OfficialDocuments\\Y3_S2\\ASP\\OceanShellCarft\\Controllers\\SanPhamController.cs",
-              "RelativeDocumentMoniker": "Controllers\\SanPhamController.cs",
-              "ToolTip": "D:\\ANhu\\Study\\OfficialDocuments\\Y3_S2\\ASP\\OceanShellCarft\\Controllers\\SanPhamController.cs",
-              "RelativeToolTip": "Controllers\\SanPhamController.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAA0AAAAJAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-02-04T00:53:24.186Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 4,
-              "Title": "DanhMuc.cs",
-              "DocumentMoniker": "D:\\ANhu\\Study\\OfficialDocuments\\Y3_S2\\ASP\\OceanShellCarft\\Models\\DanhMuc.cs",
-              "RelativeDocumentMoniker": "Models\\DanhMuc.cs",
-              "ToolTip": "D:\\ANhu\\Study\\OfficialDocuments\\Y3_S2\\ASP\\OceanShellCarft\\Models\\DanhMuc.cs",
-              "RelativeToolTip": "Models\\DanhMuc.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAYAAABYAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-02-04T00:46:08.05Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 3,
-              "Title": "SanPham.cs",
-              "DocumentMoniker": "D:\\ANhu\\Study\\OfficialDocuments\\Y3_S2\\ASP\\OceanShellCarft\\Models\\SanPham.cs",
-              "RelativeDocumentMoniker": "Models\\SanPham.cs",
-              "ToolTip": "D:\\ANhu\\Study\\OfficialDocuments\\Y3_S2\\ASP\\OceanShellCarft\\Models\\SanPham.cs",
-              "RelativeToolTip": "Models\\SanPham.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAACAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-02-04T00:45:17.822Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 6,
-              "Title": "_Layout.cshtml",
-              "DocumentMoniker": "D:\\ANhu\\Study\\OfficialDocuments\\Y3_S2\\ASP\\OceanShellCarft\\Views\\Shared\\_Layout.cshtml",
-              "RelativeDocumentMoniker": "Views\\Shared\\_Layout.cshtml",
-              "ToolTip": "D:\\ANhu\\Study\\OfficialDocuments\\Y3_S2\\ASP\\OceanShellCarft\\Views\\Shared\\_Layout.cshtml",
-              "RelativeToolTip": "Views\\Shared\\_Layout.cshtml",
-              "ViewState": "AgIAABsAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
-              "WhenOpened": "2026-02-04T01:05:29.551Z"
+              "WhenOpened": "2026-03-11T05:43:53.952Z",
+              "EditorCaption": ""
             }
           ]
         }

@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "7Y+HR6Hrzwo=",
+  "dgSpecHash": "MKB11XSCG0M=",
   "success": true,
-  "projectFilePath": "D:\\ANhu\\Study\\OfficialDocuments\\Y3_S2\\ASP\\OceanShellCarft\\OceanShellCraft.csproj",
+  "projectFilePath": "D:\\ANhu\\Study\\OfficialDocuments\\Y3_S2\\ASP\\OceanShellCraft\\OceanShellCraft.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\HP\\.nuget\\packages\\azure.core\\1.47.1\\azure.core.1.47.1.nupkg.sha512",
     "C:\\Users\\HP\\.nuget\\packages\\azure.identity\\1.14.2\\azure.identity.1.14.2.nupkg.sha512",

@@ -1,4 +1,11 @@
+using Microsoft.EntityFrameworkCore;
+using OceanShellCraft.Models;
+
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Services.AddDbContext<MyNgheDbContext>(options =>
+    options.UseSqlServer(builder.Configuration.GetConnectionString("DbConnection")));
+
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
@@ -22,7 +29,7 @@ app.MapStaticAssets();
 
 app.MapControllerRoute(
     name: "default",
-    pattern: "{controller=Home}/{action=Index}/{id?}")
+    pattern: "{controller=TrangChu}/{action=Index}/{id?}")
     .WithStaticAssets();
 
 

@@ -1,0 +1,24 @@
+﻿@model IEnumerable<OceanShellCraft.Models.SanPham>
+
+@{
+    ViewData["Title"] = "Danh sách sản phẩm";
+}
+
+<h2 class="my-4">Sản Phẩm Mỹ Nghệ Vỏ Ốc</h2>
+
+<div class="row">
+    @foreach (var item in Model)
+    {
+        <div class="col-md-4 mb-4">
+            <div class="card h-100 shadow-sm">
+                <img src="@item.HinhAnh" class="card-img-top" alt="@item.TenSanPham" style="height: 200px; object-fit: cover;">
+                <div class="card-body">
+                    <h5 class="card-title">@item.TenSanPham</h5>
+                    <p class="card-text text-danger fw-bold">@item.GiaTien.ToString("N0") VNĐ</p>
+                    <p class="card-text small text-muted">Chất liệu: @item.ChatLieu</p>
+                    <a href="#" class="btn btn-primary w-100">Xem chi tiết</a>
+                </div>
+            </div>
+        </div>
+    }
+</div>

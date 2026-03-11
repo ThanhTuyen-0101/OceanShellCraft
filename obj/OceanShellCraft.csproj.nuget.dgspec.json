@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "D:\\ANhu\\Study\\OfficialDocuments\\Y3_S2\\ASP\\OceanShellCarft\\OceanShellCraft.csproj": {}
+    "D:\\ANhu\\Study\\OfficialDocuments\\Y3_S2\\ASP\\OceanShellCraft\\OceanShellCraft.csproj": {}
   },
   "projects": {
-    "D:\\ANhu\\Study\\OfficialDocuments\\Y3_S2\\ASP\\OceanShellCarft\\OceanShellCraft.csproj": {
+    "D:\\ANhu\\Study\\OfficialDocuments\\Y3_S2\\ASP\\OceanShellCraft\\OceanShellCraft.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "D:\\ANhu\\Study\\OfficialDocuments\\Y3_S2\\ASP\\OceanShellCarft\\OceanShellCraft.csproj",
+        "projectUniqueName": "D:\\ANhu\\Study\\OfficialDocuments\\Y3_S2\\ASP\\OceanShellCraft\\OceanShellCraft.csproj",
         "projectName": "OceanShellCraft",
-        "projectPath": "D:\\ANhu\\Study\\OfficialDocuments\\Y3_S2\\ASP\\OceanShellCarft\\OceanShellCraft.csproj",
+        "projectPath": "D:\\ANhu\\Study\\OfficialDocuments\\Y3_S2\\ASP\\OceanShellCraft\\OceanShellCraft.csproj",
         "packagesPath": "C:\\Users\\HP\\.nuget\\packages\\",
-        "outputPath": "D:\\ANhu\\Study\\OfficialDocuments\\Y3_S2\\ASP\\OceanShellCarft\\obj\\",
+        "outputPath": "D:\\ANhu\\Study\\OfficialDocuments\\Y3_S2\\ASP\\OceanShellCraft\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
@@ -79,7 +79,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\10.0.102/PortableRuntimeIdentifierGraph.json",
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\10.0.103/PortableRuntimeIdentifierGraph.json",
           "packagesToPrune": {
             "Microsoft.AspNetCore": "(,10.0.32767]",
             "Microsoft.AspNetCore.Antiforgery": "(,10.0.32767]",
