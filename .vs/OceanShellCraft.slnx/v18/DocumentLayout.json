@@ -3,6 +3,22 @@
   "WorkspaceRootPath": "C:\\B\u00E0i Cu\u1ED1i k\u00EC\\OceanShellCraft\\",
   "Documents": [
     {
+      "AbsoluteMoniker": "D:0:0:{DF14BA65-DC71-786E-DCCB-8DC38CA43FA9}|OceanShellCraft.csproj|c:\\b\u00E0i cu\u1ED1i k\u00EC\\oceanshellcraft\\views\\shared\\_layout.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{DF14BA65-DC71-786E-DCCB-8DC38CA43FA9}|OceanShellCraft.csproj|solutionrelative:views\\shared\\_layout.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{DF14BA65-DC71-786E-DCCB-8DC38CA43FA9}|OceanShellCraft.csproj|c:\\b\u00E0i cu\u1ED1i k\u00EC\\oceanshellcraft\\wwwroot\\css\\site.css||{A5401142-F49D-43DB-90B1-F57BA349E55C}",
+      "RelativeMoniker": "D:0:0:{DF14BA65-DC71-786E-DCCB-8DC38CA43FA9}|OceanShellCraft.csproj|solutionrelative:wwwroot\\css\\site.css||{A5401142-F49D-43DB-90B1-F57BA349E55C}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{DF14BA65-DC71-786E-DCCB-8DC38CA43FA9}|OceanShellCraft.csproj|c:\\b\u00E0i cu\u1ED1i k\u00EC\\oceanshellcraft\\views\\shared\\_footer.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{DF14BA65-DC71-786E-DCCB-8DC38CA43FA9}|OceanShellCraft.csproj|solutionrelative:views\\shared\\_footer.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{DF14BA65-DC71-786E-DCCB-8DC38CA43FA9}|OceanShellCraft.csproj|c:\\b\u00E0i cu\u1ED1i k\u00EC\\oceanshellcraft\\views\\shared\\_header.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{DF14BA65-DC71-786E-DCCB-8DC38CA43FA9}|OceanShellCraft.csproj|solutionrelative:views\\shared\\_header.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
       "AbsoluteMoniker": "D:0:0:{DF14BA65-DC71-786E-DCCB-8DC38CA43FA9}|OceanShellCraft.csproj|c:\\b\u00E0i cu\u1ED1i k\u00EC\\oceanshellcraft\\views\\home\\index.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
       "RelativeMoniker": "D:0:0:{DF14BA65-DC71-786E-DCCB-8DC38CA43FA9}|OceanShellCraft.csproj|solutionrelative:views\\home\\index.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
     },
@@ -25,10 +41,6 @@
     {
       "AbsoluteMoniker": "D:0:0:{DF14BA65-DC71-786E-DCCB-8DC38CA43FA9}|OceanShellCraft.csproj|c:\\b\u00E0i cu\u1ED1i k\u00EC\\oceanshellcraft\\controllers\\trangchucontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{DF14BA65-DC71-786E-DCCB-8DC38CA43FA9}|OceanShellCraft.csproj|solutionrelative:controllers\\trangchucontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{DF14BA65-DC71-786E-DCCB-8DC38CA43FA9}|OceanShellCraft.csproj|c:\\b\u00E0i cu\u1ED1i k\u00EC\\oceanshellcraft\\views\\shared\\_layout.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
-      "RelativeMoniker": "D:0:0:{DF14BA65-DC71-786E-DCCB-8DC38CA43FA9}|OceanShellCraft.csproj|solutionrelative:views\\shared\\_layout.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
     }
   ],
   "DocumentGroupContainers": [
@@ -38,24 +50,50 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 0,
+          "SelectedChildIndex": 4,
           "Children": [
             {
               "$type": "Document",
-              "DocumentIndex": 0,
-              "Title": "Index.cshtml",
-              "DocumentMoniker": "C:\\B\u00E0i Cu\u1ED1i k\u00EC\\OceanShellCraft\\Views\\Home\\Index.cshtml",
-              "RelativeDocumentMoniker": "Views\\Home\\Index.cshtml",
-              "ToolTip": "C:\\B\u00E0i Cu\u1ED1i k\u00EC\\OceanShellCraft\\Views\\Home\\Index.cshtml",
-              "RelativeToolTip": "Views\\Home\\Index.cshtml",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAABsAAAAJAAAAAAAAAA==",
+              "DocumentIndex": 3,
+              "Title": "_Header.cshtml",
+              "DocumentMoniker": "C:\\B\u00E0i Cu\u1ED1i k\u00EC\\OceanShellCraft\\Views\\Shared\\_Header.cshtml",
+              "RelativeDocumentMoniker": "Views\\Shared\\_Header.cshtml",
+              "ToolTip": "C:\\B\u00E0i Cu\u1ED1i k\u00EC\\OceanShellCraft\\Views\\Shared\\_Header.cshtml",
+              "RelativeToolTip": "Views\\Shared\\_Header.cshtml",
+              "ViewState": "AgIAADMAAAAAAAAAAAAQwE8AAAAJAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
-              "WhenOpened": "2026-02-04T08:41:57.567Z",
+              "WhenOpened": "2026-02-16T14:32:51.256Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "_Footer.cshtml",
+              "DocumentMoniker": "C:\\B\u00E0i Cu\u1ED1i k\u00EC\\OceanShellCraft\\Views\\Shared\\_Footer.cshtml",
+              "RelativeDocumentMoniker": "Views\\Shared\\_Footer.cshtml",
+              "ToolTip": "C:\\B\u00E0i Cu\u1ED1i k\u00EC\\OceanShellCraft\\Views\\Shared\\_Footer.cshtml",
+              "RelativeToolTip": "Views\\Shared\\_Footer.cshtml",
+              "ViewState": "AgIAADEAAAAAAAAAAAAQwE0AAAAJAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2026-02-16T14:32:27.812Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
               "DocumentIndex": 1,
+              "Title": "site.css",
+              "DocumentMoniker": "C:\\B\u00E0i Cu\u1ED1i k\u00EC\\OceanShellCraft\\wwwroot\\css\\site.css",
+              "RelativeDocumentMoniker": "wwwroot\\css\\site.css",
+              "ToolTip": "C:\\B\u00E0i Cu\u1ED1i k\u00EC\\OceanShellCraft\\wwwroot\\css\\site.css",
+              "RelativeToolTip": "wwwroot\\css\\site.css",
+              "ViewState": "AgIAAKMAAAAAAAAAAAAAAL4AAAABAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003000|",
+              "WhenOpened": "2026-02-16T14:20:33.193Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 5,
               "Title": "MyNgheDbContext.cs",
               "DocumentMoniker": "C:\\B\u00E0i Cu\u1ED1i k\u00EC\\OceanShellCraft\\Models\\MyNgheDbContext.cs",
               "RelativeDocumentMoniker": "Models\\MyNgheDbContext.cs",
@@ -63,12 +101,36 @@
               "RelativeToolTip": "Models\\MyNgheDbContext.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAgAAAAJAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-02-04T06:20:38.376Z",
+              "WhenOpened": "2026-02-04T06:20:38.376Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "_Layout.cshtml",
+              "DocumentMoniker": "C:\\B\u00E0i Cu\u1ED1i k\u00EC\\OceanShellCraft\\Views\\Shared\\_Layout.cshtml",
+              "RelativeDocumentMoniker": "Views\\Shared\\_Layout.cshtml",
+              "ToolTip": "C:\\B\u00E0i Cu\u1ED1i k\u00EC\\OceanShellCraft\\Views\\Shared\\_Layout.cshtml",
+              "RelativeToolTip": "Views\\Shared\\_Layout.cshtml",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABsAAAAHAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2026-02-04T01:05:29.551Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 5,
+              "DocumentIndex": 4,
+              "Title": "Index.cshtml",
+              "DocumentMoniker": "C:\\B\u00E0i Cu\u1ED1i k\u00EC\\OceanShellCraft\\Views\\Home\\Index.cshtml",
+              "RelativeDocumentMoniker": "Views\\Home\\Index.cshtml",
+              "ToolTip": "C:\\B\u00E0i Cu\u1ED1i k\u00EC\\OceanShellCraft\\Views\\Home\\Index.cshtml",
+              "RelativeToolTip": "Views\\Home\\Index.cshtml",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABsAAAAJAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2026-02-04T08:41:57.567Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 9,
               "Title": "TrangChuController.cs",
               "DocumentMoniker": "C:\\B\u00E0i Cu\u1ED1i k\u00EC\\OceanShellCraft\\Controllers\\TrangChuController.cs",
               "RelativeDocumentMoniker": "Controllers\\TrangChuController.cs",
@@ -80,7 +142,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 2,
+              "DocumentIndex": 6,
               "Title": "SanPhamController.cs",
               "DocumentMoniker": "C:\\B\u00E0i Cu\u1ED1i k\u00EC\\OceanShellCraft\\Controllers\\SanPhamController.cs",
               "RelativeDocumentMoniker": "Controllers\\SanPhamController.cs",
@@ -92,7 +154,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 4,
+              "DocumentIndex": 8,
               "Title": "DanhMuc.cs",
               "DocumentMoniker": "C:\\B\u00E0i Cu\u1ED1i k\u00EC\\OceanShellCraft\\Models\\DanhMuc.cs",
               "RelativeDocumentMoniker": "Models\\DanhMuc.cs",
@@ -104,7 +166,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 3,
+              "DocumentIndex": 7,
               "Title": "SanPham.cs",
               "DocumentMoniker": "C:\\B\u00E0i Cu\u1ED1i k\u00EC\\OceanShellCraft\\Models\\SanPham.cs",
               "RelativeDocumentMoniker": "Models\\SanPham.cs",
@@ -113,18 +175,6 @@
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAACAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2026-02-04T00:45:17.822Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 6,
-              "Title": "_Layout.cshtml",
-              "DocumentMoniker": "C:\\B\u00E0i Cu\u1ED1i k\u00EC\\OceanShellCraft\\Views\\Shared\\_Layout.cshtml",
-              "RelativeDocumentMoniker": "Views\\Shared\\_Layout.cshtml",
-              "ToolTip": "C:\\B\u00E0i Cu\u1ED1i k\u00EC\\OceanShellCraft\\Views\\Shared\\_Layout.cshtml",
-              "RelativeToolTip": "Views\\Shared\\_Layout.cshtml",
-              "ViewState": "AgIAABsAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
-              "WhenOpened": "2026-02-04T01:05:29.551Z"
             }
           ]
         }

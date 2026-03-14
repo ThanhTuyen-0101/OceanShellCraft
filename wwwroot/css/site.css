@@ -1,31 +1,191 @@
+﻿:root {
+    /* Khai báo bảng màu từ ảnh */
+    --foam-whisper: #D0EFEF;
+    --ocean-haze: #AEE3E0;
+    --driftwood-teal: #5DA9B0;
+    --tidal-depths: #2C6A74;
+}
+
 html {
-  font-size: 14px;
+    font-size: 14px;
+    /* Thiết lập màu nền chủ đạo cho toàn bộ trang */
+    background-color: var(--foam-whisper);
 }
 
 @media (min-width: 768px) {
-  html {
-    font-size: 16px;
-  }
-}
-
-.btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
-  box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
-}
-
-html {
-  position: relative;
-  min-height: 100%;
+    html {
+        font-size: 16px;
+    }
 }
 
 body {
-  margin-bottom: 60px;
+    margin-bottom: 60px;
+    /* Sử dụng màu nhạt nhất làm nền để nội dung dễ đọc */
+    background-color: var(--foam-whisper);
+    color: var(--tidal-depths); /* Chữ màu đậm để tương phản tốt */
+}
+
+/* Cập nhật màu sắc cho các nút và trạng thái focus */
+.btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
+    /* Sử dụng màu Tidal Depths cho vòng tiêu điểm thay vì màu xanh mặc định */
+    box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem var(--driftwood-teal);
+    border-color: var(--tidal-depths);
 }
 
 .form-floating > .form-control-plaintext::placeholder, .form-floating > .form-control::placeholder {
-  color: var(--bs-secondary-color);
-  text-align: end;
+    color: var(--driftwood-teal);
+    text-align: end;
 }
 
 .form-floating > .form-control-plaintext:focus::placeholder, .form-floating > .form-control:focus::placeholder {
-  text-align: start;
+    text-align: start;
+}
+/* KHUNG FOOTER CHÍNH */
+.luxury-footer {
+    background-color: #262626;
+    color: #d1d1d1;
+    position: relative;
+    padding-top: 120px;
+    padding-bottom: 20px;
+    margin-top: 50px;
+    clip-path: polygon( 0 80px, calc(50% - 80px) 80px, 50% 0, calc(50% + 80px) 80px, 100% 80px, 100% 100%, 0 100% );
+}
+
+/* LOGO TRONG TAM GIÁC */
+.footer-logo-top {
+    position: absolute;
+    top: 25px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 40px;
+    height: 40px;
+    border: 1px solid #fff;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+    .footer-logo-top::after {
+        content: "O"; /* Thay bằng icon hoặc logo thật của bạn */
+        color: white;
+        font-size: 20px;
+    }
+
+/* TIÊU ĐỀ & LINK */
+.footer-title {
+    color: #ffffff;
+    font-size: 11px;
+    letter-spacing: 1.5px;
+    font-weight: bold;
+}
+
+.luxury-footer a {
+    color: #d1d1d1;
+    text-decoration: none;
+    font-size: 13px;
+    transition: color 0.3s;
+}
+
+    .luxury-footer a:hover {
+        color: #ffffff;
+    }
+
+/* STYLE CHỮ SANG TRỌNG */
+.hotel-name {
+    font-family: 'Times New Roman', Times, serif;
+    font-style: italic;
+    color: #b0a382 !important;
+    font-size: 14px !important;
+}
+
+/* ĐƯỜNG KẺ DỌC CỘT BÊN PHẢI (Màn hình lớn mới hiện) */
+@media (min-width: 992px) {
+    .footer-col-right {
+        border-left: 1px solid #444;
+    }
+}
+
+/* NÚT SUBSCRIBE */
+.subscribe-btn {
+    background-color: #d4c7a3;
+    color: #000;
+    border: none;
+    padding: 10px 25px;
+    font-family: 'Times New Roman', Times, serif;
+    font-style: italic;
+    font-weight: bold;
+    font-size: 15px;
+    transition: opacity 0.3s;
+}
+
+    .subscribe-btn:hover {
+        opacity: 0.8;
+    }
+
+/* ĐƯỜNG KẺ NGANG "WE RECOMMEND" */
+.divider {
+    display: flex;
+    align-items: center;
+    text-align: center;
+    margin: 40px 0 20px 0;
+}
+
+    .divider::before, .divider::after {
+        content: '';
+        flex: 1;
+        border-bottom: 1px solid #444;
+    }
+
+    .divider span {
+        padding: 0 20px;
+        font-size: 10px;
+        letter-spacing: 2px;
+        color: #ffffff;
+    }
+
+/* PHẦN RECOMMEND TRUNG TÂM */
+.recommend-brands {
+    font-family: 'Times New Roman', Times, serif;
+    font-style: italic;
+    font-size: 13px;
+    margin-bottom: 40px;
+}
+
+.brand-logo {
+    font-size: 18px;
+    font-style: normal;
+    color: #ffffff;
+    margin: 0 15px;
+    font-family: 'Segoe UI', sans-serif;
+    letter-spacing: 1px;
+}
+
+/* BOTTOM BAR */
+.footer-bottom {
+    border-top: 1px solid #444;
+    padding-top: 20px;
+    font-size: 10px;
+    letter-spacing: 1px;
+}
+/* Thiết lập Flexbox cho toàn bộ trang */
+html, body {
+    height: 100%;
+    margin: 0;
+}
+
+body {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh; /* Cao tối thiểu bằng màn hình */
+}
+
+/* Đẩy phần thân trang giãn ra hết cỡ, tự động ép footer xuống đáy */
+.main-content-wrapper {
+    flex: 1 0 auto;
+}
+
+/* Đảm bảo footer không bị co rút */
+.luxury-footer {
+    flex-shrink: 0;
 }

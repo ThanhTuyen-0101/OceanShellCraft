@@ -1,0 +1,80 @@
+﻿<header class="bg-white border-bottom box-shadow mb-3">
+    <div class="container-fluid">
+
+        <div class="row py-2 bg-light border-bottom text-muted" style="font-size: 0.9rem;">
+            <div class="col-md-6 d-flex align-items-center">
+                <span>Tôi thích bạn cũng thích</span>
+            </div>
+            <div class="col-md-6 d-flex justify-content-end align-items-center gap-3">
+                <a href="#" class="text-muted text-decoration-none"><i class="bi bi-facebook"></i> Facebook</a>
+                <a href="#" class="text-muted text-decoration-none"><i class="bi bi-instagram"></i> Instagram</a>
+                <a href="#" class="text-muted text-decoration-none"><i class="bi bi-youtube"></i> YouTube</a>
+            </div>
+        </div>
+
+        <div class="row py-3 align-items-center">
+            <div class="col-md-3">
+                <a asp-area="" asp-controller="Home" asp-action="Index" class="text-decoration-none">
+                    <img src="/images/logo.png" alt="OceanShellCraft Logo" style="width: 189px; height: 189px; object-fit: contain;">
+                </a>
+            </div>
+
+            <div class="col-md-5">
+                <form class="d-flex" action="/Search" method="get">
+                    <input class="form-control me-2" type="search" placeholder="Tìm kiếm sản phẩm..." aria-label="Search">
+                    <button class="btn btn-outline-primary" type="submit">Tìm</button>
+                </form>
+            </div>
+
+            <div class="col-md-4 d-flex justify-content-end align-items-center gap-4">
+                <a href="#" class="text-dark text-decoration-none">
+                    <i class="bi bi-heart"></i> Wishlist
+                </a>
+
+                <div class="dropdown">
+                    <a class="text-dark text-decoration-none dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        <i class="bi bi-person"></i> Tài khoản của tôi
+                    </a>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" asp-area="Identity" asp-page="/Account/Login">Đăng nhập</a></li>
+                        <li><a class="dropdown-item" asp-area="Identity" asp-page="/Account/Register">Đăng ký</a></li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li><a class="dropdown-item" asp-area="Identity" asp-page="/Account/Logout">Đăng xuất</a></li>
+                    </ul>
+                </div>
+
+                <a href="#" class="text-dark text-decoration-none">
+                    <i class="bi bi-cart"></i> Giỏ hàng
+                    <span class="badge bg-danger rounded-pill">0</span>
+                </a>
+            </div>
+        </div>
+
+        <div class="row align-items-center py-2 border-top">
+            <div class="col-md-9">
+                <nav class="navbar navbar-expand-sm navbar-light p-0">
+                    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarMenu" aria-controls="navbarMenu" aria-expanded="false" aria-label="Toggle navigation">
+                        <span class="navbar-toggler-icon"></span>
+                    </button>
+                    <div class="collapse navbar-collapse" id="navbarMenu">
+                        <ul class="navbar-nav me-auto">
+                            <li class="nav-item">
+                                <a class="nav-link text-dark fw-bold" asp-area="" asp-controller="Home" asp-action="Index">Trang chủ</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-dark fw-bold" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+                            </li>
+                        </ul>
+                    </div>
+                </nav>
+            </div>
+
+            <div class="col-md-3 text-end">
+                <span class="fw-bold text-danger">
+                    <i class="bi bi-telephone-fill"></i> Hotline: 0123 456 789
+                </span>
+            </div>
+        </div>
+
+    </div>
+</header>
