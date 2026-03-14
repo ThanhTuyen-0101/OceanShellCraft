@@ -1,24 +1,80 @@
 ﻿@model IEnumerable<OceanShellCraft.Models.SanPham>
 
 @{
-    ViewData["Title"] = "Danh sách sản phẩm";
+    ViewData["Title"] = "Danh Sách Sản Phẩm";
 }
 
-<h2 class="my-4">Sản Phẩm Mỹ Nghệ Vỏ Ốc</h2>
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="fw-bold">Sản Phẩm Mỹ Nghệ Vỏ Ốc</h2>
 
-<div class="row">
-    @foreach (var item in Model)
-    {
-        <div class="col-md-4 mb-4">
-            <div class="card h-100 shadow-sm">
-                <img src="@item.HinhAnh" class="card-img-top" alt="@item.TenSanPham" style="height: 200px; object-fit: cover;">
-                <div class="card-body">
-                    <h5 class="card-title">@item.TenSanPham</h5>
-                    <p class="card-text text-danger fw-bold">@item.GiaTien.ToString("N0") VNĐ</p>
-                    <p class="card-text small text-muted">Chất liệu: @item.ChatLieu</p>
-                    <a href="#" class="btn btn-primary w-100">Xem chi tiết</a>
+        @* CHỈ ADMIN MỚI THẤY CÁC NÚT NHẬP DỮ LIỆU *@
+        @if (User.IsInRole("Admin"))
+        {
+            <div class="btn-group shadow-sm">
+                <a asp-action="TaoMoi" class="btn btn-primary">
+                    <i class="fas fa-plus me-1"></i>Thêm Thủ Công
+                </a>
+                <a asp-action="NhapExcel" class="btn btn-success">
+                    <i class="fas fa-file-excel me-1"></i>Nhập Từ Excel
+                </a>
+            </div>
+        }
+    </div>
+
+    <div class="row">
+        @foreach (var sp in Model)
+        {
+            <div class="col-md-3 mb-4">
+                <div class="card h-100 border-0 shadow-sm overflow-hidden card-product">
+                    <img src="@sp.HinhAnh" class="card-img-top" alt="@sp.TenSanPham" style="height: 220px; object-fit: cover;">
+
+                    <div class="card-body pb-0">
+                        <h6 class="card-title fw-bold text-dark mb-1">@sp.TenSanPham</h6>
+                        <p class="text-danger fw-bold mb-2">@sp.GiaTien.ToString("N0") VNĐ</p>
+
+                        <div class="small text-muted mb-2" style="font-size: 0.85rem;">
+                            <div>Chất liệu: @sp.ChatLieu</div>
+                            <div>Kích thước: @sp.KichThuoc</div>
+                        </div>
+                    </div>
+
+                    <div class="card-footer bg-white border-0 pt-2 pb-3">
+                        <div class="d-grid gap-2">
+                            @if (User.Identity.IsAuthenticated)
+                            {
+                                <form asp-controller="GioHang" asp-action="ThemVaoGio" method="get">
+                                    <input type="hidden" name="sanPhamId" value="@sp.Id" />
+                                    <button type="submit" class="btn btn-primary w-100 btn-sm">
+                                        <i class="bi bi-cart-plus"></i> Thêm Vào Giỏ
+                                    </button>
+                                </form>
+                            }
+                            else
+                            {
+                                <a asp-controller="TaiKhoan" asp-action="DangNhap" class="btn btn-warning btn-sm">
+                                    <i class="bi bi-lock-fill"></i> Đăng nhập để mua
+                                </a>
+                            }
+
+                            <a asp-controller="SanPham" asp-action="ChiTiet" asp-route-id="@sp.Id" class="btn btn-outline-dark btn-sm">
+                                Chi Tiết
+                            </a>
+                        </div>
+                    </div>
                 </div>
             </div>
-        </div>
-    }
+        }
+    </div>
 </div>
+
+<style>
+    .card-product {
+        transition: transform 0.2s ease-in-out;
+    }
+
+        .card-product:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1) !important;
+        }
+</style>

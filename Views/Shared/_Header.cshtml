@@ -1,0 +1,66 @@
+﻿@using System.Security.Claims
+@inject OceanShellCraft.Models.MyNgheDbContext _context
+@{
+    // Tính số lượng giỏ hàng như cũ
+    string maPhien = Context.Request.Cookies["MaPhienGioHang"];
+    var soLuongGioHang = !string.IsNullOrEmpty(maPhien) ? _context.GioHangs.Where(g => g.MaPhien == maPhien).Sum(g => (int?)g.SoLuong) ?? 0 : 0;
+}
+
+<header>
+    <nav class="navbar navbar-expand-lg navbar-light bg-white border-bottom shadow-sm py-3">
+        <div class="container">
+            <a class="navbar-brand fw-bold" asp-controller="TrangChu" asp-action="Index">
+                <i class="fas fa-fish text-primary me-2"></i>Mỹ Nghệ Biển
+            </a>
+
+            <div class="collapse navbar-collapse">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item"><a class="nav-link text-dark" asp-controller="TrangChu" asp-action="Index">Trang Chủ</a></li>
+                    <li class="nav-item"><a class="nav-link text-dark" asp-controller="SanPham" asp-action="DanhSach">Sản Phẩm</a></li>
+                    @if (User.IsInRole("Admin"))
+                    {
+                        <li class="nav-item">
+                            <a class="nav-link text-danger fw-bold" asp-controller="QuanTriVien" asp-action="DanhSach">Quản Lý Thành Viên</a>
+                        </li>
+                    }
+
+                    @* CHỈ ADMIN MỚI THẤY NÚT NÀY *@
+                    @if (User.IsInRole("Admin"))
+                    {
+                        <li class="nav-item"><a class="nav-link text-danger fw-bold" asp-controller="SanPham" asp-action="TaoMoi">Quản Lý Kho</a></li>
+                    }
+                </ul>
+
+                <div class="d-flex align-items-center">
+                    @* Giỏ hàng (Mọi người đều thấy nhưng logic thêm sẽ chặn ở sau) *@
+                    <a class="nav-link text-dark me-3 position-relative" asp-controller="GioHang" asp-action="DanhSach">
+                        <i class="fas fa-shopping-cart"></i>
+                        @if (soLuongGioHang > 0)
+                        {
+                            <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">@soLuongGioHang</span>
+                        }
+                    </a>
+
+                    @if (User.Identity.IsAuthenticated)
+                    {
+                        @* Khi đã đăng nhập: Hiện tên và nút Đăng xuất *@
+                        <div class="dropdown">
+                            <button class="btn btn-outline-primary dropdown-toggle" data-bs-toggle="dropdown">
+                                Chào, @User.Identity.Name
+                            </button>
+                            <ul class="dropdown-menu">
+                                <li><a class="dropdown-item" asp-controller="TaiKhoan" asp-action="DangXuat">Đăng xuất</a></li>
+                            </ul>
+                        </div>
+                    }
+                    else
+                    {
+                        @* Khi chưa đăng nhập: Hiện nút Đăng nhập/Đăng ký *@
+                        <a class="btn btn-outline-primary me-2" asp-controller="TaiKhoan" asp-action="DangNhap">Đăng nhập</a>
+                        <a class="btn btn-primary" asp-controller="TaiKhoan" asp-action="DangKy">Đăng ký</a>
+                    }
+                </div>
+            </div>
+        </div>
+    </nav>
+</header>

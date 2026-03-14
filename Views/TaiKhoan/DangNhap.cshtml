@@ -1,0 +1,41 @@
+﻿@model OceanShellCraft.Models.ViewModels.DangNhapViewModel
+
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-5">
+            <div class="card shadow-lg border-0 rounded-3">
+                <div class="card-body p-5">
+                    <h2 class="fw-bold text-center mb-4">Đăng Nhập</h2>
+                    <form asp-action="DangNhap" method="post">
+                        <div class="form-floating mb-3">
+                            <input asp-for="Email" class="form-control" placeholder="Email" />
+                            <label asp-for="Email">Email</label>
+                        </div>
+
+                        @* Ô mật khẩu đăng nhập *@
+                        <div class="form-floating mb-4 position-relative">
+                            <input asp-for="MatKhau" type="password" class="form-control" id="login-pass" placeholder="Mật khẩu" />
+                            <label asp-for="MatKhau">Mật khẩu</label>
+                            <i class="bi bi-eye-slash position-absolute top-50 end-0 translate-middle-y me-3 fs-5"
+                               id="eye-login" style="cursor: pointer; z-index: 10;"></i>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary btn-lg w-100 shadow-sm mb-3">Đăng Nhập</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        const eye = document.getElementById('eye-login');
+        const input = document.getElementById('login-pass');
+        eye.addEventListener('click', () => {
+            input.type = input.type === 'password' ? 'text' : 'password';
+            eye.classList.toggle('bi-eye');
+            eye.classList.toggle('bi-eye-slash');
+        });
+    </script>
+}

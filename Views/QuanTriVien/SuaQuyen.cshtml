@@ -1,0 +1,47 @@
+﻿@model OceanShellCraft.Models.ViewModels.SuaQuyenNguoiDungViewModel
+
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-5">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb mb-4">
+                    <li class="breadcrumb-item"><a asp-action="Index">Quản lý</a></li>
+                    <li class="breadcrumb-item active">Sửa quyền</li>
+                </ol>
+            </nav>
+
+            <div class="card shadow-lg border-0 rounded-4">
+                <div class="card-body p-5">
+                    <h3 class="fw-bold text-center mb-4">Thiết Lập Quyền</h3>
+
+                    <div class="mb-4 text-center">
+                        <div class="p-3 bg-light rounded-3 border">
+                            <p class="text-muted small mb-1">Đang chỉnh sửa tài khoản:</p>
+                            <h6 class="fw-bold mb-0">@Model.Email</h6>
+                        </div>
+                    </div>
+
+                    <form asp-action="SuaQuyen" method="post">
+                        @* Hidden field để gửi ID về mà không hiện lên màn hình *@
+                        <input type="hidden" asp-for="NguoiDungId" />
+
+                        <div class="mb-4">
+                            <label class="form-label fw-bold">Chọn vai trò mới</label>
+                            <select name="vaiTroMoi" class="form-select form-select-lg border-primary">
+                                @foreach (var role in Model.DanhSachVaiTro)
+                                {
+                                    <option value="@role" selected="@(role == Model.VaiTroHienTai)">@role</option>
+                                }
+                            </select>
+                        </div>
+
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-primary btn-lg shadow">Xác Nhận Thay Đổi</button>
+                            <a asp-action="DanhSach" class="btn btn-link text-muted">Hủy bỏ và quay lại</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

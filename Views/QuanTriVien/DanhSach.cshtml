@@ -1,0 +1,65 @@
+﻿@model IEnumerable<OceanShellCraft.Models.NguoiDung>
+
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="fw-bold text-primary"><i class="bi bi-people-fill"></i> Quản Lý Thành Viên</h2>
+    </div>
+
+    @if (TempData["ThongBao"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show shadow-sm" role="alert">
+            <i class="bi bi-check-circle-fill me-2"></i> @TempData["ThongBao"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+
+    <div class="card border-0 shadow-sm">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th class="ps-4">Họ và Tên</th>
+                        <th>Email</th>
+                        <th>Vai Trò</th>
+                        <th class="text-center">Thao Tác</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model)
+                    {
+                        <tr>
+                            <td class="ps-4 fw-bold">@item.HoTen</td>
+                            <td>@item.Email</td>
+                            <td>
+                                @if (item.VaiTro == "Admin")
+                                {
+                                    <span class="badge bg-danger">Quản Trị Viên</span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-primary">Khách Hàng</span>
+                                }
+                            </td>
+                            <td class="text-center">
+                                <div class="btn-group">
+                                    <a asp-action="SuaQuyen" asp-route-id="@item.Id" class="btn btn-sm btn-outline-warning">
+                                        <i class="bi bi-pencil-square"></i> Đổi Quyền
+                                    </a>
+                                    @if (item.Email != "admin@biendanang.com")
+                                    {
+                                        <form asp-action="XoaNguoiDung" asp-route-id="@item.Id" method="post"
+                                              onsubmit="return confirm('Bạn có chắc chắn muốn xóa người dùng này?')">
+                                            <button type="submit" class="btn btn-sm btn-outline-danger ms-1">
+                                                <i class="bi bi-trash"></i> Xóa
+                                            </button>
+                                        </form>
+                                    }
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

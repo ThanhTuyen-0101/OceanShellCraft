@@ -1,0 +1,30 @@
+﻿@model IEnumerable<OceanShellCraft.Models.DanhMuc>
+
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>Quản Lý Danh Mục Mỹ Nghệ</h2>
+        <a asp-action="TaoMoi" class="btn btn-success"><i class="fas fa-plus"></i> Thêm Loại Mới</a>
+    </div>
+
+    <table class="table table-hover shadow-sm">
+        <thead class="table-dark">
+            <tr>
+                <th>Mã (ID)</th>
+                <th>Tên Loại Sản Phẩm</th>
+                <th>Thao tác</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>@item.Id</td>
+                    <td>@item.TenDanhMuc</td>
+                    <td>
+                        <button class="btn btn-sm btn-outline-danger"><i class="fas fa-trash"></i></button>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

@@ -1,38 +1,147 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;           // Giải quyết lỗi EntityFrameworkCore
-using System.ComponentModel.DataAnnotations.Schema; // Giải quyết lỗi [Column]
+﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.EntityFrameworkCore;
+using MiniExcelLibs; // Chỉ cần anh bạn này là đủ cân cả thế giới
 using OceanShellCraft.Models;
+using System.Data;
 
 namespace OceanShellCraft.Controllers
 {
     public class SanPhamController : Controller
     {
         private readonly MyNgheDbContext _context;
+
         public SanPhamController(MyNgheDbContext context)
         {
             _context = context;
         }
-        public IActionResult Index()
+
+        // 1. Hiển thị danh sách sản phẩm
+        public async Task<IActionResult> DanhSach(int? maDanhMuc)
         {
+            var sanPhams = _context.SanPhams.Include(s => s.DanhMuc).AsQueryable();
+            if (maDanhMuc.HasValue)
+            {
+                sanPhams = sanPhams.Where(s => s.DanhMucId == maDanhMuc);
+            }
+            return View(await sanPhams.ToListAsync());
+        }
+
+        // 2. Trang tạo mới sản phẩm (Giao diện)
+        [HttpGet]
+        public IActionResult TaoMoi()
+        {
+            ViewBag.MaDanhMuc = new SelectList(_context.DanhMucs, "Id", "TenDanhMuc");
             return View();
         }
-        public async Task<IActionResult> DanhSach(int? danhMucId)
-        {
-            // 1. Tạo câu truy vấn cơ bản (chưa chạy xuống DB)
-            // .Include(s => s.DanhMuc): Giống lệnh JOIN trong SQL để lấy tên danh mục
-            var truyVan = _context.SanPhams.Include(s => s.DanhMuc).AsQueryable();
 
-            // 2. Nếu người dùng chọn lọc theo danh mục (VD: bấm vào menu "Đèn ngủ")
-            if (danhMucId.HasValue)
+        // 3. Xử lý tạo mới sản phẩm thủ công
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> TaoMoi([Bind("TenSanPham,MoTa,GiaTien,ChatLieu,KichThuoc,DanhMucId")] SanPham sanPham, IFormFile imageFile)
+        {
+            if (ModelState.IsValid)
             {
-                truyVan = truyVan.Where(s => s.DanhMucId == danhMucId);
+                if (imageFile != null && imageFile.Length > 0)
+                {
+                    string tenFile = Guid.NewGuid().ToString() + Path.GetExtension(imageFile.FileName);
+                    string duongDanLuu = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/img", tenFile);
+
+                    using (var stream = new FileStream(duongDanLuu, FileMode.Create))
+                    {
+                        await imageFile.CopyToAsync(stream);
+                    }
+                    sanPham.HinhAnh = "/img/" + tenFile;
+                }
+
+                _context.Add(sanPham);
+                await _context.SaveChangesAsync();
+                return RedirectToAction(nameof(DanhSach));
             }
 
-            // 3. Thực thi truy vấn và lấy dữ liệu về list (.ToListAsync())
-            var danhSachSanPham = await truyVan.ToListAsync();
+            ViewBag.MaDanhMuc = new SelectList(_context.DanhMucs, "Id", "TenDanhMuc", sanPham.DanhMucId);
+            return View(sanPham);
+        }
 
-            // 4. Trả dữ liệu về View
-            return View(danhSachSanPham);
+        // 4. Xử lý Nhập Excel bằng MiniExcel
+        [HttpPost]
+        public async Task<IActionResult> NhapExcel(IFormFile file)
+        {
+            if (file == null || file.Length == 0) return RedirectToAction("TaoMoi");
+
+            try
+            {
+                using (var stream = file.OpenReadStream())
+                {
+                    var rows = stream.Query().ToList();
+                    var dsSanPham = new List<SanPham>();
+
+                    foreach (var row in rows.Skip(1))
+                    {
+                        string tenSP = row.A?.ToString();
+                        if (string.IsNullOrWhiteSpace(tenSP)) continue;
+
+                        dsSanPham.Add(new SanPham
+                        {
+                            TenSanPham = tenSP,
+                            MoTa = row.B?.ToString() ?? "",
+                            // FIX LỖI: Chỉ định rõ 'out decimal' và 'out int' thay vì 'out var'
+                            GiaTien = decimal.TryParse(row.C?.ToString(), out decimal gia) ? gia : 0,
+                            HinhAnh = row.D?.ToString() ?? "",
+                            ChatLieu = row.E?.ToString() ?? "",
+                            KichThuoc = row.F?.ToString() ?? "",
+                            DanhMucId = int.TryParse(row.G?.ToString(), out int id) ? id : 1
+                        });
+                    }
+
+                    if (dsSanPham.Any())
+                    {
+                        _context.SanPhams.AddRange(dsSanPham);
+                        await _context.SaveChangesAsync();
+                    }
+                }
+                return RedirectToAction("DanhSach");
+            }
+            catch (Exception ex)
+            {
+                return Content("Lỗi MiniExcel: " + ex.Message);
+            }
+        }
+
+        // 5. Xuất file mẫu bằng MiniExcel (Siêu ngắn, không cần EPPlus)
+        public IActionResult TaiFileMau()
+        {
+            // Tạo 1 dòng dữ liệu mẫu cực kỳ gọn gàng
+            var dataMau = new[]
+            {
+                new {
+                    TenSanPham = "Đèn ngủ vỏ ốc xà cừ",
+                    MoTa = "Sản phẩm thủ công tinh xảo",
+                    GiaTien = 250000,
+                    HinhAnh = "/img/mau.jpg",
+                    ChatLieu = "Vỏ ốc tự nhiên",
+                    KichThuoc = "20cm",
+                    DanhMucId = 1
+                }
+            };
+
+            var stream = new MemoryStream();
+            // MiniExcel tự động tạo file Excel từ mảng dữ liệu ở trên
+            stream.SaveAs(dataMau);
+            stream.Position = 0;
+
+            return File(stream.ToArray(), "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "Mau_Nhap_San_Pham.xlsx");
+        }
+        public async Task<IActionResult> ChiTiet(int id)
+        {
+            var sanPham = await _context.SanPhams
+                .Include(s => s.DanhMuc)
+                .FirstOrDefaultAsync(m => m.Id == id);
+
+            if (sanPham == null) return NotFound();
+
+            return View(sanPham);
         }
     }
 }

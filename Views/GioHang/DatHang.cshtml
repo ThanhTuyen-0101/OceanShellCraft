@@ -1,0 +1,92 @@
+﻿@model OceanShellCraft.Models.ViewModels.GioHangViewModel
+
+<div class="container mt-4">
+    <h2 class="fw-bold text-primary mb-4 text-center">Thông Tin Đặt Hàng 🐚</h2>
+
+    <form asp-action="XacNhanDatHang" method="post" id="formDatHang">
+        <div class="row">
+            @* CỘT TRÁI: THÔNG TIN GIAO HÀNG *@
+            <div class="col-md-5">
+                <div class="card shadow-sm border-0 rounded-4 mb-4">
+                    <div class="card-body p-4">
+                        <h5 class="fw-bold mb-3 border-bottom pb-2">Địa Chỉ Nhận Hàng</h5>
+                        <div class="mb-3">
+                            <label class="form-label">Số điện thoại <span class="text-danger">*</span></label>
+                            <input type="tel" name="SoDienThoai" class="form-control" required />
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Địa chỉ giao hàng <span class="text-danger">*</span></label>
+                            <textarea name="DiaChi" class="form-control" rows="3" required></textarea>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            @* CỘT PHẢI: CHỈNH SỬA SẢN PHẨM *@
+            <div class="col-md-7">
+                <div class="card shadow-sm border-0 rounded-4">
+                    <div class="card-body p-4">
+                        <h5 class="fw-bold mb-3 border-bottom pb-2">Kiểm Tra Sản Phẩm</h5>
+                        <div class="table-responsive">
+                            <table class="table align-middle">
+                                <tbody>
+                                    @for (int i = 0; i < Model.DanhSachItem.Count; i++)
+                                    {
+                                        var item = Model.DanhSachItem[i];
+                                        <tr class="product-row" data-price="@item.SanPham.GiaTien">
+                                            @* Lưu ID sản phẩm để gửi về Controller *@
+                                            <input type="hidden" name="ListSanPhamId" value="@item.SanPhamId" />
+
+                                            <td style="width: 60px;"><img src="@item.SanPham.HinhAnh" width="50" class="rounded" /></td>
+                                            <td>
+                                                <div class="fw-bold">@item.SanPham.TenSanPham</div>
+                                                <div class="input-group input-group-sm mt-2" style="width: 120px;">
+                                                    @* Cho phép khách sửa số lượng ngay đây *@
+                                                    <input type="number" name="ListSoLuong" class="form-control text-center input-soluong"
+                                                           value="@item.SoLuong" min="1" />
+                                                </div>
+                                            </td>
+                                            <td class="text-end fw-bold">
+                                                <span class="line-total">@((item.SoLuong * item.SanPham.GiaTien).ToString("N0"))</span>đ
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <div class="bg-light p-3 rounded-3 mt-3 text-end">
+                            <span class="h5 fw-bold">Tổng cộng: </span>
+                            <span class="h5 fw-bold text-danger" id="grand-total">@Model.TongTien.ToString("N0")</span>
+                            <span class="h5 fw-bold text-danger"> VNĐ</span>
+                        </div>
+
+                        <button type="submit" class="btn btn-success btn-lg w-100 mt-4 shadow fw-bold">
+                            XÁC NHẬN ĐẶT HÀNG <i class="bi bi-cart-check"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            $('.input-soluong').on('input change', function () {
+                let grandTotal = 0;
+
+                $('.product-row').each(function () {
+                    const price = parseFloat($(this).data('price'));
+                    const quantity = parseInt($(this).find('.input-soluong').val()) || 0;
+                    const lineTotal = price * quantity;
+
+                    $(this).find('.line-total').text(lineTotal.toLocaleString('vi-VN'));
+                    grandTotal += lineTotal;
+                });
+
+                $('#grand-total').text(grandTotal.toLocaleString('vi-VN'));
+            });
+        });
+    </script>
+}

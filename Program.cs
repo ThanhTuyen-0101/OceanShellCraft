@@ -1,36 +1,56 @@
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.EntityFrameworkCore;
 using OceanShellCraft.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
+// 1. Cấu hình DbContext với Retry Policy (Giúp kết nối SQL lỳ đòn trên .NET 10)
 builder.Services.AddDbContext<MyNgheDbContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("DbConnection")));
+    options.UseSqlServer(
+        builder.Configuration.GetConnectionString("DbConnection"),
+        sqlServerOptionsAction: sqlOptions =>
+        {
+            sqlOptions.EnableRetryOnFailure();
+        }));
 
+builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+    .AddCookie(options =>
+    {
+        options.LoginPath = "/TaiKhoan/DangNhap"; // Trang chuyển hướng khi chưa đăng nhập
+        options.AccessDeniedPath = "/TaiKhoan/TuChoiTruyCap"; // Trang khi khách lẻ đòi vào Admin
+    });
 
-// Add services to the container.
+// 2. Cấu hình giới hạn upload file (Dùng cho tính năng nhập Excel và thêm ảnh)
+builder.Services.Configure<Microsoft.AspNetCore.Http.Features.FormOptions>(options =>
+{
+    options.MultipartBodyLengthLimit = 52428800; // 50MB
+});
+
+// 3. Đăng ký Controllers và Views
 builder.Services.AddControllersWithViews();
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
+// 4. Cấu hình Pipeline xử lý request
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Home/Error");
-    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }
 
 app.UseHttpsRedirection();
-app.UseRouting();
 
-app.UseAuthorization();
-
+// 5. Tính năng mới của .NET 10: Tối ưu hóa việc tải file tĩnh (CSS/JS/Ảnh)
+// Thay cho UseStaticFiles cũ để tăng tốc độ load trang
 app.MapStaticAssets();
 
+app.UseRouting();
+app.UseAuthentication(); // Ai là ai?
+app.UseAuthorization();  // Được làm gì?
+// 6. Cấu hình Route mặc định
 app.MapControllerRoute(
     name: "default",
-    pattern: "{controller=TrangChu}/{action=Index}/{id?}")
-    .WithStaticAssets();
-
+    pattern: "{controller=SanPham}/{action=DanhSach}/{id?}")
+    .WithStaticAssets(); // Kết hợp tối ưu assets cho các route
 
 app.Run();

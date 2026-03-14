@@ -1,14 +1,22 @@
 is_global = true
 build_property.TargetFramework = net10.0
-build_property.TargetFrameworkIdentifier = .NETCoreApp
-build_property.TargetFrameworkVersion = v10.0
+build_property.TargetFramework = net10.0
+build_property.TargetPlatformMinVersion = 
 build_property.TargetPlatformMinVersion = 
 build_property.UsingMicrosoftNETSdkWeb = true
+build_property.UsingMicrosoftNETSdkWeb = true
+build_property.ProjectTypeGuids = 
 build_property.ProjectTypeGuids = 
 build_property.InvariantGlobalization = 
+build_property.InvariantGlobalization = 
+build_property.PlatformNeutralAssembly = 
 build_property.PlatformNeutralAssembly = 
 build_property.EnforceExtendedAnalyzerRules = 
+build_property.EnforceExtendedAnalyzerRules = 
 build_property._SupportedPlatformList = Linux,macOS,Windows
+build_property._SupportedPlatformList = Linux,macOS,Windows
+build_property.TargetFrameworkIdentifier = .NETCoreApp
+build_property.TargetFrameworkVersion = v10.0
 build_property.RootNamespace = OceanShellCraft
 build_property.RootNamespace = OceanShellCraft
 build_property.ProjectDir = D:\ANhu\Study\OfficialDocuments\Y3_S2\ASP\OceanShellCraft\
@@ -22,16 +30,72 @@ build_property._RazorSourceGeneratorDebug =
 build_property.EffectiveAnalysisLevelStyle = 10.0
 build_property.EnableCodeStyleSeverity = 
 
+[D:/ANhu/Study/OfficialDocuments/Y3_S2/ASP/OceanShellCraft/Views/DanhMuc/DanhSach.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcRGFuaE11Y1xEYW5oU2FjaC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/ANhu/Study/OfficialDocuments/Y3_S2/ASP/OceanShellCraft/Views/DanhMuc/TaoMoi.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcRGFuaE11Y1xUYW9Nb2kuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/ANhu/Study/OfficialDocuments/Y3_S2/ASP/OceanShellCraft/Views/GioHang/CamOn.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcR2lvSGFuZ1xDYW1Pbi5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/ANhu/Study/OfficialDocuments/Y3_S2/ASP/OceanShellCraft/Views/GioHang/DanhSach.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcR2lvSGFuZ1xEYW5oU2FjaC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/ANhu/Study/OfficialDocuments/Y3_S2/ASP/OceanShellCraft/Views/GioHang/DatHang.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcR2lvSGFuZ1xEYXRIYW5nLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/ANhu/Study/OfficialDocuments/Y3_S2/ASP/OceanShellCraft/Views/QuanTriVien/DanhSach.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUXVhblRyaVZpZW5cRGFuaFNhY2guY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/ANhu/Study/OfficialDocuments/Y3_S2/ASP/OceanShellCraft/Views/QuanTriVien/SuaQuyen.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUXVhblRyaVZpZW5cU3VhUXV5ZW4uY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/ANhu/Study/OfficialDocuments/Y3_S2/ASP/OceanShellCraft/Views/SanPham/ChiTiet.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU2FuUGhhbVxDaGlUaWV0LmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
 [D:/ANhu/Study/OfficialDocuments/Y3_S2/ASP/OceanShellCraft/Views/SanPham/DanhSach.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU2FuUGhhbVxEYW5oU2FjaC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/ANhu/Study/OfficialDocuments/Y3_S2/ASP/OceanShellCraft/Views/SanPham/TaoMoi.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU2FuUGhhbVxUYW9Nb2kuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/ANhu/Study/OfficialDocuments/Y3_S2/ASP/OceanShellCraft/Views/Shared/Components/MenuDanhMuc/MacDinh.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU2hhcmVkXENvbXBvbmVudHNcTWVudURhbmhNdWNcTWFjRGluaC5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
 [D:/ANhu/Study/OfficialDocuments/Y3_S2/ASP/OceanShellCraft/Views/Shared/Error.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU2hhcmVkXEVycm9yLmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
+[D:/ANhu/Study/OfficialDocuments/Y3_S2/ASP/OceanShellCraft/Views/Shared/_Footer.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU2hhcmVkXF9Gb290ZXIuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/ANhu/Study/OfficialDocuments/Y3_S2/ASP/OceanShellCraft/Views/Shared/_Header.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU2hhcmVkXF9IZWFkZXIuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
 [D:/ANhu/Study/OfficialDocuments/Y3_S2/ASP/OceanShellCraft/Views/Shared/_ValidationScriptsPartial.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU2hhcmVkXF9WYWxpZGF0aW9uU2NyaXB0c1BhcnRpYWwuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/ANhu/Study/OfficialDocuments/Y3_S2/ASP/OceanShellCraft/Views/TaiKhoan/DangKy.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcVGFpS2hvYW5cRGFuZ0t5LmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/ANhu/Study/OfficialDocuments/Y3_S2/ASP/OceanShellCraft/Views/TaiKhoan/DangNhap.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcVGFpS2hvYW5cRGFuZ05oYXAuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
 [D:/ANhu/Study/OfficialDocuments/Y3_S2/ASP/OceanShellCraft/Views/TrangChu/Index.cshtml]
