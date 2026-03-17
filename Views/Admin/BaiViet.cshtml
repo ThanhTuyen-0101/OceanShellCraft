@@ -1,0 +1,80 @@
+﻿@model IEnumerable<OceanShellCraft.Models.BaiViet>
+@{
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+    ViewData["Title"] = "Quản lý bài viết";
+}
+
+<div class="container-fluid py-3">
+    <div class="row mb-4">
+        <div class="col"><h4 class="fw-bold text-primary">Quản lý bài viết / banner</h4></div>
+    </div>
+    <div class="row mb-3 align-items-center">
+        <div class="col-md-4">
+            <div class="input-group">
+                <span class="input-group-text bg-white border-end-0"><i class="bi bi-search"></i></span>
+                <input type="text" class="form-control border-start-0 ps-0" placeholder="Tìm kiếm...">
+            </div>
+        </div>
+        <div class="col-md-8 text-end">
+            <a href="/Admin/ThemSuaBaiViet" class="btn btn-primary">
+                <i class="bi bi-plus-circle me-1"></i> Thêm (F7)
+            </a>
+        </div>
+    </div>
+
+    <div class="card shadow-sm border-0">
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover table-bordered mb-0 align-middle">
+                    <thead class="table-light">
+                        <tr>
+                            <th class="text-primary py-3 px-4">ID</th>
+                            <th class="text-primary py-3 px-4">Tiêu Đề</th>
+                            <th class="text-primary py-3 px-4">Đường Link Ảnh Nền</th>
+                            <th class="py-3 px-4" style="width: 150px;"></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Model != null && Model.Any())
+                        {
+                            foreach (var item in Model)
+                            {
+                                <tr>
+                                    <td class="px-4">@item.Id</td>
+                                    <td class="px-4">@item.TieuDe</td>
+                                    <td class="px-4">
+                                        @if (!string.IsNullOrEmpty(item.AnhNen))
+                                        {
+                                            <a href="@item.AnhNen" target="_blank" class="text-decoration-none">
+                                                <img src="@item.AnhNen" style="height:40px; border-radius:4px; margin-right:10px;" />
+                                                @item.AnhNen
+                                            </a>
+                                        }
+                                        else
+                                        {
+                                            <span class="text-muted">Không có ảnh</span>
+                                        }
+                                    </td>
+                                    <td class="text-end px-4">
+                                        <a href="/Admin/ThemSuaBaiViet?id=@item.Id" class="btn btn-warning btn-sm text-white me-1" title="Sửa">
+                                            <i class="bi bi-pencil-fill"></i>
+                                        </a>
+                                        <button class="btn btn-danger btn-sm" title="Xóa">
+                                            <i class="bi bi-trash-fill"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                            }
+                        }
+                        else
+                        {
+                            <tr>
+                                <td colspan="4" class="text-center py-4 text-muted">Chưa có bài viết nào. Hãy bấm Thêm mới!</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>

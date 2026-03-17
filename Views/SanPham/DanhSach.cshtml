@@ -1,80 +1,92 @@
 ﻿@model IEnumerable<OceanShellCraft.Models.SanPham>
 
 @{
-    ViewData["Title"] = "Danh Sách Sản Phẩm";
+    ViewData["Title"] = "Bộ Sưu Tập Sản Phẩm";
 }
 
-<div class="container mt-4">
+<div class="container mt-5 mb-5 luxury-section">
     <div class="d-flex justify-content-between align-items-center mb-4">
-        <h2 class="fw-bold">Sản Phẩm Mỹ Nghệ Vỏ Ốc</h2>
+        <h2 class="luxury-title" style="font-size: 2.5rem;">Sản Phẩm Nghệ Thuật</h2>
 
-        @* CHỈ ADMIN MỚI THẤY CÁC NÚT NHẬP DỮ LIỆU *@
         @if (User.IsInRole("Admin"))
         {
             <div class="btn-group shadow-sm">
-                <a asp-action="TaoMoi" class="btn btn-primary">
+                <a asp-action="TaoMoi" class="btn btn-outline-warning">
                     <i class="fas fa-plus me-1"></i>Thêm Thủ Công
                 </a>
-                <a asp-action="NhapExcel" class="btn btn-success">
-                    <i class="fas fa-file-excel me-1"></i>Nhập Từ Excel
+                <a asp-action="NhapExcel" class="btn btn-warning">
+                    <i class="fas fa-file-excel me-1"></i>Nhập Excel
                 </a>
             </div>
         }
     </div>
 
-    <div class="row">
+    <ul class="luxury-filter-menu text-center mb-5">
+        <li>
+            <a href="@Url.Action("DanhSach", new { maDanhMuc = (int?)null })"
+               class="@(ViewBag.CurrentCategory == null ? "active" : "")">TẤT CẢ</a>
+        </li>
+        @if (ViewBag.DanhMucs != null)
+        {
+            foreach (var dm in ViewBag.DanhMucs)
+            {
+                <li>
+                    <a href="@Url.Action("DanhSach", new { maDanhMuc = dm.Id })"
+                       class="@(ViewBag.CurrentCategory == dm.Id ? "active" : "")">@dm.TenDanhMuc.ToUpper()</a>
+                </li>
+            }
+        }
+    </ul>
+
+    <div class="row g-4">
+        @if (!Model.Any())
+        {
+            <div class="col-12 text-center text-muted py-5">
+                <p>Không có sản phẩm nào trong danh mục này.</p>
+            </div>
+        }
         @foreach (var sp in Model)
         {
-            <div class="col-md-3 mb-4">
-                <div class="card h-100 border-0 shadow-sm overflow-hidden card-product">
-                    <img src="@sp.HinhAnh" class="card-img-top" alt="@sp.TenSanPham" style="height: 220px; object-fit: cover;">
-
-                    <div class="card-body pb-0">
-                        <h6 class="card-title fw-bold text-dark mb-1">@sp.TenSanPham</h6>
-                        <p class="text-danger fw-bold mb-2">@sp.GiaTien.ToString("N0") VNĐ</p>
-
-                        <div class="small text-muted mb-2" style="font-size: 0.85rem;">
-                            <div>Chất liệu: @sp.ChatLieu</div>
-                            <div>Kích thước: @sp.KichThuoc</div>
-                        </div>
+            <div class="col-md-4">
+                <div class="luxury-grid-card text-center h-100 d-flex flex-column">
+                    <div class="card-img-container">
+                        <img src="@(string.IsNullOrEmpty(sp.HinhAnh) ? "/images/default-shell.png" : sp.HinhAnh)" alt="@sp.TenSanPham">
                     </div>
 
-                    <div class="card-footer bg-white border-0 pt-2 pb-3">
-                        <div class="d-grid gap-2">
+                    <div class="card-content mt-auto p-4">
+                        <h4 class="product-title-gold text-uppercase">@sp.TenSanPham</h4>
+                        <p class="text-white-50 small mb-2">@sp.ChatLieu</p>
+                        <p class="price-gold mb-3">@sp.GiaTien.ToString("N0") VNĐ</p>
+
+                        <div class="d-flex justify-content-center gap-3">
+                            <a asp-controller="SanPham" asp-action="ChiTiet" asp-route-id="@sp.Id" class="btn-luxury-text">CHI TIẾT</a>
+
                             @if (User.Identity.IsAuthenticated)
                             {
                                 <form asp-controller="GioHang" asp-action="ThemVaoGio" method="get">
                                     <input type="hidden" name="sanPhamId" value="@sp.Id" />
-                                    <button type="submit" class="btn btn-primary w-100 btn-sm">
-                                        <i class="bi bi-cart-plus"></i> Thêm Vào Giỏ
-                                    </button>
+                                    <button type="submit" class="btn-luxury-text border-0 bg-transparent">THÊM VÀO GIỎ</button>
                                 </form>
                             }
                             else
                             {
-                                <a asp-controller="TaiKhoan" asp-action="DangNhap" class="btn btn-warning btn-sm">
-                                    <i class="bi bi-lock-fill"></i> Đăng nhập để mua
-                                </a>
+                                <a asp-controller="TaiKhoan" asp-action="DangNhap" class="btn-luxury-text">ĐĂNG NHẬP MUA</a>
                             }
-
-                            <a asp-controller="SanPham" asp-action="ChiTiet" asp-route-id="@sp.Id" class="btn btn-outline-dark btn-sm">
-                                Chi Tiết
-                            </a>
                         </div>
                     </div>
                 </div>
             </div>
         }
     </div>
-</div>
 
-<style>
-    .card-product {
-        transition: transform 0.2s ease-in-out;
+    @if (ViewBag.TotalPages > 1)
+    {
+        <div class="luxury-pagination mt-5">
+            @for (int i = 1; i <= ViewBag.TotalPages; i++)
+            {
+                <a href="@Url.Action("DanhSach", new { maDanhMuc = ViewBag.CurrentCategory, page = i })"
+                   class="@(i == ViewBag.CurrentPage ? "active" : "")">@i</a>
+            }
+        </div>
     }
-
-        .card-product:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 20px rgba(0,0,0,0.1) !important;
-        }
-</style>
+</div>

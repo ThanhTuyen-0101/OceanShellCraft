@@ -34,23 +34,33 @@ var app = builder.Build();
 // 4. Cấu hình Pipeline xử lý request
 if (!app.Environment.IsDevelopment())
 {
-    app.UseExceptionHandler("/Home/Error");
+    app.UseExceptionHandler("/TrangChu/Error");
     app.UseHsts();
 }
 
 app.UseHttpsRedirection();
 
 // 5. Tính năng mới của .NET 10: Tối ưu hóa việc tải file tĩnh (CSS/JS/Ảnh)
-// Thay cho UseStaticFiles cũ để tăng tốc độ load trang
 app.MapStaticAssets();
 
 app.UseRouting();
 app.UseAuthentication(); // Ai là ai?
 app.UseAuthorization();  // Được làm gì?
-// 6. Cấu hình Route mặc định
+
+// --- THÊM MỚI TẠI ĐÂY ---
+// Cấu hình Route riêng cho khu vực Admin (Phải đặt TRƯỚC route mặc định)
+app.MapControllerRoute(
+    name: "admin",
+    pattern: "Admin/{action=BaiViet}/{id?}",
+    defaults: new { controller = "Admin" })
+    .WithStaticAssets();
+// ------------------------
+
+// 6. Cấu hình Route mặc định (Dành cho trang người dùng bên ngoài)
+// ĐÃ SỬA LẠI THÀNH TRANG CHỦ TẠI ĐÂY:
 app.MapControllerRoute(
     name: "default",
-    pattern: "{controller=SanPham}/{action=DanhSach}/{id?}")
-    .WithStaticAssets(); // Kết hợp tối ưu assets cho các route
+    pattern: "{controller=TrangChu}/{action=TrangChu}/{id?}")
+    .WithStaticAssets();
 
 app.Run();

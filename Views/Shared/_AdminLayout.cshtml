@@ -1,0 +1,112 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+}
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - Admin OceanShellCraft</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+
+    <style>
+        body {
+            background-color: #f8f9fa;
+        }
+
+        /* Style cho thanh Sidebar */
+        .sidebar {
+            min-height: 100vh;
+            background-color: #ffffff;
+            border-right: 1px solid #e0e0e0;
+            box-shadow: 2px 0 5px rgba(0,0,0,0.05);
+        }
+
+        .sidebar-link {
+            color: #495057;
+            text-decoration: none;
+            padding: 10px 15px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-radius: 8px;
+            margin-bottom: 5px;
+            transition: all 0.2s;
+        }
+
+            .sidebar-link:hover {
+                background-color: #f1f3f5;
+            }
+
+        /* Style cho các menu con */
+        .sub-menu-link {
+            color: #495057;
+            text-decoration: none;
+            padding: 10px 15px 10px 40px; /* Thụt lề vào trong */
+            display: flex;
+            align-items: center;
+            border-radius: 8px;
+            margin-bottom: 5px;
+        }
+
+            .sub-menu-link i {
+                margin-right: 10px;
+                font-size: 1.1rem;
+            }
+
+            /* Style cho menu đang được chọn (màu xanh giống hình của bạn) */
+            .sub-menu-link.active {
+                background-color: #3b82f6; /* Màu xanh biển */
+                color: white;
+            }
+
+                .sub-menu-link.active i {
+                    color: white;
+                }
+    </style>
+</head>
+<body>
+    <div class="d-flex flex-nowrap">
+        <div class="sidebar p-3" style="width: 280px;">
+            <a href="/" class="d-flex align-items-center mb-3 mb-md-0 me-md-auto text-dark text-decoration-none">
+                <span class="fs-4 fw-bold text-primary">Admin Panel</span>
+            </a>
+            <hr>
+            <ul class="nav nav-pills flex-column mb-auto">
+                <li class="nav-item">
+                    <a href="#quanLyWebMenu" data-bs-toggle="collapse" class="sidebar-link" aria-expanded="true">
+                        <div>
+                            <i class="bi bi-globe me-2"></i> Quản lý Website
+                        </div>
+                        <i class="bi bi-chevron-down" style="font-size: 0.8rem;"></i>
+                    </a>
+
+                    <div class="collapse show" id="quanLyWebMenu">
+                        <ul class="nav flex-column">
+                            <li>
+                                <a href="#" class="sub-menu-link active">
+                                    <i class="bi bi-journal-text"></i> Bài viết
+                                </a>
+                            </li>
+                            <li>
+                                <a href="#" class="sub-menu-link">
+                                    <i class="bi bi-box-seam"></i> Sản phẩm
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </li>
+            </ul>
+        </div>
+        <div class="w-100 p-4">
+            @RenderBody()
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

@@ -1,66 +1,122 @@
 ﻿@using System.Security.Claims
 @inject OceanShellCraft.Models.MyNgheDbContext _context
 @{
-    // Tính số lượng giỏ hàng như cũ
+    // Tính số lượng giỏ hàng
     string maPhien = Context.Request.Cookies["MaPhienGioHang"];
     var soLuongGioHang = !string.IsNullOrEmpty(maPhien) ? _context.GioHangs.Where(g => g.MaPhien == maPhien).Sum(g => (int?)g.SoLuong) ?? 0 : 0;
 }
 
-<header>
-    <nav class="navbar navbar-expand-lg navbar-light bg-white border-bottom shadow-sm py-3">
-        <div class="container">
-            <a class="navbar-brand fw-bold" asp-controller="TrangChu" asp-action="Index">
-                <i class="fas fa-fish text-primary me-2"></i>Mỹ Nghệ Biển
-            </a>
+<header class="glass-header">
+    <div class="container-fluid">
 
-            <div class="collapse navbar-collapse">
-                <ul class="navbar-nav me-auto">
-                    <li class="nav-item"><a class="nav-link text-dark" asp-controller="TrangChu" asp-action="Index">Trang Chủ</a></li>
-                    <li class="nav-item"><a class="nav-link text-dark" asp-controller="SanPham" asp-action="DanhSach">Sản Phẩm</a></li>
-                    @if (User.IsInRole("Admin"))
-                    {
-                        <li class="nav-item">
-                            <a class="nav-link text-danger fw-bold" asp-controller="QuanTriVien" asp-action="DanhSach">Quản Lý Thành Viên</a>
-                        </li>
-                    }
+        <div class="row py-2 glass-topbar text-white-50" style="font-size: 0.9rem;">
+            <div class="col-md-6 d-flex align-items-center">
+                <span>Tôi thích bạn cũng thích</span>
+            </div>
+            <div class="col-md-6 d-flex justify-content-end align-items-center gap-3">
+                <a href="#" class="text-white-50 text-decoration-none"><i class="bi bi-facebook"></i> Facebook</a>
+                <a href="#" class="text-white-50 text-decoration-none"><i class="bi bi-instagram"></i> Instagram</a>
+                <a href="#" class="text-white-50 text-decoration-none"><i class="bi bi-youtube"></i> YouTube</a>
+            </div>
+        </div>
 
-                    @* CHỈ ADMIN MỚI THẤY NÚT NÀY *@
-                    @if (User.IsInRole("Admin"))
-                    {
-                        <li class="nav-item"><a class="nav-link text-danger fw-bold" asp-controller="SanPham" asp-action="TaoMoi">Quản Lý Kho</a></li>
-                    }
-                </ul>
+        <div class="row py-3 align-items-center">
+            <div class="col-md-3">
+                <a asp-controller="TrangChu" asp-action="TrangChu" class="text-decoration-none">
+                    <img src="/images/logo.png" alt="OceanShellCraft Logo" style="width: 189px; height: 189px; object-fit: contain; filter: drop-shadow(0 0 10px rgba(255,255,255,0.2));">
+                </a>
+            </div>
 
-                <div class="d-flex align-items-center">
-                    @* Giỏ hàng (Mọi người đều thấy nhưng logic thêm sẽ chặn ở sau) *@
-                    <a class="nav-link text-dark me-3 position-relative" asp-controller="GioHang" asp-action="DanhSach">
-                        <i class="fas fa-shopping-cart"></i>
-                        @if (soLuongGioHang > 0)
-                        {
-                            <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">@soLuongGioHang</span>
-                        }
-                    </a>
+            <div class="col-md-5">
+                <form class="d-flex" action="/Search" method="get">
+                    <input class="form-control me-2 bg-transparent text-white border-light custom-placeholder" type="search" placeholder="Tìm kiếm sản phẩm..." aria-label="Search">
+                    <button class="btn btn-outline-light" type="submit">Tìm</button>
+                </form>
+            </div>
 
+            <div class="col-md-4 d-flex justify-content-end align-items-center">
+                <span class="fw-bold text-warning fs-5" style="text-shadow: 1px 1px 5px rgba(0,0,0,0.5);">
+                    <i class="bi bi-telephone-fill"></i> Hotline: 0123 456 789
+                </span>
+            </div>
+        </div>
+
+    </div>
+</header>
+
+<div class="sticky-top glass-header mb-3" style="z-index: 1020;">
+    <div class="container-fluid">
+
+        <div class="row align-items-center py-2 border-top border-light">
+            <div class="col-md-7">
+                <nav class="navbar navbar-expand-sm navbar-dark p-0">
+                    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarMenu" aria-controls="navbarMenu" aria-expanded="false" aria-label="Toggle navigation">
+                        <span class="navbar-toggler-icon"></span>
+                    </button>
+                    <div class="collapse navbar-collapse" id="navbarMenu">
+                        <ul class="navbar-nav me-auto">
+                            <li class="nav-item">
+                                <a class="nav-link text-white fw-bold" asp-controller="TrangChu" asp-action="TrangChu">Trang chủ</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-white fw-bold" asp-controller="SanPham" asp-action="DanhSach">Sản Phẩm</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-white" asp-area="" asp-controller="TrangChu" asp-action="GioiThieu">Giới Thiệu</a>
+                            </li>
+
+                            @if (User.IsInRole("Admin"))
+                            {
+                                <li class="nav-item">
+                                    <a class="nav-link text-warning fw-bold" asp-controller="QuanTriVien" asp-action="DanhSach">Quản Lý Thành Viên</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link text-warning fw-bold" asp-controller="SanPham" asp-action="TaoMoi">Quản Lý Kho</a>
+                                </li>
+                            }
+                        </ul>
+                    </div>
+                </nav>
+            </div>
+
+            <div class="col-md-5 d-flex justify-content-end align-items-center gap-4">
+                <a href="#" class="text-white text-decoration-none">
+                    <i class="bi bi-heart"></i> Wishlist
+                </a>
+
+                <div class="dropdown">
                     @if (User.Identity.IsAuthenticated)
                     {
-                        @* Khi đã đăng nhập: Hiện tên và nút Đăng xuất *@
-                        <div class="dropdown">
-                            <button class="btn btn-outline-primary dropdown-toggle" data-bs-toggle="dropdown">
-                                Chào, @User.Identity.Name
-                            </button>
-                            <ul class="dropdown-menu">
-                                <li><a class="dropdown-item" asp-controller="TaiKhoan" asp-action="DangXuat">Đăng xuất</a></li>
-                            </ul>
-                        </div>
+                        <a class="text-white text-decoration-none dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="bi bi-person"></i> Chào, @User.Identity.Name
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-dark glass-header border-light">
+                            <li><a class="dropdown-item text-white" asp-controller="TaiKhoan" asp-action="DangXuat">Đăng xuất</a></li>
+                        </ul>
                     }
                     else
                     {
-                        @* Khi chưa đăng nhập: Hiện nút Đăng nhập/Đăng ký *@
-                        <a class="btn btn-outline-primary me-2" asp-controller="TaiKhoan" asp-action="DangNhap">Đăng nhập</a>
-                        <a class="btn btn-primary" asp-controller="TaiKhoan" asp-action="DangKy">Đăng ký</a>
+                        <a class="text-white text-decoration-none dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="bi bi-person"></i> Tài khoản của tôi
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-dark glass-header border-light">
+                            <li><a class="dropdown-item text-white" asp-controller="TaiKhoan" asp-action="DangNhap">Đăng nhập</a></li>
+                            <li><a class="dropdown-item text-white" asp-controller="TaiKhoan" asp-action="DangKy">Đăng ký</a></li>
+                        </ul>
                     }
                 </div>
+
+                <a asp-controller="GioHang" asp-action="DanhSach" class="text-white text-decoration-none position-relative">
+                    <i class="bi bi-cart"></i> Giỏ hàng
+                    @if (soLuongGioHang > 0)
+                    {
+                        <span class="position-absolute top-0 start-100 translate-middle badge bg-danger rounded-pill">
+                            @soLuongGioHang
+                        </span>
+                    }
+                </a>
             </div>
         </div>
-    </nav>
-</header>
+
+    </div>
+</div>

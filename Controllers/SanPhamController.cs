@@ -18,14 +18,33 @@ namespace OceanShellCraft.Controllers
         }
 
         // 1. Hiển thị danh sách sản phẩm
-        public async Task<IActionResult> DanhSach(int? maDanhMuc)
+        // 1. Hiển thị danh sách sản phẩm (Đã thêm Phân trang và Lọc theo danh mục)
+        public async Task<IActionResult> DanhSach(int? maDanhMuc, int page = 1)
         {
+            int pageSize = 6; // Số sản phẩm hiển thị trên 1 trang (giống ảnh mẫu là 6)
+
+            // Lấy danh sách danh mục để hiển thị lên Menu Lọc
+            ViewBag.DanhMucs = await _context.DanhMucs.ToListAsync();
+            ViewBag.CurrentCategory = maDanhMuc; // Lưu lại danh mục đang chọn để tô màu vàng
+
             var sanPhams = _context.SanPhams.Include(s => s.DanhMuc).AsQueryable();
+
             if (maDanhMuc.HasValue)
             {
                 sanPhams = sanPhams.Where(s => s.DanhMucId == maDanhMuc);
             }
-            return View(await sanPhams.ToListAsync());
+
+            // Tính toán số trang
+            int totalItems = await sanPhams.CountAsync();
+            int totalPages = (int)Math.Ceiling((double)totalItems / pageSize);
+
+            ViewBag.TotalPages = totalPages;
+            ViewBag.CurrentPage = page;
+
+            // Lấy dữ liệu của trang hiện tại
+            var pagedData = await sanPhams.Skip((page - 1) * pageSize).Take(pageSize).ToListAsync();
+
+            return View(pagedData);
         }
 
         // 2. Trang tạo mới sản phẩm (Giao diện)

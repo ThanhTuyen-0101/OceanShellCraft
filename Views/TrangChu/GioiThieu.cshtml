@@ -1,0 +1,163 @@
+﻿@{
+    ViewData["Title"] = "Giới Thiệu - OceanShellCraft";
+}
+
+<style>
+    /* 1. Thiết lập vùng chứa 3D làm nền phía sau */
+    .intro-wrapper {
+        position: relative;
+        width: 100%;
+        min-height: 100vh;
+        overflow: hidden;
+        background: linear-gradient(to bottom, #002b4d 0%, #001220 100%);
+    }
+
+    #ocean-canvas {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: 1; /* Nằm dưới nội dung */
+        cursor: grab;
+    }
+
+    /* 2. Lớp phủ nội dung phía trên */
+    .content-overlay {
+        position: relative;
+        z-index: 2; /* Nằm trên đại dương */
+        padding: 80px 0;
+        color: white;
+    }
+
+    /* 3. Style cho các Card để chúng trông mượt mà trên nền 3D */
+    .glass-card {
+        background: rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(10px); /* Hiệu ứng kính mờ */
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        border-radius: 20px;
+        transition: all 0.3s ease;
+    }
+
+        .glass-card:hover {
+            background: rgba(255, 255, 255, 0.15);
+            transform: translateY(-10px);
+        }
+
+    .text-primary-ocean {
+        color: #8ce5ff;
+    }
+</style>
+
+<div class="intro-wrapper">
+    <div id="ocean-canvas"></div>
+
+    <div class="container content-overlay">
+        <div class="row g-4">
+            <div class="col-12 text-center mb-5">
+                <div class="glass-card p-5">
+                    <h1 class="display-3 fw-bold text-primary-ocean">OceanShellCraft</h1>
+                    <p class="lead fs-4">Nơi vẻ đẹp đại dương hòa quyện cùng nghệ thuật thủ công</p>
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                <div class="glass-card p-4 h-100">
+                    <h3 class="text-primary-ocean fw-bold mb-4">Câu chuyện của chúng tôi</h3>
+                    <p>
+                        OceanShellCraft ra đời từ niềm đam mê bất tận với những báu vật của biển cả.
+                        Chúng tôi tin rằng mỗi vỏ sò, mỗi hạt cát đều mang trong mình một linh hồn của đại dương.
+                        Sứ mệnh của chúng tôi là biến những vật liệu tự nhiên ấy thành những tác phẩm trang trí độc bản,
+                        mang hơi thở của sóng và gió vào không gian sống của bạn.
+                    </p>
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                <div class="row g-4 h-100">
+                    <div class="col-12">
+                        <div class="glass-card p-4 h-100">
+                            <h3 class="text-success fw-bold mb-3">Sứ Mệnh</h3>
+                            <p>Tôn vinh giá trị thủ công truyền thống và lan tỏa ý thức bảo vệ môi trường biển thông qua từng sản phẩm bền vững.</p>
+                        </div>
+                    </div>
+                    <div class="col-12">
+                        <div class="glass-card p-4 h-100">
+                            <h3 class="text-warning fw-bold mb-3">Tầm Nhìn</h3>
+                            <p>Trở thành thương hiệu dẫn đầu trong việc kết nối phong cách sống hiện đại với vẻ đẹp mộc mạc từ thiên nhiên biển cả.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-12 text-center mt-5">
+                <a href="@Url.Action("SanPham", "Home")" class="btn btn-outline-info btn-lg px-5 rounded-pill fw-bold shadow-lg">Khám Phá Bộ Sưu Tập</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="importmap">
+    {
+      "imports": {
+        "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
+        "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
+      }
+    }
+</script>
+
+<script type="module">
+    import * as THREE from 'three';
+    import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+
+    const container = document.getElementById('ocean-canvas');
+    const scene = new THREE.Scene();
+
+    // Camera góc rộng để thấy không gian bao la
+    const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+    camera.position.z = 5;
+
+    const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    renderer.setPixelRatio(window.devicePixelRatio);
+    container.appendChild(renderer.domElement);
+
+    // ÁNH SÁNG ĐẠI DƯƠNG
+    const ambientLight = new THREE.AmbientLight(0x404040, 2);
+    scene.add(ambientLight);
+
+    const pointLight = new THREE.PointLight(0x0088ff, 3);
+    pointLight.position.set(5, 5, 5);
+    scene.add(pointLight);
+
+    // Thêm một chút hạt lấp lánh như bọt biển (particles) cho sống động
+    const particlesGeometry = new THREE.BufferGeometry();
+    const count = 500;
+    const positions = new Float32Array(count * 3);
+    for(let i = 0; i < count * 3; i++) {
+        positions[i] = (Math.random() - 0.5) * 10;
+    }
+    particlesGeometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+    const particlesMaterial = new THREE.PointsMaterial({ size: 0.05, color: 0x8ce5ff });
+    const particles = new THREE.Points(particlesGeometry, particlesMaterial);
+    scene.add(particles);
+
+    const controls = new OrbitControls(camera, renderer.domElement);
+    controls.enableZoom = false;
+    controls.autoRotate = true; // Tự động xoay không gian
+    controls.autoRotateSpeed = 0.5;
+
+    function animate() {
+        requestAnimationFrame(animate);
+        particles.rotation.y += 0.001; // Hạt bọt biển xoay nhẹ
+        controls.update();
+        renderer.render(scene, camera);
+    }
+    animate();
+
+    window.addEventListener('resize', () => {
+        camera.aspect = window.innerWidth / window.innerHeight;
+        camera.updateProjectionMatrix();
+        renderer.setSize(window.innerWidth, window.innerHeight);
+    });
+</script>

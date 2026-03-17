@@ -17,12 +17,16 @@
     @* 3. Font chữ Be Vietnam Pro cho đẹp *@
     <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@300;400;600;700&display=swap" rel="stylesheet">
 
+    @* CSS Mặc định của Web *@
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+
+    @* THÊM DÒNG NÀY: CSS GIAO DIỆN BIỂN ĐẠI DƯƠNG *@
+    <link rel="stylesheet" href="~/css/ocean-theme.css" asp-append-version="true" />
 
     <style>
         body {
             font-family: 'Be Vietnam Pro', sans-serif;
-            background-color: #f8f9fa;
+            /* Đã xóa nền xám ở đây để nhường chỗ cho nền xanh của ocean-theme.css */
         }
         /* Style chung cho con mắt trong ô input floating */
         .position-relative i {
@@ -31,23 +35,24 @@
         }
 
             .position-relative i:hover {
-                color: #0d6efd;
+                color: #0d6efd; /* Giữ lại hiệu ứng đổi màu con mắt */
             }
     </style>
 </head>
-<body>
-    @* Header (Như có thể để Partial View ở đây) *@
-    @await Html.PartialAsync("_Header")
+<body class="d-flex flex-column min-vh-100">
 
-    <main role="main" class="pb-3">
-        @RenderBody()
-    </main>
+    @* Gọi Header (Phần code Header trong suốt bám dính bạn hãy dán vào file _Header.cshtml nhé) *@
+    <partial name="_Header" />
 
-    <footer class="border-top footer text-muted bg-white py-4 mt-5">
-        <div class="container text-center">
-            &copy; 2026 - <strong>Mỹ Nghệ Biển OceanShellCraft</strong> - Thiết kế bởi Như 🐚
-        </div>
-    </footer>
+    @* Đã bỏ class "container" để trang chủ được tràn viền full màn hình *@
+    <div class="flex-grow-1">
+        <main role="main" class="pb-3">
+            @RenderBody()
+        </main>
+    </div>
+
+    @* Gọi Footer (Code HTML Footer bạn dán vào file _Footer.cshtml nhé) *@
+    <partial name="_Footer" />
 
     @* JavaScript cơ bản *@
     <script src="~/lib/jquery/dist/jquery.min.js"></script>

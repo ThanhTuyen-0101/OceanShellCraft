@@ -1,55 +1,86 @@
 ﻿@model OceanShellCraft.Models.SanPham
 
-<div class="container mt-5">
-    <nav aria-label="breadcrumb">
-        <ol class="breadcrumb">
-            <li class="breadcrumb-item"><a asp-action="DanhSach">Sản phẩm</a></li>
-            <li class="breadcrumb-item active">@Model.TenSanPham</li>
-        </ol>
-    </nav>
+@{
+    ViewData["Title"] = Model.TenSanPham;
+}
 
-    <div class="row">
-        <div class="col-md-6 text-center">
-            <img src="@Model.HinhAnh" class="img-fluid rounded shadow-lg border" style="max-height: 500px; width: 100%; object-fit: contain;" />
-        </div>
-        <div class="col-md-6">
-            <h1 class="display-5 fw-bold text-dark">@Model.TenSanPham</h1>
-            <h3 class="text-danger mb-4">@Model.GiaTien.ToString("N0") VNĐ</h3>
+<div class="container mt-5 mb-5">
+    <a asp-action="DanhSach" class="btn text-white mb-4 px-4 py-2" style="background: rgba(255,255,255,0.1); backdrop-filter: blur(5px); border-radius: 30px; border: 1px solid rgba(255,255,255,0.2);">
+        <i class="bi bi-arrow-left me-2"></i> Quay lại cửa hàng
+    </a>
 
-            <div class="bg-light p-4 rounded mb-4 border-start border-primary border-4">
-                <p class="mb-2"><strong>🐚 Chất liệu:</strong> @Model.ChatLieu</p>
-                <p class="mb-2"><strong>📏 Kích thước:</strong> @Model.KichThuoc</p>
-                <p class="mb-0"><strong>📝 Mô tả:</strong> @Model.MoTa</p>
-            </div>
+    <div class="modern-light-ui shadow-lg">
+        <div class="row align-items-center">
 
-            <div class="d-flex gap-2">
-                @if (User.Identity.IsAuthenticated)
-                {
-                    <form asp-controller="GioHang" asp-action="ThemVaoGio" method="get" class="flex-grow-1">
-                        <input type="hidden" name="sanPhamId" value="@Model.Id" />
-                        <button type="submit" class="btn btn-primary btn-lg w-100">
-                            <i class="bi bi-cart-plus"></i> Thêm Vào Giỏ Hàng
-                        </button>
-                    </form>
-                }
-                else
-                {
-                    <a asp-controller="TaiKhoan" asp-action="DangNhap" class="btn btn-warning btn-lg flex-grow-1">
-                        <i class="bi bi-lock-fill"></i> Đăng nhập để mua hàng
-                    </a>
-                }
-                <a asp-action="DanhSach" asp-controller="SanPham" class="btn btn-outline-secondary btn-lg px-4">Quay Lại</a>
-            </div>
+            <div class="col-lg-6 p-5 pe-lg-0">
+                <p class="brand-text text-muted mb-2 fw-bold">OceanShellCraft <i class="bi bi-gem text-info"></i></p>
 
-            @if (User.IsInRole("Admin"))
-            {
-                <div class="mt-4 p-3 border border-danger rounded bg-light">
-                    <small class="text-danger fw-bold">Dành cho Quản trị viên:</small>
-                    <div class="mt-2">
-                        <a href="#" class="btn btn-sm btn-outline-danger">Sửa thông tin</a>
-                    </div>
+                <h1 class="display-4 fw-bolder text-dark mb-4" style="line-height: 1.15; letter-spacing: -1px;">
+                    @Model.TenSanPham
+                </h1>
+
+                <h2 class="h3 fw-bold text-dark mb-4">@Model.GiaTien.ToString("N0") VNĐ</h2>
+
+                <div class="d-flex align-items-center gap-3 mb-5">
+                    @if (User.Identity.IsAuthenticated)
+                    {
+                        <form asp-controller="GioHang" asp-action="ThemVaoGio" method="get">
+                            <input type="hidden" name="sanPhamId" value="@Model.Id" />
+                            <button type="submit" class="btn-black-pill shadow">
+                                Thêm Giỏ Hàng <i class="bi bi-arrow-right ms-3"></i>
+                            </button>
+                        </form>
+                        <button class="btn-outline-pill">Mua Ngay</button>
+                    }
+                    else
+                    {
+                        <a asp-controller="TaiKhoan" asp-action="DangNhap" class="btn-black-pill shadow">
+                            <i class="bi bi-lock-fill me-2"></i> Đăng nhập mua
+                        </a>
+                    }
                 </div>
-            }
+
+                <div class="d-flex gap-3 mb-4">
+                    <div class="soft-icon-box" title="Đảm bảo chất lượng"><i class="fa-solid fa-award"></i></div>
+                    <div class="soft-icon-box" title="Thủ công tinh xảo"><i class="fa-solid fa-hand-sparkles"></i></div>
+                    <div class="soft-icon-box" title="Vật liệu tự nhiên"><i class="fa-solid fa-leaf"></i></div>
+                    <div class="soft-icon-box" title="Giao hàng an toàn"><i class="fa-solid fa-box-open"></i></div>
+                </div>
+            </div>
+
+            <div class="col-lg-6 position-relative text-center p-5">
+                <img src="@(string.IsNullOrEmpty(Model.HinhAnh) ? "/images/default-shell.png" : Model.HinhAnh)" alt="@Model.TenSanPham" class="hero-product-img" />
+            </div>
         </div>
+
+        <div class="row p-5 pt-0 align-items-end">
+            <div class="col-lg-6 d-flex flex-wrap gap-4">
+                <div class="info-card">
+                    <div class="info-icon mb-3"><i class="fa-solid fa-gem text-dark fs-4"></i></div>
+                    <h5 class="fw-bold text-dark mb-1">Chất liệu</h5>
+                    <p class="text-muted small mb-0">@Model.ChatLieu</p>
+                </div>
+                <div class="info-card">
+                    <div class="info-icon mb-3"><i class="fa-solid fa-ruler-combined text-dark fs-4"></i></div>
+                    <h5 class="fw-bold text-dark mb-1">Kích thước</h5>
+                    <p class="text-muted small mb-0">@Model.KichThuoc</p>
+                </div>
+            </div>
+
+            <div class="col-lg-6 ps-lg-5 mt-4 mt-lg-0">
+                <h3 class="fw-bolder text-dark mb-3">Thông tin chi tiết</h3>
+                <p class="text-muted" style="line-height: 1.8; font-size: 0.95rem;">
+                    @Model.MoTa
+                </p>
+            </div>
+        </div>
+
+        @if (User.IsInRole("Admin"))
+        {
+            <div class="admin-bar bg-light p-3 text-center border-top">
+                <span class="text-danger fw-bold me-2">Quyền Quản Trị Viên:</span>
+                <a href="#" class="btn btn-sm btn-outline-danger rounded-pill px-3">Sửa Sản Phẩm</a>
+            </div>
+        }
     </div>
 </div>

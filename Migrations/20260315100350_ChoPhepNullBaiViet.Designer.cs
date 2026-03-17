@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using OceanShellCraft.Models;
 
@@ -11,9 +12,11 @@ using OceanShellCraft.Models;
 namespace OceanShellCraft.Migrations
 {
     [DbContext(typeof(MyNgheDbContext))]
-    partial class MyNgheDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260315100350_ChoPhepNullBaiViet")]
+    partial class ChoPhepNullBaiViet
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

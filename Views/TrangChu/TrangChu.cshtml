@@ -1,0 +1,84 @@
+﻿@model IEnumerable<OceanShellCraft.Models.SanPham>
+
+@{
+    ViewData["Title"] = "Trang Chủ - OceanShellCraft";
+
+    // Giả lập chia sản phẩm thành các danh mục để hiển thị theo layout
+    var featuredProducts = Model?.Take(3).ToList() ?? new List<OceanShellCraft.Models.SanPham>();
+    var popularProducts = Model?.Skip(3).Take(4).ToList() ?? new List<OceanShellCraft.Models.SanPham>();
+    var premiumProducts = Model?.Skip(7).Take(2).ToList() ?? new List<OceanShellCraft.Models.SanPham>();
+}
+
+<div class="luxury-hero text-center">
+    <img src="/images/hero-shell.png" alt="Nghệ thuật vỏ ốc" class="hero-main-img" />
+    <h1 class="luxury-title mt-4">Khám Phá Nghệ Thuật Biển Cả</h1>
+    <p class="luxury-subtitle">Một hành trình của cái đẹp, sự tinh tế và không gian nghệ thuật,<br />được chế tác thủ công cho những tâm hồn yêu đại dương.</p>
+    <div class="mt-4">
+        <a href="#" class="btn-luxury-outline me-3">Khám phá ngay</a>
+        <a href="#" class="btn-luxury-solid">Đặt thiết kế riêng</a>
+    </div>
+</div>
+
+<div class="luxury-section container">
+    <h2 class="section-heading text-center">Sản Phẩm Nổi Bật</h2>
+
+    <div class="row justify-content-center mt-5">
+        @foreach (var item in featuredProducts)
+        {
+            <div class="col-md-4 mb-4">
+                <div class="luxury-card text-center">
+                    <div class="img-wrapper">
+                        <img src="@(string.IsNullOrEmpty(item.HinhAnh) ? "/images/default-shell.png" : item.HinhAnh)" alt="@item.TenSanPham" class="circle-img" />
+                        <span class="price-badge-gold">@item.GiaTien.ToString("N0") đ</span>
+                    </div>
+                    <h3 class="product-title mt-4">@item.TenSanPham</h3>
+                    <p class="product-desc">@item.ChatLieu - Size: @item.KichThuoc</p>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+
+<div class="luxury-section container">
+    <h2 class="section-heading text-center">Sản Phẩm Phổ Biến</h2>
+
+    <div class="row mt-5">
+        @foreach (var item in popularProducts)
+        {
+            <div class="col-md-3 col-sm-6 mb-4">
+                <div class="luxury-card-small">
+                    <img src="@(string.IsNullOrEmpty(item.HinhAnh) ? "/images/default-shell.png" : item.HinhAnh)" alt="@item.TenSanPham" class="rounded-img" />
+                    <h4 class="product-title-small mt-3">@item.TenSanPham</h4>
+                    <div class="d-flex justify-content-between align-items-center mt-2">
+                        <div class="stars text-warning" style="font-size: 0.8rem;">
+                            <i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i>
+                        </div>
+                        <span class="text-gold fw-bold">@item.GiaTien.ToString("N0") đ</span>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+
+<div class="luxury-section container">
+    <h2 class="section-heading text-center">Bộ Sưu Tập Cao Cấp</h2>
+
+    <div class="row mt-5 justify-content-center">
+        @foreach (var item in premiumProducts)
+        {
+            <div class="col-lg-10 mb-4">
+                <div class="luxury-card-wide row g-0 align-items-center">
+                    <div class="col-md-7 p-4">
+                        <h3 class="product-title luxury-text">@item.TenSanPham - Lựa chọn hoàn mỹ</h3>
+                        <p class="product-desc mt-3">Tác phẩm nghệ thuật tinh xảo, được tuyển chọn kỹ lưỡng. @item.ChatLieu mang đến không gian sang trọng đích thực.</p>
+                        <span class="price-badge-gold d-inline-block mt-2">@item.GiaTien.ToString("N0") đ</span>
+                    </div>
+                    <div class="col-md-5 text-center">
+                        <img src="@(string.IsNullOrEmpty(item.HinhAnh) ? "/images/default-shell.png" : item.HinhAnh)" alt="@item.TenSanPham" class="wide-img" />
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>
