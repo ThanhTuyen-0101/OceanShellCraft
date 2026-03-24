@@ -1,283 +1,64 @@
 ﻿@model IEnumerable<OceanShellCraft.Models.BaiViet>
 
-@{
-    // Sử dụng Layout mặc định của trang khách (Frontend)
-    Layout = "~/Views/Shared/_Layout.cshtml";
-    ViewData["Title"] = "Khám phá bài viết";
+<div class="ds-scroll-container bg-transparent" id="mainScroll">
+    <div class="text-center pt-5 mt-5">
+        <h6 class="text-white opacity-50 fw-bold text-uppercase small mb-2 ls-3">Collection</h6>
+        <h1 class="display-4 fw-bold text-white mb-0">Câu Chuyện Đại Dương</h1>
+    </div>
 
-    // Lấy bài viết đầu tiên làm ảnh nền mặc định lúc mới tải trang
-    var firstItem = Model != null ? Model.FirstOrDefault() : null;
-    var defaultBg = firstItem?.AnhNen ?? "https://via.placeholder.com/1920x1080?text=Chua+co+anh";
-}
-
-<style>
-    /* Ẩn thanh cuộn ngang nếu hiệu ứng tràn viền gây ra */
-    body {
-        overflow-x: hidden;
-    }
-
-    /* BỘ CSS CHO GIAO DIỆN SLIDER TRÀN VIỀN (FULL SCREEN) */
-    .hero-slider-section {
-        position: relative;
-        width: 100vw; /* Chiếm 100% chiều rộng màn hình */
-        height: 100vh; /* Chiếm 100% chiều cao màn hình */
-        background-size: cover;
-        background-position: center;
-        background-repeat: no-repeat;
-        transition: background-image 0.5s ease-in-out;
-        color: white;
-        overflow: hidden;
-        /* Kỹ thuật phá vỡ khung container của _Layout.cshtml để ép tràn viền */
-        margin-left: calc(-50vw + 50%);
-        margin-right: calc(-50vw + 50%);
-    }
-
-    .overlay {
-        position: absolute;
-        inset: 0;
-        /* Chỉnh lại dải màu tối hơn một chút ở sát rìa để chữ luôn nổi bật trên màn hình lớn */
-        background: linear-gradient(to right, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.5) 40%, rgba(0,0,0,0.1) 100%);
-        z-index: 1;
-    }
-
-    .slider-container {
-        position: relative;
-        z-index: 2;
-        display: flex;
-        height: 100%;
-        align-items: center;
-        padding: 40px 5%; /* Dùng phần trăm để padding co giãn đẹp trên màn hình to */
-        gap: 50px;
-    }
-
-    .left-content {
-        flex: 0 0 450px;
-        animation: fadeIn 1s ease;
-    }
-
-        .left-content h5 {
-            font-weight: 300;
-            letter-spacing: 2px;
-            margin-bottom: 10px;
-            text-transform: uppercase;
-            font-size: 1.1rem;
-            color: #f1c40f; /* Màu vàng nhấn nhá */
-        }
-
-        .left-content h1 {
-            font-weight: 800;
-            font-size: 4rem; /* Chữ to hơn cho màn hình full */
-            line-height: 1.1;
-            margin-bottom: 20px;
-            text-transform: uppercase;
-            font-family: 'Arial Black', sans-serif;
-        }
-
-        .left-content p {
-            font-size: 1.1rem; /* Chữ to hơn cho màn hình full */
-            color: #e0e0e0;
-            line-height: 1.6;
-            margin-bottom: 30px;
-            display: -webkit-box;
-            -webkit-line-clamp: 4; /* Hiển thị tối đa 4 dòng */
-            -webkit-box-orient: vertical;
-            overflow: hidden;
-        }
-
-    .btn-discover {
-        border: 1px solid rgba(255,255,255,0.5);
-        color: white;
-        padding: 10px 25px 10px 10px;
-        border-radius: 30px;
-        text-decoration: none;
-        transition: all 0.3s;
-        display: inline-flex;
-        align-items: center;
-        gap: 15px;
-        font-weight: bold;
-        letter-spacing: 1px;
-    }
-
-        .btn-discover:hover {
-            background: white;
-            color: black;
-        }
-
-    .right-slider {
-        flex: 1;
-        overflow: hidden;
-        position: relative;
-    }
-
-    .cards-wrapper {
-        display: flex;
-        gap: 20px;
-        overflow-x: auto;
-        padding-bottom: 20px;
-        scroll-behavior: smooth;
-        -ms-overflow-style: none; /* IE and Edge */
-        scrollbar-width: none; /* Firefox */
-    }
-
-        .cards-wrapper::-webkit-scrollbar {
-            display: none; /* Chrome, Safari, Opera */
-        }
-
-    .slider-card {
-        min-width: 260px; /* Thẻ to hơn một chút do màn hình rộng */
-        height: 400px;
-        border-radius: 12px;
-        background-size: cover;
-        background-position: center;
-        position: relative;
-        cursor: pointer;
-        transition: transform 0.3s, filter 0.3s;
-        box-shadow: 0 8px 15px rgba(0,0,0,0.4);
-    }
-
-        .slider-card:hover {
-            transform: translateY(-15px);
-            filter: brightness(1.15);
-        }
-
-    .card-info {
-        position: absolute;
-        bottom: 0;
-        left: 0;
-        right: 0;
-        padding: 25px 20px;
-        background: linear-gradient(transparent, rgba(0,0,0,0.95));
-        border-radius: 0 0 12px 12px;
-    }
-
-        .card-info small {
-            color: #f1c40f;
-            font-size: 0.8rem;
-            text-transform: uppercase;
-            font-weight: bold;
-        }
-
-        .card-info h4 {
-            margin: 8px 0 0 0;
-            font-size: 1.2rem;
-            font-weight: bold;
-            color: white;
-            line-height: 1.3;
-        }
-
-    .slider-controls {
-        position: absolute;
-        bottom: 50px;
-        left: 5%; /* Canh lề đồng nhất với nội dung */
-        display: flex;
-        gap: 15px;
-        z-index: 3;
-    }
-
-    .control-btn {
-        width: 50px;
-        height: 50px;
-        border-radius: 50%;
-        border: 1px solid rgba(255,255,255,0.4);
-        background: rgba(0,0,0,0.3);
-        color: white;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        cursor: pointer;
-        transition: all 0.3s;
-        backdrop-filter: blur(5px);
-        font-size: 1.2rem;
-    }
-
-        .control-btn:hover {
-            background: white;
-            color: black;
-            transform: scale(1.1);
-        }
-</style>
-
-<div class="full-screen-wrapper">
-    @if (Model != null && Model.Any())
-    {
-        <div class="hero-slider-section" id="main-bg" style="background-image: url('@defaultBg');">
-            <div class="overlay"></div>
-
-            <div class="slider-container">
-                <div class="left-content">
-                    <h5 id="active-category">@(firstItem?.HinhThuc ?? "OceanShellCraft")</h5>
-                    <h1 id="active-title">@(firstItem?.TieuDe ?? "TIÊU ĐỀ BÀI VIẾT")</h1>
-                    <p id="active-summary">@(firstItem?.NoiDungTomTat ?? "Chọn một thẻ bên phải để xem nội dung tóm tắt của bài viết này.")</p>
-
-                    <a href="/BaiViet/ChiTiet/@(firstItem?.Id)" id="active-link" class="btn-discover">
-                        <span style="background: #f1c40f; color: black; width: 35px; height: 35px; display: inline-flex; justify-content: center; align-items: center; border-radius: 50%;">
-                            <i class="bi bi-play-fill fs-5"></i>
-                        </span>
-                        XEM CHI TIẾT
-                    </a>
-                </div>
-
-                <div class="right-slider">
-                    <div class="cards-wrapper" id="cards-wrapper">
+    <section class="d-flex align-items-center" style="height: 100vh; scroll-snap-align: start;">
+        <div class="w-100 overflow-hidden py-5">
+            <div class="ds-slider-track" id="sliderTrack">
+                @if (Model != null)
+                {
+                    @for (int i = 0; i < 3; i++)
+                    {
                         @foreach (var item in Model)
                         {
-                            var bgImage = string.IsNullOrEmpty(item.AnhNen) ? "https://via.placeholder.com/400x600?text=No+Image" : item.AnhNen;
-
-                            <div class="slider-card"
-                                 style="background-image: url('@bgImage');"
-                                 data-title="@item.TieuDe"
-                                 data-category="@item.HinhThuc"
-                                 data-summary="@item.NoiDungTomTat"
-                                 data-link="/BaiViet/ChiTiet/@item.Id"
-                                 onclick="changeSlide(this, '@bgImage')">
-
-                                <div class="card-info">
-                                    <small>@(string.IsNullOrEmpty(item.HinhThuc) ? "Khám phá" : item.HinhThuc)</small>
-                                    <h4>@item.TieuDe</h4>
+                            <div class="shell-card p-4 m-3 rounded-5 shadow" onclick="loadArticle('@item.Id')" style="width: 350px; cursor: pointer;">
+                                <div class="text-center">
+                                    <img src="@(item.AnhNen ?? "/img/bien.jpg")" class="rounded-circle border border-white border-opacity-25 mb-4 shadow-sm" style="width:140px; height:140px; object-fit:cover;" />
+                                    <h3 class="text-white fs-5 fw-bold mb-3">@item.TieuDe</h3>
+                                    <p class="text-white-50 small opacity-75">ĐỌC CÂU CHUYỆN <i class="bi bi-arrow-right ms-1"></i></p>
                                 </div>
                             </div>
                         }
-                    </div>
+                    }
+                }
+            </div>
+        </div>
+    </section>
+
+    <section id="section-detail" class="position-relative" style="min-height: 100vh; scroll-snap-align: start;">
+        <div class="container py-5 h-100 d-flex align-items-center justify-content-center">
+            <div id="detailPlaceholder" class="w-100 h-100">
+                <div class="text-center text-white opacity-25 py-5">
+                    <i class="bi bi-mouse fs-1 d-block mb-3"></i>
+                    <p class="fs-5">Cuộn hoặc chọn một câu chuyện để khám phá</p>
                 </div>
             </div>
-
-            <div class="slider-controls">
-                <button class="control-btn" onclick="scrollCards(-1)"><i class="bi bi-chevron-left"></i></button>
-                <button class="control-btn" onclick="scrollCards(1)"><i class="bi bi-chevron-right"></i></button>
-            </div>
         </div>
-
-        <script>
-            function changeSlide(element, bgUrl) {
-                // Đổi nền
-                document.getElementById('main-bg').style.backgroundImage = "url('" + bgUrl + "')";
-
-                // Cập nhật text
-                var title = element.getAttribute('data-title');
-                var category = element.getAttribute('data-category');
-                var summary = element.getAttribute('data-summary');
-                var link = element.getAttribute('data-link');
-
-                document.getElementById('active-title').innerText = title ? title : 'TIÊU ĐỀ BÀI VIẾT';
-                document.getElementById('active-category').innerText = category ? category : 'OceanShellCraft';
-                document.getElementById('active-summary').innerText = summary ? summary : 'Không có nội dung tóm tắt.';
-                document.getElementById('active-link').href = link;
-            }
-
-            function scrollCards(direction) {
-                var wrapper = document.getElementById('cards-wrapper');
-                wrapper.scrollBy({ left: direction * 280, behavior: 'smooth' }); // Trượt mượt mà
-            }
-        </script>
-    }
-    else
-    {
-        <div class="container mt-5 mb-5">
-            <div class="alert alert-info text-center shadow-sm py-5 rounded-3">
-                <i class="bi bi-journal-x fs-1 text-secondary d-block mb-3"></i>
-                <h4 class="text-secondary">Chưa có bài viết nào</h4>
-                <p class="text-muted">Các bài viết mới sẽ xuất hiện ở đây khi được quản trị viên thêm vào hệ thống.</p>
-            </div>
-        </div>
-    }
+    </section>
 </div>
+
+<script>
+    function loadArticle(id) {
+        const placeholder = document.getElementById('detailPlaceholder');
+        const detailSection = document.getElementById('section-detail');
+
+        placeholder.innerHTML = `<div class="d-flex justify-content-center py-5"><div class="spinner-border text-light opacity-50" role="status"></div></div>`;
+        detailSection.scrollIntoView({ behavior: 'smooth' });
+
+        fetch(`/BaiViet/GetChiTiet/${id}`)
+            .then(res => res.text())
+            .then(html => {
+                placeholder.innerHTML = `<div class="glass-detail-box p-4 p-md-5 rounded-5 animate__animated animate__fadeInUp">${html}</div>`;
+            });
+    }
+
+    const track = document.getElementById('sliderTrack');
+    if (track) {
+        track.addEventListener('mouseenter', () => track.style.animationPlayState = 'paused');
+        track.addEventListener('mouseleave', () => track.style.animationPlayState = 'running');
+    }
+</script>

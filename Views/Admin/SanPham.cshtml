@@ -1,0 +1,126 @@
+﻿@model IEnumerable<OceanShellCraft.Models.SanPham>
+@{
+    ViewData["Title"] = "Quản lý Sản phẩm";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+<div class="container-fluid py-4 min-vh-100 bg-transparent">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h4 class="fw-bold m-0">@ViewData["Title"]</h4>
+
+        <div class="d-flex gap-2">
+            <a asp-action="TaiFileMau" class="btn btn-outline-light btn-sm shadow-none no-hover-bg">
+                <i class="bi bi-download me-1"></i> Xuất File
+            </a>
+            <button class="btn btn-outline-light btn-sm shadow-none no-hover-bg" onclick="document.getElementById('importFile').click()">
+                <i class="bi bi-file-earmark-excel me-1"></i> Nhập Excel
+            </button>
+            <form asp-action="NhapExcel" method="post" enctype="multipart/form-data" class="d-none">
+                <input type="file" id="importFile" name="file" onchange="this.form.submit()" accept=".xlsx, .xls" />
+            </form>
+            <a href="/Admin/ThemSuaSanPham" id="btnAdd" class="btn btn-outline-light btn-sm shadow-none fw-medium no-hover-bg">
+                <i class="bi bi-plus-circle me-1"></i> Thêm mới (F7)
+            </a>
+        </div>
+    </div>
+
+    <div class="card bg-transparent border-0 shadow-none">
+        <div class="table-responsive">
+            <table class="table table-borderless bg-transparent align-middle mb-0 admin-table-transparent">
+                <thead class="border-bottom border-light border-opacity-50 bg-transparent">
+                    <tr>
+                        <th class="fw-bold px-3 py-3 bg-transparent" style="width: 8%;">Ảnh</th>
+                        <th class="fw-bold px-3 py-3 bg-transparent">Tên sản phẩm</th>
+                        <th class="fw-bold px-3 py-3 bg-transparent">Giá tiền</th>
+                        <th class="fw-bold px-3 py-3 text-center bg-transparent">Nổi bật</th>
+                        <th class="px-3 py-3 text-end bg-transparent" style="width: 12%;">Thao tác</th>
+                    </tr>
+                </thead>
+                <tbody class="bg-transparent">
+                    @if (Model != null && Model.Any())
+                    {
+                        foreach (var item in Model)
+                        {
+                            <tr class="border-bottom border-light border-opacity-10 transition-row bg-transparent">
+                                <td class="px-3 py-2 bg-transparent">
+                                    <img src="@(string.IsNullOrEmpty(item.HinhAnh) ? "/img/no-image.png" : item.HinhAnh)"
+                                         class="rounded-circle object-fit-cover border border-light border-opacity-25"
+                                         style="width: 45px; height: 45px;" />
+                                </td>
+                                <td class="px-3 fw-bold bg-transparent">@item.TenSanPham</td>
+                                <td class="px-3 fw-bold bg-transparent">
+                                    @item.GiaTien.ToString("N0") <span class="small">đ</span>
+                                </td>
+                                <td class="px-3 text-center bg-transparent">
+                                    <a href="javascript:void(0)" onclick="toggleFeatured(@item.Id, this)" class="text-decoration-none">
+                                        <i class="bi @(item.IsFeatured ? "bi-star-fill text-white" : "bi-star text-white-50 opacity-50") fs-5"></i>
+                                    </a>
+                                </td>
+                                <td class="px-3 text-end bg-transparent">
+                                    <div class="d-flex justify-content-end gap-2">
+                                        <a asp-action="ThemSuaSanPham" asp-route-id="@item.Id" class="btn btn-outline-light btn-sm action-icon">
+                                            <i class="bi bi-pencil"></i>
+                                        </a>
+                                        <a asp-action="XoaSanPham" asp-route-id="@item.Id" class="btn btn-outline-light btn-sm action-icon" onclick="return confirm('Xác nhận xóa sản phẩm này?');">
+                                            <i class="bi bi-trash"></i>
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    }
+                    else
+                    {
+                        <tr>
+                            <td colspan="5" class="text-center py-5 opacity-50 fst-italic bg-transparent">Không có dữ liệu sản phẩm</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'F7') {
+                e.preventDefault();
+                window.location.href = '/Admin/ThemSuaSanPham';
+            }
+        });
+
+        // Hàm gọi API xử lý
+        async function toggleFeatured(id, element) {
+            const icon = element.querySelector('i');
+
+            try {
+                // Gọi xuống Backend
+                const response = await fetch(`/Admin/ToggleNoiBat/${id}`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' }
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+
+                    // Chỉ đổi màu khi Server báo thành công và trả về trạng thái mới
+                    if (data.isFeatured) {
+                        // Bật sao trắng
+                        icon.classList.remove('bi-star', 'text-white-50', 'opacity-50');
+                        icon.classList.add('bi-star-fill', 'text-white');
+                    } else {
+                        // Tắt sao trắng, về lại sao rỗng
+                        icon.classList.remove('bi-star-fill', 'text-white');
+                        icon.classList.add('bi-star', 'text-white-50', 'opacity-50');
+                    }
+                } else {
+                    alert("Có lỗi xảy ra khi lưu trạng thái!");
+                }
+            } catch (err) {
+                console.error('Lỗi khi cập nhật sản phẩm nổi bật:', err);
+                alert("Lỗi kết nối đến máy chủ.");
+            }
+        }
+    </script>
+}

@@ -26,22 +26,16 @@ namespace OceanShellCraft.Controllers
         }
 
         // 2. TRANG CHI TIẾT (Hiển thị khi người dùng bấm "Xem chi tiết")
-        public async Task<IActionResult> ChiTiet(int? id)
+
+        [HttpGet]
+        public IActionResult GetChiTiet(int id)
         {
-            if (id == null)
-            {
-                return NotFound(); // Báo lỗi 404 nếu không có ID
-            }
+            var post = _context.BaiViets.FirstOrDefault(b => b.Id == id);
+            if (post == null) return NotFound();
 
-            // Tìm bài viết trong SQL dựa theo ID
-            var baiViet = await _context.BaiViets.FirstOrDefaultAsync(m => m.Id == id);
-
-            if (baiViet == null)
-            {
-                return NotFound(); // Báo lỗi 404 nếu ID không tồn tại trong Data
-            }
-
-            return View(baiViet); // Truyền dữ liệu bài viết sang View
+            // Sửa lại tên PartialView cho đúng với file bạn đang để nội dung chi tiết
+            // Nếu file đó tên là _NoiDungBaiViet.cshtml thì sửa thành:
+            return PartialView("_ChiTietNoiDung", post);
         }
     }
 }

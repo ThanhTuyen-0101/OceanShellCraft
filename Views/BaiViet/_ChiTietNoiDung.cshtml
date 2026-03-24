@@ -1,0 +1,54 @@
+﻿@model OceanShellCraft.Models.BaiViet
+
+@{
+    var videoId = "";
+    if (!string.IsNullOrEmpty(Model.VideoYoutube))
+    {
+        var url = Model.VideoYoutube;
+        if (url.Contains("youtu.be/")) videoId = url.Split("youtu.be/")[1].Split('?')[0];
+        else if (url.Contains("v=")) videoId = url.Split("v=")[1].Split('&')[0];
+        else videoId = url;
+    }
+}
+
+<div class="article-inner">
+    <div class="text-center mb-5">
+        <span class="text-white-50 fw-bold text-uppercase small ls-3">@(Model.HinhThuc ?? "ARTISANAL")</span>
+        <h1 class="display-3 fw-bold text-white mt-2 mb-4">@Model.TieuDe</h1>
+        <hr class="mx-auto border-white opacity-25" style="width: 80px;">
+    </div>
+
+    @if (!string.IsNullOrEmpty(Model.NoiDungTomTat))
+    {
+        <div class="px-lg-5 mb-5 text-center">
+            <p class="fs-4 fst-italic text-white opacity-75" style="line-height: 1.6;">"@Model.NoiDungTomTat"</p>
+        </div>
+    }
+
+    <div class="bv-article-body fs-5 lh-lg text-white opacity-75 mb-5" style="text-align: justify;">
+        @Html.Raw(Model.NoiDung)
+    </div>
+
+    @if (!string.IsNullOrEmpty(videoId))
+    {
+        <div class="mt-5 ratio ratio-16x9 rounded-4 overflow-hidden border border-white border-opacity-10 shadow-lg">
+            <iframe src="https://www.youtube.com/embed/@videoId" allowfullscreen frameborder="0"></iframe>
+        </div>
+    }
+
+    <div class="mt-5 pt-4 border-top border-white border-opacity-10 d-flex flex-column flex-md-row justify-content-between align-items-center gap-3">
+        <div class="small text-white-50 opacity-50">#OceanShellCraft #ArtisanalHeritage</div>
+        <div class="d-flex gap-4">
+            <span class="small text-white-50 opacity-50 text-uppercase">Chia sẻ:</span>
+            <a href="#" class="text-white opacity-50 hover-opacity-100 fs-5 transition"><i class="bi bi-facebook"></i></a>
+            <a href="#" class="text-white opacity-50 hover-opacity-100 fs-5 transition"><i class="bi bi-link-45deg"></i></a>
+        </div>
+    </div>
+
+    <div class="text-center mt-5">
+        <button class="btn btn-outline-light rounded-pill px-5 py-2 border-opacity-25 opacity-50 hover-opacity-100"
+                onclick="document.getElementById('mainScroll').scrollTo({top: 0, behavior: 'smooth'})">
+            <i class="bi bi-arrow-up me-2"></i> QUAY LẠI DANH SÁCH
+        </button>
+    </div>
+</div>

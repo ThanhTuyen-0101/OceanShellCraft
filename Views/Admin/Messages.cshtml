@@ -1,0 +1,244 @@
+﻿@{
+    ViewData["Title"] = "Hệ thống hỗ trợ - OceanShellCraft";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+<style>
+    /* Custom Scrollbar */
+    .hide-scrollbar::-webkit-scrollbar {
+        width: 4px;
+    }
+
+    .hide-scrollbar::-webkit-scrollbar-thumb {
+        background: rgba(255,255,255,0.1);
+        border-radius: 10px;
+    }
+
+    .hide-scrollbar:hover::-webkit-scrollbar-thumb {
+        background: rgba(255,255,255,0.3);
+    }
+
+    /* List Chat Item */
+    .chat-list-item {
+        background: rgba(255, 255, 255, 0.03);
+        border: 1px solid rgba(255, 255, 255, 0.05);
+        transition: all 0.3s ease;
+        cursor: pointer;
+    }
+
+        .chat-list-item:hover {
+            background: rgba(255, 255, 255, 0.08);
+            transform: translateX(5px);
+        }
+
+        .chat-list-item.active {
+            background: rgba(197, 160, 89, 0.15); /* Tông màu Gold mờ */
+            border-left: 4px solid #c5a059;
+        }
+
+    /* Bong bóng Chat */
+    .chat-bubble {
+        max-width: 75%;
+        padding: 12px 18px;
+        font-size: 0.95rem;
+        backdrop-filter: blur(10px);
+    }
+
+        .chat-bubble.received {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 0px 20px 20px 20px;
+            color: #ffffff;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .chat-bubble.sent {
+            background: #c5a059; /* Màu vàng Gold OceanShell */
+            color: #1a1612;
+            border-radius: 20px 0px 20px 20px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            font-weight: 500;
+        }
+
+    .chat-container-height {
+        height: calc(100vh - 140px);
+    }
+</style>
+
+<div class="row g-4 chat-container-height">
+    <div class="col-lg-4 d-flex flex-column h-100 pe-lg-3" style="border-right: 1px solid rgba(255,255,255,0.1);">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h3 class="fw-bold text-pure m-0" style="font-family: 'Playfair Display', serif;">Messages</h3>
+            <span class="badge rounded-pill bg-gold text-dark" id="online-count">Online</span>
+        </div>
+
+        <div id="customer-list" class="flex-grow-1 overflow-auto hide-scrollbar pe-2">
+            <h6 class="text-dim fw-bold mb-3 mt-2 text-uppercase" style="font-size: 0.7rem; letter-spacing: 1px;">Khách hàng trực tuyến</h6>
+            <div id="active-chats">
+                <div class="text-center opacity-50 py-5">
+                    <small>Chưa có cuộc hội thoại nào...</small>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-8 d-flex flex-column h-100 ps-lg-4">
+        <div id="chat-header" class="d-flex justify-content-between align-items-center pb-3 mb-3 border-bottom border-light opacity-75">
+            <div class="d-flex align-items-center gap-3">
+                <div class="position-relative">
+                    <img id="current-user-img" src="https://i.pravatar.cc/150?u=none" class="rounded-circle object-fit-cover" width="45" height="45">
+                    <span id="status-dot" class="position-absolute bottom-0 end-0 bg-success border border-dark rounded-circle d-none" style="width: 12px; height: 12px;"></span>
+                </div>
+                <div>
+                    <h6 id="current-user-name" class="m-0 text-pure fw-bold">Chọn khách hàng để bắt đầu</h6>
+                    <small id="current-user-status" class="text-dim">Chưa có kết nối</small>
+                </div>
+            </div>
+            <div class="d-flex gap-3 text-pure fs-5">
+                <i class="bi bi-telephone cursor-pointer hover-white transition"></i>
+                <i class="bi bi-three-dots-vertical cursor-pointer hover-white transition"></i>
+            </div>
+        </div>
+
+        <div id="messages-container" class="flex-grow-1 overflow-auto hide-scrollbar d-flex flex-column gap-4 pe-2 pb-3">
+            <div class="text-center my-auto opacity-25">
+                <i class="bi bi-chat-dots fs-1 d-block mb-2"></i>
+                <p>Nội dung tin nhắn sẽ hiển thị tại đây</p>
+            </div>
+        </div>
+
+        <div class="chat-input-area p-2 rounded-pill d-flex align-items-center gap-2 mt-3 shadow-lg">
+            <input type="hidden" id="target-user-id">
+            <a href="#" class="text-dim ms-3 hover-white transition"><i class="bi bi-paperclip fs-5"></i></a>
+
+            <input type="text" id="admin-message-input" class="form-control bg-transparent border-0 text-pure shadow-none p-2"
+                   placeholder="Phản hồi với tư cách OceanShellCraft..." disabled>
+
+            <button id="btn-send-reply" class="btn btn-gold rounded-circle d-flex align-items-center justify-content-center p-0 shadow-sm"
+                    style="width: 42px; height: 42px; min-width: 42px;" disabled>
+                <i class="bi bi-send-fill" style="transform: translateX(-1px) translateY(1px);"></i>
+            </button>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/7.0.5/signalr.min.js"></script>
+    <script>
+        const connection = new signalR.HubConnectionBuilder()
+            .withUrl("/chatHub")
+            .withAutomaticReconnect()
+            .build();
+
+        let activeUserId = "";
+
+        // 1. Lắng nghe tin nhắn
+        connection.on("ReceiveMessage", function (userId, userName, message, role, time) {
+            // Cập nhật danh sách bên trái
+            updateCustomerList(userId, userName, message, time, role);
+
+            // Nếu là tin nhắn của khách đang chọn thì hiện lên màn hình chat
+            if (activeUserId === userId) {
+                appendMessage(userName, message, role, time);
+            }
+        });
+
+        // 2. Hàm cập nhật danh sách khách hàng bên trái
+        function updateCustomerList(userId, userName, lastMsg, time, role) {
+            const listArea = document.getElementById("active-chats");
+            let item = document.getElementById(`user-item-${userId}`);
+
+            // Nếu khách chưa có trong danh sách, tạo mới
+            if (!item) {
+                if (listArea.querySelector('.opacity-50')) listArea.innerHTML = ""; // Xóa dòng "Chưa có cuộc hội thoại"
+
+                const html = `
+                    <div id="user-item-${userId}" class="chat-list-item p-3 mb-3 rounded-4 d-flex align-items-center gap-3"
+                         onclick="selectCustomer('${userId}', '${userName}')">
+                        <img src="https://i.pravatar.cc/150?u=${userId}" class="rounded-circle" width="45" height="45">
+                        <div class="flex-grow-1 overflow-hidden">
+                            <div class="d-flex justify-content-between align-items-center mb-1">
+                                <h6 class="m-0 text-pure fw-bold">${userName}</h6>
+                                <small class="text-dim" style="font-size: 0.65rem;">${time}</small>
+                            </div>
+                            <p class="m-0 text-dim text-truncate small last-msg">${role === 'Admin' ? 'Bạn: ' : ''}${lastMsg}</p>
+                        </div>
+                    </div>`;
+                listArea.insertAdjacentHTML('afterbegin', html);
+            } else {
+                // Nếu khách có rồi thì cập nhật tin nhắn cuối và đưa lên đầu
+                item.querySelector('.last-msg').innerText = (role === 'Admin' ? 'Bạn: ' : '') + lastMsg;
+                listArea.prepend(item);
+            }
+        }
+
+        // 3. Hàm chọn khách hàng để chat
+        function selectCustomer(userId, userName) {
+            activeUserId = userId;
+            document.getElementById("target-user-id").value = userId;
+            document.getElementById("current-user-name").innerText = userName;
+            document.getElementById("current-user-status").innerText = "Đang kết nối";
+            document.getElementById("current-user-img").src = `https://i.pravatar.cc/150?u=${userId}`;
+            document.getElementById("status-dot").classList.remove("d-none");
+
+            // Mở khóa ô nhập liệu
+            document.getElementById("admin-message-input").disabled = false;
+            document.getElementById("btn-send-reply").disabled = false;
+            document.getElementById("admin-message-input").focus();
+
+            // Xóa nội dung chat cũ (Hoặc load history từ DB tại đây)
+            document.getElementById("messages-container").innerHTML = `<div class="text-center opacity-25 small">Đầu trang hội thoại với ${userName}</div>`;
+
+            // Active UI
+            document.querySelectorAll('.chat-list-item').forEach(el => el.classList.remove('active'));
+            document.getElementById(`user-item-${userId}`).classList.add('active');
+        }
+
+        // 4. Hàm hiển thị tin nhắn vào khung chat
+                // Tìm đến hàm appendMessage trong file Admin/Messages.cshtml của bạn và cập nhật logic hiển thị
+        function appendMessage(user, message, role, time) {
+            const container = document.getElementById("messages-container");
+            const isAdmin = (role === "Admin");
+
+            const msgHtml = `
+                <div class="d-flex gap-3 ${isAdmin ? 'align-self-end flex-row-reverse' : ''}">
+                    <img src="${isAdmin ? '/img/logo.png' : 'https://i.pravatar.cc/150?u=' + activeUserId}"
+                         onerror="this.src='https://i.pravatar.cc/150?img=11'"
+                         class="rounded-circle object-fit-cover align-self-end" width="35" height="35">
+                    <div class="${isAdmin ? 'text-end' : ''}">
+                        <small class="text-dim mb-1 d-block fw-bold">${isAdmin ? 'OceanShellCraft' : user}</small>
+                        <div class="chat-bubble ${isAdmin ? 'sent' : 'received'}">
+                            ${message}
+                        </div>
+                        <small class="text-dim mt-1 d-block" style="font-size: 0.7rem;">${time}</small>
+                    </div>
+                </div>`;
+
+            container.insertAdjacentHTML('beforeend', msgHtml);
+            container.scrollTop = container.scrollHeight;
+        }
+
+        // 5. Gửi tin nhắn trả lời
+        async function sendMessage() {
+            const input = document.getElementById("admin-message-input");
+            const targetId = document.getElementById("target-user-id").value;
+
+            if (input.value.trim() !== "" && targetId !== "") {
+                try {
+                    await connection.invoke("AdminReplyMessage", targetId, input.value);
+                    input.value = "";
+                } catch (err) {
+                    console.error("Lỗi gửi tin nhắn:", err);
+                }
+            }
+        }
+
+        document.getElementById("btn-send-reply").addEventListener("click", sendMessage);
+        document.getElementById("admin-message-input").addEventListener("keypress", function(e) {
+            if (e.key === "Enter") sendMessage();
+        });
+
+        connection.start().then(() => {
+            console.log("Admin đã kết nối ChatHub");
+        });
+    </script>
+}

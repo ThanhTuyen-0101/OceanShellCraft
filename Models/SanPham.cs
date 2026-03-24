@@ -17,5 +17,11 @@ namespace OceanShellCraft.Models
         // Khóa ngoại liên kết với Danh mục
         public int DanhMucId { get; set; }
         public DanhMuc? DanhMuc { get; set; }
+        public bool IsFeatured { get; set; } // Sản phẩm nổi bật
+        public bool IsFavorite { get; set; } // Sản phẩm yêu thích
+        [Column(TypeName = "decimal(18,2)")]
+        public decimal? GiaKhuyenMai { get; set; } // Dùng dấu ? để cho phép null (không bắt buộc nhập)
+        public int SoLuong { get; set; }
+        public virtual ICollection<DanhGia> DanhGias { get; set; } = new List<DanhGia>();
     }
 }

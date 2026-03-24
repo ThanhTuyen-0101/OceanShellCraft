@@ -1,0 +1,110 @@
+﻿@model OceanShellCraft.Models.SanPham
+
+@{
+    bool coGiamGia = Model.GiaKhuyenMai.HasValue && Model.GiaKhuyenMai.Value > 0 && Model.GiaKhuyenMai.Value < Model.GiaTien;
+    int phanTramGiam = coGiamGia ? (int)Math.Round((1 - (double)(Model.GiaKhuyenMai.Value / Model.GiaTien)) * 100) : 0;
+
+    // Các tham số điều khiển hiển thị (có thể null → mặc định false)
+    bool? hienBadgeGiamGia = ViewData["HienBadgeGiamGia"] as bool? ?? true;
+    bool? hienBadgeSoLuong = ViewData["HienBadgeSoLuong"] as bool? ?? false;
+    bool? hienThanhTienDo = ViewData["HienThanhTienDo"] as bool? ?? false;
+    bool? hienTextSapChayHang = ViewData["HienTextSapChayHang"] as bool? ?? false;
+    bool? laSanPhamMoi = ViewData["LaSanPhamMoi"] as bool? ?? false;
+    bool? laFlashSale = ViewData["LaFlashSale"] as bool? ?? false;
+
+    // Hình dạng ảnh: rounded-circle hay rounded-4
+    string anhClass = ViewData["AnhRoundedCircle"] as bool? ?? true ? "rounded-circle" : "rounded-4";
+
+    // Kích thước ảnh mặc định
+    string anhWidth = ViewData["AnhWidth"] as string ?? "120px";
+    string anhHeight = ViewData["AnhHeight"] as string ?? "120px";
+    string anhStyle = $"width: {anhWidth}; height: {anhHeight}; object-fit: cover; border: 2px solid rgba(255,255,255,0.1);";
+}
+
+<div class="bento-glass-card bento-product-card p-4 text-center position-relative h-100 d-flex flex-column hover-zoom @(laFlashSale == true ? "border-warning border-opacity-25" : "")">
+
+    @if (hienBadgeGiamGia == true && coGiamGia)
+    {
+        <div class="position-absolute top-0 start-0 m-3 badge bg-white text-dark shadow-sm rounded-pill py-1 px-3 z-2">-@phanTramGiam%</div>
+    }
+
+    @if (laSanPhamMoi == true && !coGiamGia)
+    {
+        <div class="position-absolute top-0 start-0 m-3 badge bg-white text-dark rounded-pill px-3 py-2 shadow z-2">MỚI</div>
+    }
+
+    @if (hienBadgeSoLuong == true && Model.SoLuong > 0)
+    {
+        <div class="position-absolute top-0 end-0 m-3 badge bg-white text-dark shadow-sm rounded-pill px-3 py-1 z-2" style="font-size: 0.75rem !important;">
+            Chỉ còn @Model.SoLuong
+        </div>
+    }
+
+    <a asp-controller="SanPham" asp-action="ChiTiet" asp-route-id="@Model.Id" class="text-decoration-none d-flex flex-column flex-grow-1">
+
+        <img src="@(Model?.HinhAnh ?? "/images/default-shell.png")"
+             class="@anhClass mb-4 mx-auto shadow @(anhClass == "rounded-circle" ? "" : "shadow-sm") mt-@(anhClass == "rounded-4" ? "3" : "0")"
+             style="@anhStyle" alt="@(Model?.TenSanPham ?? "Sản phẩm")">
+
+        <h6 class="text-white opacity-85 mb-2 text-truncate w-100" style="font-size: 0.9rem;">
+            @Model?.TenSanPham
+        </h6>
+
+        <div class="mt-auto">
+            <div class="mb-3">
+                @if (coGiamGia)
+                {
+                    <small class="text-white opacity-50 text-decoration-line-through d-block" style="font-size: 0.8rem;">
+                        @Model.GiaTien.ToString("N0") đ
+                    </small>
+                    <span class="text-white fw-bold fs-6">
+                        @Model.GiaKhuyenMai.Value.ToString("N0") đ
+                    </span>
+                }
+                else
+                {
+                    <small class="text-white opacity-0 d-block" style="font-size: 0.8rem;">&nbsp;</small>
+                    <span class="text-white fw-bold fs-6">
+                        @Model.GiaTien.ToString("N0") đ
+                    </span>
+                }
+            </div>
+
+            @if (hienThanhTienDo == true && Model.SoLuong > 0)
+            {
+                <div class="px-2 mb-3">
+                    <div class="w-100 bg-white bg-opacity-25 rounded-pill overflow-hidden" style="height: 6px;">
+                        <div class="bg-white h-100 rounded-pill" style="width: @(Model.SoLuong * 10)%;"></div>
+                    </div>
+                    @if (hienTextSapChayHang == true)
+                    {
+                        <small class="text-white opacity-75 mt-2 d-block fw-bold" style="font-size: 0.7rem;">
+                            SẮP CHÁY HÀNG
+                        </small>
+                    }
+                </div>
+            }
+        </div>
+    </a>
+
+    <div class="d-flex justify-content-center gap-2 mt-2 position-relative" style="z-index: 10;">
+        @if (User.Identity != null && User.Identity.IsAuthenticated)
+        {
+            <a asp-controller="GioHang" asp-action="ThemVaoGio" asp-route-sanPhamId="@Model.Id" class="btn btn-outline-light btn-sm rounded-circle p-2 d-flex align-items-center justify-content-center" style="width: 35px; height: 35px;" title="Thêm vào giỏ">
+                <i class="bi bi-cart-plus"></i>
+            </a>
+            <a asp-controller="GioHang" asp-action="MuaNgay" asp-route-sanPhamId="@Model.Id" class="btn btn-outline-light btn-sm rounded-circle p-2 d-flex align-items-center justify-content-center" style="width: 35px; height: 35px;" title="Mua ngay">
+                <i class="bi bi-bag-check"></i>
+            </a>
+        }
+        else
+        {
+            <a asp-controller="TaiKhoan" asp-action="DangNhap" class="btn btn-outline-light btn-sm rounded-circle p-2 d-flex align-items-center justify-content-center" style="width: 35px; height: 35px;" title="Đăng nhập để thêm vào giỏ">
+                <i class="bi bi-cart-plus"></i>
+            </a>
+            <a asp-controller="TaiKhoan" asp-action="DangNhap" class="btn btn-outline-light btn-sm rounded-circle p-2 d-flex align-items-center justify-content-center" style="width: 35px; height: 35px;" title="Đăng nhập để mua ngay">
+                <i class="bi bi-bag-check"></i>
+            </a>
+        }
+    </div>
+</div>

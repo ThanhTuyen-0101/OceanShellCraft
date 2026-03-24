@@ -1,0 +1,297 @@
+﻿@{
+    ViewData["Title"] = "Bills";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+<style>
+    /* Ẩn thanh cuộn cho mượt */
+    .hide-scrollbar::-webkit-scrollbar {
+        width: 4px;
+    }
+
+    .hide-scrollbar::-webkit-scrollbar-thumb {
+        background: rgba(255,255,255,0.1);
+        border-radius: 10px;
+    }
+
+    .hide-scrollbar:hover::-webkit-scrollbar-thumb {
+        background: rgba(255,255,255,0.3);
+    }
+
+    /* Thẻ Đơn Hàng (Bill Card) */
+    .bill-card {
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid rgba(255, 255, 255, 0.05);
+        border-radius: 20px;
+        transition: all 0.2s ease-in-out;
+        cursor: pointer;
+    }
+
+        .bill-card:hover {
+            background: rgba(255, 255, 255, 0.1);
+            transform: translateY(-2px);
+        }
+
+        .bill-card.active {
+            background: rgba(255, 255, 255, 0.15);
+            border-right: 4px solid var(--gt-gold); /* Vạch vàng bên phải giống ảnh */
+        }
+
+    /* Các chấm trạng thái */
+    .status-dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        display: inline-block;
+        margin-right: 4px;
+    }
+
+    .dot-active {
+        background-color: #ffc107;
+    }
+    /* Vàng */
+    .dot-cancelled {
+        background-color: #dc3545;
+    }
+    /* Đỏ */
+    .dot-paid {
+        background-color: #198754;
+    }
+    /* Xanh lá */
+
+    /* Fix chiều cao container để không làm tràn trang web */
+    .bills-container-height {
+        height: calc(100vh - 120px);
+    }
+
+    /* Select box trong suốt */
+    .glass-select {
+        background-color: transparent;
+        color: var(--text-pure);
+        border: none;
+        cursor: pointer;
+        font-weight: 500;
+    }
+
+        .glass-select option {
+            color: #000;
+        }
+    /* Chữ đen khi xổ xuống để dễ đọc */
+</style>
+
+<div class="row g-4 bills-container-height">
+
+    <div class="col-lg-5 col-xl-4 d-flex flex-column h-100 pe-lg-3" style="border-right: 1px solid var(--border-light);">
+
+        <div class="d-flex align-items-center mb-3">
+            <a href="/Admin" class="text-dim text-decoration-none me-3"><i class="bi bi-arrow-left fs-5"></i></a>
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb mb-0">
+                    <li class="breadcrumb-item"><a href="#" class="text-dim text-decoration-none small">Bills</a></li>
+                    <li class="breadcrumb-item active text-pure small fw-bold" aria-current="page">Payment history</li>
+                </ol>
+            </nav>
+        </div>
+
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2 class="fw-bold text-pure m-0" style="font-family: 'Playfair Display', serif !important;">Bills</h2>
+            <div class="bg-light bg-opacity-10 rounded-3 d-flex justify-content-center align-items-center hover-white transition cursor-pointer" style="width: 40px; height: 40px;">
+                <i class="bi bi-plus-lg text-pure fs-5"></i>
+            </div>
+        </div>
+
+        <div class="d-flex justify-content-between align-items-center mb-3 border-bottom border-light pb-3 opacity-75">
+            <select class="glass-select shadow-none p-0 outline-none">
+                <option>All orders</option>
+                <option>Active</option>
+                <option>Paid</option>
+            </select>
+            <select class="glass-select shadow-none p-0 outline-none">
+                <option>March 23, 2026</option>
+                <option>March 22, 2026</option>
+            </select>
+        </div>
+
+        <div class="flex-grow-1 overflow-auto hide-scrollbar pe-2 pb-5 position-relative">
+
+            <div class="bill-card active p-3 mb-3 d-flex justify-content-between align-items-center">
+                <div>
+                    <h6 class="m-0 text-pure fw-bold mb-1">
+                        Order #48
+                        <span class="ms-2" style="font-size: 0.7rem;"><span class="status-dot dot-active"></span>Active</span>
+                    </h6>
+                    <small class="text-dim">Table 12 · 2 guests</small>
+                </div>
+                <div class="text-end">
+                    <h6 class="m-0 text-pure fw-bold mb-1">$28.40</h6>
+                    <small class="text-dim">18:22</small>
+                </div>
+            </div>
+
+            <div class="bill-card p-3 mb-3 d-flex justify-content-between align-items-center">
+                <div>
+                    <h6 class="m-0 text-pure fw-bold mb-1">
+                        Order #38
+                        <span class="ms-2" style="font-size: 0.7rem;"><span class="status-dot dot-cancelled"></span>Cancelled</span>
+                    </h6>
+                    <small class="text-dim">Table 7 · 4 guests</small>
+                </div>
+                <div class="text-end">
+                    <h6 class="m-0 text-pure fw-bold mb-1">$86.75</h6>
+                    <small class="text-dim">18:41</small>
+                </div>
+            </div>
+
+            <div class="bill-card p-3 mb-3 d-flex justify-content-between align-items-center">
+                <div>
+                    <h6 class="m-0 text-pure fw-bold mb-1">
+                        Order #125
+                        <span class="ms-2" style="font-size: 0.7rem;"><span class="status-dot dot-active"></span>Active</span>
+                    </h6>
+                    <small class="text-dim">Table 24 · 3 guest</small>
+                </div>
+                <div class="text-end">
+                    <h6 class="m-0 text-pure fw-bold mb-1">$42.30</h6>
+                    <small class="text-dim">18:54</small>
+                </div>
+            </div>
+
+            <div class="bill-card p-3 mb-3 d-flex justify-content-between align-items-center">
+                <div>
+                    <h6 class="m-0 text-pure fw-bold mb-1">
+                        Order #39
+                        <span class="ms-2" style="font-size: 0.7rem;"><span class="status-dot dot-paid"></span>Paid</span>
+                    </h6>
+                    <small class="text-dim">Table 3 · 2 guests</small>
+                </div>
+                <div class="text-end">
+                    <h6 class="m-0 text-pure fw-bold mb-1">$31.90</h6>
+                    <small class="text-dim">19:12</small>
+                </div>
+            </div>
+
+            <div class="bill-card p-3 mb-5 d-flex justify-content-between align-items-center">
+                <div>
+                    <h6 class="m-0 text-pure fw-bold mb-1">
+                        Order #123
+                        <span class="ms-2" style="font-size: 0.7rem;"><span class="status-dot dot-active"></span>Active</span>
+                    </h6>
+                    <small class="text-dim">Table 5 · 1 guest</small>
+                </div>
+                <div class="text-end">
+                    <h6 class="m-0 text-pure fw-bold mb-1">$14.80</h6>
+                    <small class="text-dim">19:30</small>
+                </div>
+            </div>
+
+            <div class="position-absolute bottom-0 start-0 w-100 pt-3" style="background: linear-gradient(to top, rgba(18, 43, 39, 1) 40%, transparent); padding-bottom: 2px;">
+                <div class="luxury-input-group d-flex align-items-center px-3 py-2 rounded-pill shadow" style="background: rgba(255,255,255,0.15); backdrop-filter: blur(10px);">
+                    <i class="bi bi-search text-pure"></i>
+                    <input type="text" class="form-control bg-transparent border-0 text-pure shadow-none ms-2" placeholder="Search for order ...">
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="col-lg-7 col-xl-8 d-flex flex-column h-100 ps-lg-4">
+
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <div class="d-flex align-items-center gap-2 cursor-pointer opacity-75 hover-white transition">
+                <i class="bi bi-clock-history"></i>
+                <span class="fw-medium">Payment history</span>
+                <i class="bi bi-chevron-down small"></i>
+            </div>
+            <i class="bi bi-three-dots fs-5 cursor-pointer text-dim hover-white transition"></i>
+        </div>
+
+        <div class="bento-card p-4 p-xl-5 flex-grow-1 d-flex flex-column rounded-4" style="border-radius: 20px !important;">
+
+            <div class="d-flex justify-content-between align-items-center mb-4 pb-3 border-bottom border-light">
+                <h2 class="fw-bold text-pure m-0">Order #48</h2>
+                <span class="badge bg-gold text-dark px-3 py-2 rounded-pill fs-6 fw-bold">
+                    <span class="status-dot bg-dark opacity-50 me-2"></span>Active
+                </span>
+            </div>
+
+            <h6 class="text-pure fw-bold mb-3">Details</h6>
+            <div class="row text-center mb-4 pb-4 border-bottom border-light">
+                <div class="col-3">
+                    <small class="text-dim d-block mb-1">Table</small>
+                    <h5 class="text-pure fw-bold m-0">12</h5>
+                </div>
+                <div class="col-3">
+                    <small class="text-dim d-block mb-1">Guests</small>
+                    <h5 class="text-pure fw-bold m-0">2</h5>
+                </div>
+                <div class="col-3">
+                    <small class="text-dim d-block mb-1">Customers</small>
+                    <h5 class="text-pure fw-bold m-0">Jojo Kate</h5>
+                </div>
+                <div class="col-3">
+                    <small class="text-dim d-block mb-1">Payment</small>
+                    <h5 class="text-pure fw-bold m-0">Pending</h5>
+                </div>
+            </div>
+
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h6 class="text-pure fw-bold m-0">Order info</h6>
+            </div>
+
+            <div class="d-flex justify-content-between text-dim small fw-medium mb-2 border-bottom border-light pb-2">
+                <span>Items</span>
+                <span>Price</span>
+            </div>
+
+            <div class="d-flex justify-content-between align-items-center py-2 border-bottom border-light border-opacity-25">
+                <div class="d-flex align-items-center gap-3">
+                    <div class="bg-light bg-opacity-10 rounded d-flex justify-content-center align-items-center" style="width: 40px; height: 40px;">
+                        <i class="bi bi-egg-fried fs-5 text-gold"></i>
+                    </div>
+                    <span class="text-pure fw-medium">Classic Burger</span>
+                </div>
+                <span class="text-pure fw-bold">$8.90</span>
+            </div>
+
+            <div class="d-flex justify-content-between align-items-center py-2 border-bottom border-light border-opacity-25">
+                <div class="d-flex align-items-center gap-3">
+                    <div class="bg-light bg-opacity-10 rounded d-flex justify-content-center align-items-center" style="width: 40px; height: 40px;">
+                        <i class="bi bi-egg-fried fs-5 text-gold"></i>
+                    </div>
+                    <span class="text-pure fw-medium">BBQ Bacon Burger</span>
+                </div>
+                <span class="text-pure fw-bold">$10.50</span>
+            </div>
+
+            <div class="d-flex justify-content-between align-items-center py-2 border-bottom border-light border-opacity-25">
+                <div class="d-flex align-items-center gap-3">
+                    <div class="bg-light bg-opacity-10 rounded d-flex justify-content-center align-items-center" style="width: 40px; height: 40px;">
+                        <i class="bi bi-basket fs-5 text-gold"></i>
+                    </div>
+                    <span class="text-pure fw-medium">Fries (2x)</span>
+                </div>
+                <span class="text-pure fw-bold">$7.00</span>
+            </div>
+
+            <div class="d-flex justify-content-between align-items-center py-2 border-bottom border-light">
+                <div class="d-flex align-items-center gap-3">
+                    <div class="bg-light bg-opacity-10 rounded d-flex justify-content-center align-items-center" style="width: 40px; height: 40px;">
+                        <i class="bi bi-cup-straw fs-5 text-gold"></i>
+                    </div>
+                    <span class="text-pure fw-medium">Soda (2x)</span>
+                </div>
+                <span class="text-pure fw-bold">$5.00</span>
+            </div>
+
+            <div class="d-flex justify-content-between align-items-center mt-3 mb-auto">
+                <h5 class="text-pure fw-bold m-0">Total</h5>
+                <h4 class="text-pure fw-bold m-0">$31.40</h4>
+            </div>
+
+            <button class="btn btn-gold w-100 rounded-3 py-3 mt-4 fw-bold fs-6 shadow-sm transition">
+                Charge customer $31.40
+            </button>
+        </div>
+
+    </div>
+</div>

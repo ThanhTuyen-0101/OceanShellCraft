@@ -1,0 +1,148 @@
+﻿@model OceanShellCraft.Models.SanPham
+@{
+    ViewData["Title"] = Model?.Id > 0 ? "Chỉnh sửa Sản phẩm" : "Thêm Sản phẩm mới";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+<div class="container-fluid py-4 min-vh-100 text-white">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h4 class="fw-bold text-white mb-0"><i class="bi bi-box-seam me-2"></i>@ViewData["Title"]</h4>
+    </div>
+
+    <div class="card bg-transparent glass-effect border-light shadow-lg rounded-4">
+        <div class="card-body p-4 p-md-5">
+            <form id="formSanPham" asp-action="ThemSuaSanPham" method="post" enctype="multipart/form-data">
+                <input type="hidden" asp-for="Id" />
+                <input type="hidden" asp-for="HinhAnh" />
+
+                <input type="hidden" asp-for="GiaTien" id="GiaTienReal" />
+                <input type="hidden" asp-for="GiaKhuyenMai" id="GiaKhuyenMaiReal" />
+
+                <div class="row g-4">
+                    <div class="col-md-8">
+                        <div class="mb-4">
+                            <label class="form-label fw-bold">Tên sản phẩm <span class="text-danger">*</span></label>
+                            <input asp-for="TenSanPham" type="text" class="form-control bg-transparent text-white border-light shadow-none" required>
+                        </div>
+
+                        <div class="row mb-4">
+                            <div class="col-md-3">
+                                <label class="form-label fw-bold">Giá gốc (VNĐ)</label>
+                                <input type="text" id="displayGiaTien" class="form-control bg-transparent text-white border-light shadow-none"
+                                       value="@(Model?.GiaTien > 0 ? Model.GiaTien.ToString("N0", new System.Globalization.CultureInfo("vi-VN")) : "")"
+                                       oninput="formatCurrency(this, 'GiaTienReal')">
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label fw-bold">Giá giảm (VNĐ)</label>
+                                <input type="text" id="displayGiaKhuyenMai" class="form-control bg-transparent text-white border-light shadow-none"
+                                       value="@(Model?.GiaKhuyenMai > 0 ? Model.GiaKhuyenMai.Value.ToString("N0", new System.Globalization.CultureInfo("vi-VN")) : "")"
+                                       oninput="formatCurrency(this, 'GiaKhuyenMaiReal')" placeholder="Bỏ trống nếu không giảm">
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label fw-bold">Số lượng</label>
+                                <input asp-for="SoLuong" type="number" class="form-control bg-transparent text-white border-light shadow-none no-spinners">
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label fw-bold">Danh mục</label>
+                                <select asp-for="DanhMucId" class="form-select bg-transparent text-white border-light shadow-none" asp-items="ViewBag.DanhMucList">
+                                    <option value="" class="text-dark">-- Chọn danh mục --</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="row mb-4">
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold">Chất liệu</label>
+                                <input asp-for="ChatLieu" type="text" class="form-control bg-transparent text-white border-light shadow-none" placeholder="VD: Vỏ ốc xà cừ">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold">Kích thước</label>
+                                <input asp-for="KichThuoc" type="text" class="form-control bg-transparent text-white border-light shadow-none" placeholder="VD: 15cm x 20cm">
+                            </div>
+                        </div>
+
+                        <div class="mb-4">
+                            <label class="form-label fw-bold">Mô tả sản phẩm</label>
+                            <textarea asp-for="MoTa" class="form-control bg-transparent text-white border-light shadow-none" rows="5"></textarea>
+                        </div>
+                    </div>
+
+                    <div class="col-md-4">
+                        <div class="p-4 rounded-4 border border-light border-opacity-25" style="background: rgba(255,255,255,0.02);">
+                            <label class="form-label fw-bold d-block mb-3">Hình ảnh sản phẩm</label>
+                            <div class="text-center mb-3">
+                                <img id="imgPreview" src="@(string.IsNullOrEmpty(Model?.HinhAnh) ? "/img/no-image.png" : Model.HinhAnh)"
+                                     class="img-fluid rounded-3 border border-light" style="max-height: 250px; object-fit: cover;">
+                            </div>
+                            <input type="file" name="fileHinhAnh" class="form-control form-control-sm bg-transparent text-white border-light shadow-none" accept="image/*" onchange="previewImage(event)">
+
+                            <hr class="my-4 border-light">
+
+                            <label class="form-label fw-bold d-block mb-2">Tùy chọn hiển thị</label>
+                            <div class="form-check mb-2">
+                                <input class="form-check-input" type="checkbox" asp-for="IsFeatured" id="checkFeatured">
+                                <label class="form-check-label text-white-50" for="checkFeatured">Sản phẩm nổi bật</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="d-flex justify-content-end gap-3 mt-5">
+                    <a href="/Admin/SanPham" id="btnCancel" class="btn btn-outline-light px-4 no-hover-bg">
+                        <i class="bi bi-arrow-left me-2"></i>Quay lại <kbd class="ms-2 border-light">F6</kbd>
+                    </a>
+                    <button type="submit" id="btnSave" class="btn btn-outline-light px-5 shadow-sm no-hover-bg">
+                        <i class="bi bi-save me-2"></i>Lưu thông tin <kbd class="ms-2 border-light">F8</kbd>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <style>
+        /* Ẩn thanh cuộn (mũi tên tăng giảm) của thẻ input type number (dành cho số lượng) */
+        .no-spinners::-webkit-outer-spin-button,
+        .no-spinners::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+
+        .no-spinners {
+            -moz-appearance: textfield; /* Firefox */
+        }
+    </style>
+    <script>
+        // Hàm định dạng tiền tệ có dấu chấm
+        function formatCurrency(input, hiddenId) {
+            // Lọc bỏ tất cả ký tự không phải là số
+            let value = input.value.replace(/\D/g, '');
+
+            // Gán giá trị thực (không dấu chấm) vào thẻ input ẩn để gửi về Server
+            document.getElementById(hiddenId).value = value;
+
+            // Định dạng hiển thị dấu chấm và gán lại vào ô input người dùng đang gõ
+            if (value) {
+                // toLocaleString('vi-VN') sẽ tự động thêm dấu chấm ngăn cách hàng nghìn
+                input.value = parseInt(value).toLocaleString('vi-VN');
+            } else {
+                input.value = '';
+            }
+        }
+
+        function previewImage(event) {
+            const reader = new FileReader();
+            reader.onload = function() {
+                const output = document.getElementById('imgPreview');
+                output.src = reader.result;
+            };
+            if (event.target.files[0]) reader.readAsDataURL(event.target.files[0]);
+        }
+
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'F6') { e.preventDefault(); document.getElementById('btnCancel').click(); }
+            if (e.key === 'F8') { e.preventDefault(); document.getElementById('formSanPham').submit(); }
+        });
+    </script>
+}

@@ -20,19 +20,17 @@ namespace OceanShellCraft.Controllers
         {
             if (ModelState.IsValid)
             {
-                // Kiểm tra xem email đã tồn tại chưa
                 if (_context.NguoiDungs.Any(u => u.Email == vm.Email))
                 {
                     ModelState.AddModelError("Email", "Email này đã được sử dụng");
                     return View(vm);
                 }
 
-                // Chuyển dữ liệu từ View Model sang Model chính
                 var user = new NguoiDung
                 {
                     HoTen = vm.HoTen,
                     Email = vm.Email,
-                    MatKhau = vm.MatKhau, // Trong thực tế nên mã hóa Pass ở đây
+                    MatKhau = vm.MatKhau,
                     VaiTro = vm.Email.ToLower() == "dangngoctamnhu2000@gmail.com" ? "Admin" : "KhachHang"
                 };
 
@@ -52,21 +50,18 @@ namespace OceanShellCraft.Controllers
             var user = _context.NguoiDungs.FirstOrDefault(u => u.Email == email && u.MatKhau == matkhau);
             if (user != null)
             {
-                // Tạo "Thẻ căn cước" cho người dùng
                 var claims = new List<Claim>
                 {
                     new Claim(ClaimTypes.Name, user.HoTen),
                     new Claim(ClaimTypes.Email, user.Email),
-                    new Claim(ClaimTypes.Role, user.VaiTro), // Quan trọng nhất để phân quyền
-                    new Claim("UserId", user.Id.ToString())
+                    new Claim(ClaimTypes.Role, user.VaiTro),
+                    new Claim(ClaimTypes.NameIdentifier, user.Id.ToString())
                 };
 
                 var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
-
-                // Đăng nhập chính thức vào hệ thống
                 await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(claimsIdentity));
 
-                return RedirectToAction("Index", "TrangChu");
+                return RedirectToAction("TrangChu", "TrangChu");
             }
             ViewBag.Loi = "Sai email hoặc mật khẩu!";
             return View();
@@ -74,8 +69,16 @@ namespace OceanShellCraft.Controllers
 
         public async Task<IActionResult> DangXuat()
         {
+            // Xóa Cookie xác thực (Quan trọng nhất)
             await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
-            return RedirectToAction("Index", "TrangChu");
+
+            // Xóa dòng này nếu bạn chưa cấu hình Session trong Program.cs
+            // HttpContext.Session.Clear(); 
+
+            return RedirectToAction("TrangChu", "TrangChu");
         }
+
+        [HttpGet]
+        public IActionResult TuChoiTruyCap() => View();
     }
 }

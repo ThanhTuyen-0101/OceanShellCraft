@@ -1,163 +1,111 @@
-﻿@{
-    ViewData["Title"] = "Giới Thiệu - OceanShellCraft";
+﻿@model dynamic
+@{
+    ViewData["Title"] = "Artisanal Heritage - Ocean Shell Craft";
 }
 
-<style>
-    /* 1. Thiết lập vùng chứa 3D làm nền phía sau */
-    .intro-wrapper {
-        position: relative;
-        width: 100%;
-        min-height: 100vh;
-        overflow: hidden;
-        background: linear-gradient(to bottom, #002b4d 0%, #001220 100%);
-    }
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Plus+Jakarta+Sans:wght@300;400;600&display=swap" rel="stylesheet">
 
-    #ocean-canvas {
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        z-index: 1; /* Nằm dưới nội dung */
-        cursor: grab;
-    }
+<div class="gt-page-wrapper artisanal-scope py-5 px-3">
+    <div class="container g-0">
+        <div class="bento-grid">
 
-    /* 2. Lớp phủ nội dung phía trên */
-    .content-overlay {
-        position: relative;
-        z-index: 2; /* Nằm trên đại dương */
-        padding: 80px 0;
-        color: white;
-    }
-
-    /* 3. Style cho các Card để chúng trông mượt mà trên nền 3D */
-    .glass-card {
-        background: rgba(255, 255, 255, 0.1);
-        backdrop-filter: blur(10px); /* Hiệu ứng kính mờ */
-        border: 1px solid rgba(255, 255, 255, 0.2);
-        border-radius: 20px;
-        transition: all 0.3s ease;
-    }
-
-        .glass-card:hover {
-            background: rgba(255, 255, 255, 0.15);
-            transform: translateY(-10px);
-        }
-
-    .text-primary-ocean {
-        color: #8ce5ff;
-    }
-</style>
-
-<div class="intro-wrapper">
-    <div id="ocean-canvas"></div>
-
-    <div class="container content-overlay">
-        <div class="row g-4">
-            <div class="col-12 text-center mb-5">
-                <div class="glass-card p-5">
-                    <h1 class="display-3 fw-bold text-primary-ocean">OceanShellCraft</h1>
-                    <p class="lead fs-4">Nơi vẻ đẹp đại dương hòa quyện cùng nghệ thuật thủ công</p>
+            <div class="bento-card hero-card overflow-hidden shadow-lg border-0">
+                <div class="position-absolute inset-0 p-5 d-flex flex-column justify-content-center h-100" style="background: linear-gradient(to right, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0.2) 100%);">
+                    <span class="text-gold fw-bold small text-uppercase mb-2" style="letter-spacing: 5px;">Est. 2026</span>
+                    <h1 class="sunakka-title display-2 text-gold fw-bold mb-3 lh-sm">OCEAN SHELL<br>CRAFT</h1>
+                    <p class="fst-italic fs-5 text-white opacity-75 fw-light mt-3">"Biến những mảnh vỡ của đại dương thành kiệt tác thời đại."</p>
                 </div>
             </div>
 
-            <div class="col-md-6">
-                <div class="glass-card p-4 h-100">
-                    <h3 class="text-primary-ocean fw-bold mb-4">Câu chuyện của chúng tôi</h3>
-                    <p>
-                        OceanShellCraft ra đời từ niềm đam mê bất tận với những báu vật của biển cả.
-                        Chúng tôi tin rằng mỗi vỏ sò, mỗi hạt cát đều mang trong mình một linh hồn của đại dương.
-                        Sứ mệnh của chúng tôi là biến những vật liệu tự nhiên ấy thành những tác phẩm trang trí độc bản,
-                        mang hơi thở của sóng và gió vào không gian sống của bạn.
-                    </p>
-                </div>
-            </div>
+            <div class="bento-card legacy-card p-5 d-flex flex-column" style="grid-row: span 2;">
+                <span class="text-gold small fw-bold text-uppercase mb-3 d-block" style="letter-spacing: 2px;">The Legacy</span>
+                <h2 class="sunakka-title display-5 text-gold mb-3">HÀNH TRÌNH CỦA<br>NHỮNG BÁU VẬT</h2>
+                <p class="text-white opacity-75 lh-lg mb-5" style="max-width: 95%;">Ocean Shell Craft ra đời từ niềm đam mê đánh thức vẻ đẹp của những "báu vật" thầm lặng. Chúng tôi bảo tồn linh hồn của biển cả qua từng lớp xà cừ tuyển chọn.</p>
 
-            <div class="col-md-6">
-                <div class="row g-4 h-100">
-                    <div class="col-12">
-                        <div class="glass-card p-4 h-100">
-                            <h3 class="text-success fw-bold mb-3">Sứ Mệnh</h3>
-                            <p>Tôn vinh giá trị thủ công truyền thống và lan tỏa ý thức bảo vệ môi trường biển thông qua từng sản phẩm bền vững.</p>
-                        </div>
+                <div class="row align-items-center mt-auto">
+                    <div class="col-md-6 mb-4 mb-md-0 text-center">
+                        <img src="/img/sobien.png" class="img-fluid" style="max-height: 220px; object-fit: contain; filter: drop-shadow(0 10px 15px rgba(0,0,0,0.3));" alt="Ocean Treasure">
                     </div>
-                    <div class="col-12">
-                        <div class="glass-card p-4 h-100">
-                            <h3 class="text-warning fw-bold mb-3">Tầm Nhìn</h3>
-                            <p>Trở thành thương hiệu dẫn đầu trong việc kết nối phong cách sống hiện đại với vẻ đẹp mộc mạc từ thiên nhiên biển cả.</p>
-                        </div>
+                    <div class="col-md-6 ps-md-4" style="border-left: 2px solid #c5a059;">
+                        <p class="fst-italic text-white opacity-75 fs-6 mb-0 lh-lg">"Cái đẹp thực sự bắt nguồn từ sự nguyên bản của thiên nhiên."</p>
                     </div>
                 </div>
             </div>
 
-            <div class="col-12 text-center mt-5">
-                <a href="@Url.Action("SanPham", "Home")" class="btn btn-outline-info btn-lg px-5 rounded-pill fw-bold shadow-lg">Khám Phá Bộ Sưu Tập</a>
+            <div class="bento-card philosophy-card p-5">
+                <span class="text-gold small fw-bold text-uppercase mb-4 d-block" style="letter-spacing: 2px;">Philosophy</span>
+                <div class="mb-4 pb-2">
+                    <h6 class="fw-bold text-white mb-2">Sứ mệnh</h6>
+                    <p class="small text-white opacity-75 lh-lg mb-0">Kết nối vẻ đẹp nguyên sơ của biển cả với phong cách sống hiện đại.</p>
+                </div>
+                <div>
+                    <h6 class="fw-bold text-white mb-2">Tầm nhìn</h6>
+                    <p class="small text-white opacity-75 lh-lg mb-0">Biểu tượng toàn cầu của ngành thủ công mỹ nghệ xà cừ bền vững.</p>
+                </div>
             </div>
+
+            <div class="bento-card values-card p-5 d-flex flex-column justify-content-center">
+                <span class="text-gold small fw-bold text-uppercase mb-4 d-block" style="letter-spacing: 2px;">Core Values</span>
+                <div class="row g-4 text-center mt-2">
+                    <div class="col-6">
+                        <i class="bi bi-water text-gold fs-2"></i>
+                        <p class="small text-uppercase mt-3 text-white opacity-75 mb-0" style="font-size: 0.75rem; letter-spacing: 1px;">Tự nhiên</p>
+                    </div>
+                    <div class="col-6">
+                        <i class="bi bi-lightbulb text-gold fs-2"></i>
+                        <p class="small text-uppercase mt-3 text-white opacity-75 mb-0" style="font-size: 0.75rem; letter-spacing: 1px;">Sáng tạo</p>
+                    </div>
+                    <div class="col-6 mt-4 pt-2">
+                        <i class="bi bi-recycle text-gold fs-2"></i>
+                        <p class="small text-uppercase mt-3 text-white opacity-75 mb-0" style="font-size: 0.75rem; letter-spacing: 1px;">Bền vững</p>
+                    </div>
+                    <div class="col-6 mt-4 pt-2">
+                        <i class="bi bi-heart text-gold fs-2"></i>
+                        <p class="small text-uppercase mt-3 text-white opacity-75 mb-0" style="font-size: 0.75rem; letter-spacing: 1px;">Tâm huyết</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bento-card collections-card p-5 text-center d-flex flex-column align-items-center justify-content-between">
+                <div class="w-100">
+                    <span class="text-gold small fw-bold text-uppercase mb-3 d-block" style="letter-spacing: 2px;">Collections</span>
+                    <h4 class="sunakka-title text-gold mb-4">SẢN PHẨM TIÊU BIỂU</h4>
+                </div>
+
+                <div class="my-4">
+                    <img src="/img/logo.png" alt="Ocean Shell Craft Logo" style="width: 100px; height: auto; max-height: 100px; object-fit: contain;" />
+                </div>
+
+                <a href="/SanPham/DanhSach" class="btn btn-gold rounded-pill w-100 py-3 mt-4 fw-bold text-uppercase" style="letter-spacing: 1px;">Khám phá ngay</a>
+            </div>
+
+            <div class="bento-card atelier-card p-5 d-flex flex-column justify-content-center">
+                <span class="text-gold small fw-bold text-uppercase mb-3 d-block" style="letter-spacing: 2px;">The Atelier</span>
+                <h2 class="sunakka-title text-gold mb-5">QUY TRÌNH TỈ MỈ</h2>
+                <div class="row g-4 mt-2">
+                    <div class="col-md-6">
+                        <div class="d-flex align-items-center mb-5">
+                            <h3 class="text-gold fw-bold me-4 mb-0" style="width: 30px;">01</h3>
+                            <p class="mb-0 text-white opacity-85 fs-6">Tuyển chọn xà cừ vùng biển sâu.</p>
+                        </div>
+                        <div class="d-flex align-items-center mb-md-0 mb-5">
+                            <h3 class="text-gold fw-bold me-4 mb-0" style="width: 30px;">02</h3>
+                            <p class="mb-0 text-white opacity-85 fs-6">Xử lý kỹ thuật ép lạnh tinh xảo.</p>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="d-flex align-items-center mb-5">
+                            <h3 class="text-gold fw-bold me-4 mb-0" style="width: 30px;">03</h3>
+                            <p class="mb-0 text-white opacity-85 fs-6">Chế tác độc bản bởi nghệ nhân.</p>
+                        </div>
+                        <div class="d-flex align-items-center">
+                            <h3 class="text-gold fw-bold me-4 mb-0" style="width: 30px;">04</h3>
+                            <p class="mb-0 text-white opacity-85 fs-6">Kiểm định & đánh bóng Luxury.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
         </div>
     </div>
 </div>
-
-<script type="importmap">
-    {
-      "imports": {
-        "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
-        "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
-      }
-    }
-</script>
-
-<script type="module">
-    import * as THREE from 'three';
-    import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
-
-    const container = document.getElementById('ocean-canvas');
-    const scene = new THREE.Scene();
-
-    // Camera góc rộng để thấy không gian bao la
-    const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-    camera.position.z = 5;
-
-    const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
-    renderer.setSize(window.innerWidth, window.innerHeight);
-    renderer.setPixelRatio(window.devicePixelRatio);
-    container.appendChild(renderer.domElement);
-
-    // ÁNH SÁNG ĐẠI DƯƠNG
-    const ambientLight = new THREE.AmbientLight(0x404040, 2);
-    scene.add(ambientLight);
-
-    const pointLight = new THREE.PointLight(0x0088ff, 3);
-    pointLight.position.set(5, 5, 5);
-    scene.add(pointLight);
-
-    // Thêm một chút hạt lấp lánh như bọt biển (particles) cho sống động
-    const particlesGeometry = new THREE.BufferGeometry();
-    const count = 500;
-    const positions = new Float32Array(count * 3);
-    for(let i = 0; i < count * 3; i++) {
-        positions[i] = (Math.random() - 0.5) * 10;
-    }
-    particlesGeometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
-    const particlesMaterial = new THREE.PointsMaterial({ size: 0.05, color: 0x8ce5ff });
-    const particles = new THREE.Points(particlesGeometry, particlesMaterial);
-    scene.add(particles);
-
-    const controls = new OrbitControls(camera, renderer.domElement);
-    controls.enableZoom = false;
-    controls.autoRotate = true; // Tự động xoay không gian
-    controls.autoRotateSpeed = 0.5;
-
-    function animate() {
-        requestAnimationFrame(animate);
-        particles.rotation.y += 0.001; // Hạt bọt biển xoay nhẹ
-        controls.update();
-        renderer.render(scene, camera);
-    }
-    animate();
-
-    window.addEventListener('resize', () => {
-        camera.aspect = window.innerWidth / window.innerHeight;
-        camera.updateProjectionMatrix();
-        renderer.setSize(window.innerWidth, window.innerHeight);
-    });
-</script>

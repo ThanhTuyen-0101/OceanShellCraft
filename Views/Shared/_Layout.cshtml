@@ -8,58 +8,51 @@
     @* Bootstrap 5 CSS *@
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
 
-    @* 1. Bootstrap Icons (Bắt buộc để hiện con mắt) *@
+    @* 1. Bootstrap Icons *@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 
-    @* 2. Font Awesome (Để dùng icon cá, vỏ ốc) *@
+    @* 2. Font Awesome *@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
 
-    @* 3. Font chữ Be Vietnam Pro cho đẹp *@
+    @* 3. Font chữ Be Vietnam Pro *@
     <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@300;400;600;700&display=swap" rel="stylesheet">
 
     @* CSS Mặc định của Web *@
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
 
-    @* THÊM DÒNG NÀY: CSS GIAO DIỆN BIỂN ĐẠI DƯƠNG *@
+    @* CSS GIAO DIỆN BIỂN ĐẠI DƯƠNG *@
     <link rel="stylesheet" href="~/css/ocean-theme.css" asp-append-version="true" />
-
-    <style>
-        body {
-            font-family: 'Be Vietnam Pro', sans-serif;
-            /* Đã xóa nền xám ở đây để nhường chỗ cho nền xanh của ocean-theme.css */
-        }
-        /* Style chung cho con mắt trong ô input floating */
-        .position-relative i {
-            transition: color 0.2s;
-            color: #6c757d;
-        }
-
-            .position-relative i:hover {
-                color: #0d6efd; /* Giữ lại hiệu ứng đổi màu con mắt */
-            }
-    </style>
 </head>
+
 <body class="d-flex flex-column min-vh-100">
 
-    @* Gọi Header (Phần code Header trong suốt bám dính bạn hãy dán vào file _Header.cshtml nhé) *@
-    <partial name="_Header" />
+    @* Kiểm tra nếu không yêu cầu ẩn thì mới gọi Header *@
+    @if (ViewData["HideHeaderFooter"] == null)
+    {
+        <partial name="_Header" />
+    }
 
-    @* Đã bỏ class "container" để trang chủ được tràn viền full màn hình *@
+    @* Phần thân tràn viền full màn hình *@
     <div class="flex-grow-1">
-        <main role="main" class="pb-3">
+        <main role="main">
             @RenderBody()
         </main>
     </div>
 
-    @* Gọi Footer (Code HTML Footer bạn dán vào file _Footer.cshtml nhé) *@
-    <partial name="_Footer" />
+    @* Kiểm tra nếu không yêu cầu ẩn thì mới gọi Footer và Chat Widget *@
+    @if (ViewData["HideHeaderFooter"] == null)
+    {
+        <partial name="_Footer" />
+
+        <partial name="_ChatWidget" />
+    }
 
     @* JavaScript cơ bản *@
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
 
-    @* 4. Nơi chứa Script của từng trang (Con mắt, Validation...) *@
+    @* 4. Nơi chứa Script của từng trang *@
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>

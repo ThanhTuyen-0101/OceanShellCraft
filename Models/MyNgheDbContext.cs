@@ -14,7 +14,7 @@ namespace OceanShellCraft.Models
         public DbSet<ChiTietDonHang> ChiTietDonHangs { get; set; }
         public DbSet<NguoiDung> NguoiDungs { get; set; }
         public DbSet<BaiViet> BaiViets { get; set; }
-
+        public DbSet<DanhGia> DanhGias { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);

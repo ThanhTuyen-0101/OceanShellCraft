@@ -3,59 +3,131 @@
     Layout = "~/Views/Shared/_AdminLayout.cshtml";
 }
 
-<div class="container-fluid py-3 bg-white" style="min-height: calc(100vh - 60px);">
-    <div class="row mb-4">
-        <div class="col">
-            <h4 class="fw-bold text-danger">@ViewData["Title"]</h4>
-        </div>
+<div class="container-fluid py-4 min-vh-100 text-white">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h4 class="fw-bold text-white mb-0">
+            <i class="bi bi-journal-plus me-2"></i>@ViewData["Title"]
+        </h4>
     </div>
 
-    <form asp-action="ThemSuaBaiViet" method="post" enctype="multipart/form-data">
+    <div class="card bg-transparent glass-effect border-light shadow-lg rounded-4">
+        <div class="card-body p-4 p-md-5 bg-transparent">
+            <form id="formBaiViet" asp-action="ThemSuaBaiViet" method="post" enctype="multipart/form-data">
 
-        <div class="mb-4">
-            <label class="form-label text-danger">Hình thức giới thiệu</label>
-            <select asp-for="HinhThuc" class="form-select text-muted">
-                <option value="intro-Giới thiệu">intro-Giới thiệu</option>
-                <option value="Sản phẩm">Sản phẩm</option>
-                <option value="Tin tức">Tin tức</option>
-            </select>
+                <input type="hidden" asp-for="Id" />
+                <input type="hidden" asp-for="AnhNen" />
+
+                <div class="row mb-4">
+                    <div class="col-md-4 mb-3 mb-md-0">
+                        <label class="form-label fw-bold">Hình thức giới thiệu <span class="text-white-50">*</span></label>
+                        <select asp-for="HinhThuc" class="form-select bg-transparent text-white border-light shadow-none">
+                            <option value="Bài viết" class="text-dark">Bài viết</option>
+                        </select>
+                    </div>
+                    <div class="col-md-8">
+                        <label class="form-label fw-bold">Tiêu đề bài viết <span class="text-white-50">*</span></label>
+                        <input asp-for="TieuDe" type="text" class="form-control bg-transparent text-white border-light shadow-none" placeholder="VD: Khám phá vẻ đẹp của đại dương..." required>
+                    </div>
+                </div>
+
+                <div class="mb-4">
+                    <label class="form-label fw-bold">Ảnh nền bìa (Hero Image)</label>
+                    <input type="file" name="fileAnhNen" class="form-control bg-transparent text-white border-light shadow-none mb-2" accept="image/*" onchange="previewImage(event)">
+
+                    @if (!string.IsNullOrEmpty(Model?.AnhNen))
+                    {
+                        <div class="d-flex align-items-center text-white-50 fst-italic small mb-2">
+                            <i class="bi bi-link-45deg me-1"></i> Đường dẫn hiện tại:
+                            <span class="ms-1 text-white text-break">@Model.AnhNen</span>
+                        </div>
+                    }
+                    else
+                    {
+                        <small class="text-white-50 fst-italic mt-1 d-block">Khuyến nghị ảnh ngang chất lượng cao (1920x1080px)</small>
+                    }
+
+                    <div class="mt-3">
+                        <img id="imgPreview"
+                             src="@(string.IsNullOrEmpty(Model?.AnhNen) ? "#" : Model.AnhNen)"
+                             alt="Xem trước ảnh bìa"
+                             class="shadow-sm rounded-3 border border-light object-fit-cover"
+                             style="max-width: 300px; height: 150px; display: @(string.IsNullOrEmpty(Model?.AnhNen) ? "none" : "block");" />
+                    </div>
+                </div>
+
+                <div class="mb-4">
+                    <label class="form-label fw-bold">Nội dung tóm tắt</label>
+                    <textarea asp-for="NoiDungTomTat" class="form-control bg-transparent text-white border-light shadow-none" rows="3" placeholder="Nhập một đoạn mô tả ngắn gọn, súc tích..."></textarea>
+                </div>
+
+                <div class="mb-4">
+                    <label class="form-label fw-bold">Video YouTube <span class="text-white-50 fw-normal">(Tùy chọn)</span></label>
+                    <input asp-for="VideoYoutube" type="text" class="form-control bg-transparent text-white border-light shadow-none" placeholder="Dán link hoặc ID video YouTube vào đây...">
+                </div>
+
+                <div class="mb-4">
+                    <label class="form-label fw-bold">Nội dung Chi tiết <span class="text-white-50">*</span></label>
+                    <textarea asp-for="NoiDung" id="editor" class="form-control bg-transparent text-white border-light shadow-none" rows="12" placeholder="Nhập nội dung chi tiết bài viết..."></textarea>
+                </div>
+
+                <div class="d-flex justify-content-end gap-3 mt-4">
+                    <a href="/Admin/BaiViet" id="btnCancel" class="btn btn-outline-light px-4 no-hover-bg">
+                        <i class="bi bi-x-lg me-2"></i>Quay lại
+                        <kbd class="ms-1 border border-light text-white" style="background: rgba(255,255,255,0.1);">F6</kbd>
+                    </a>
+                    <button type="submit" id="btnSave" class="btn btn-outline-light px-5 shadow-sm no-hover-bg">
+                        <i class="bi bi-check-lg me-2"></i>Lưu bài viết
+                        <kbd class="ms-1 border border-light text-white" style="background: rgba(255,255,255,0.1);">F8</kbd>
+                    </button>
+                </div>
+            </form>
         </div>
-
-        <div class="mb-4">
-            <label class="form-label text-danger">Tiêu đề</label>
-            <input asp-for="TieuDe" type="text" class="form-control" placeholder="Nhập tiêu đề" required>
-        </div>
-
-        <div class="mb-4">
-            <label class="form-label text-danger">Ảnh nền</label>
-            <input type="file" name="fileAnhNen" class="form-control" accept="image/*">
-            <small class="text-muted">Chọn ảnh từ máy tính của bạn</small>
-        </div>
-
-        <div class="mb-4">
-            <label class="form-label text-danger">Nội dung tóm tắt</label>
-            <textarea asp-for="NoiDungTomTat" class="form-control" rows="2" placeholder="Nhập nội dung tóm tắt"></textarea>
-        </div>
-
-        <div class="mb-4">
-            <label class="form-label text-danger">Video youtube (Link iframe)</label>
-            <textarea asp-for="VideoYoutube" class="form-control" rows="2" placeholder="Nhập iframe youtube"></textarea>
-        </div>
-
-        <div class="mb-4">
-            <label class="form-label text-danger">Nội dung Chi tiết</label>
-            <textarea asp-for="NoiDung" class="form-control" rows="8" placeholder="Nhập nội dung chi tiết bài viết..."></textarea>
-        </div>
-
-        <hr />
-
-        <div class="d-flex justify-content-end gap-2 mb-4">
-            <a href="/Admin/BaiViet" class="btn btn-outline-primary px-4">
-                <i class="bi bi-x-lg me-1"></i> Quay lại (F6)
-            </a>
-            <button type="submit" class="btn btn-primary px-4">
-                <i class="bi bi-check-lg me-1"></i> Lưu (F8)
-            </button>
-        </div>
-    </form>
+    </div>
 </div>
+
+@section Scripts {
+    <script>
+        // 1. Chức năng xem trước ảnh bìa
+        function previewImage(event) {
+            const reader = new FileReader();
+            const output = document.getElementById('imgPreview');
+            reader.onload = function() {
+                output.src = reader.result;
+                output.style.display = 'block';
+            };
+            if (event.target.files[0]) {
+                reader.readAsDataURL(event.target.files[0]);
+            }
+        }
+
+        // 2. Bắt sự kiện phím tắt F6 và F8
+        document.addEventListener('keydown', function(e) {
+            // F6: Quay lại
+            if (e.key === 'F6') {
+                e.preventDefault();
+                document.getElementById('btnCancel').click();
+            }
+            // F8: Lưu form
+            if (e.key === 'F8') {
+                e.preventDefault();
+                document.getElementById('formBaiViet').submit();
+            }
+        });
+    </script>
+}
+
+<style>
+    /* CSS hỗ trợ để tắt hover nút (tái sử dụng từ trang quản lý) */
+    .no-hover-bg:hover,
+    .no-hover-bg:focus,
+    .no-hover-bg:active {
+        background-color: transparent !important;
+        color: white !important;
+        border-color: rgba(255, 255, 255, 0.5) !important;
+    }
+
+    /* CSS làm mờ placeholder của input trong suốt */
+    .form-control::placeholder {
+        color: rgba(255, 255, 255, 0.4) !important;
+    }
+</style>

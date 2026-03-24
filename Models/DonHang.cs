@@ -17,6 +17,7 @@ namespace OceanShellCraft.Models
 
         public virtual NguoiDung? NguoiDung { get; set; }
         public virtual ICollection<ChiTietDonHang> ChiTietDonHangs { get; set; } = new List<ChiTietDonHang>();
+        public virtual ICollection<DanhGia> DanhGias { get; set; } = new List<DanhGia>();
     }
 
 }

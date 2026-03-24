@@ -1,0 +1,204 @@
+﻿@{
+    ViewData["Title"] = "Dashboard";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+<style>
+    /* Chỉnh nhỏ lại thanh scrollbar cho khu vực main */
+    ::-webkit-scrollbar {
+        width: 6px;
+    }
+
+    ::-webkit-scrollbar-thumb {
+        background: rgba(255,255,255,0.2);
+        border-radius: 10px;
+    }
+</style>
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb mb-1">
+                <li class="breadcrumb-item"><a href="#" class="text-dim text-decoration-none">Dashboard</a></li>
+                <li class="breadcrumb-item active text-pure" aria-current="page">Sales statistics</li>
+            </ol>
+        </nav>
+        <h2 class="fw-bold text-pure m-0" style="font-family: 'Playfair Display', serif !important;">Dashboard</h2>
+    </div>
+
+    <div class="d-flex align-items-center gap-3">
+        <ul class="nav nav-pills" style="font-size: 0.9rem;">
+            <li class="nav-item"><a class="nav-link text-dim px-2" href="#">Yesterday</a></li>
+            <li class="nav-item"><a class="nav-link text-gold fw-bold border-bottom border-warning px-2" href="#">Today</a></li>
+            <li class="nav-item"><a class="nav-link text-dim px-2" href="#">Week</a></li>
+            <li class="nav-item"><a class="nav-link text-dim px-2" href="#">Month</a></li>
+            <li class="nav-item"><a class="nav-link text-dim px-2" href="#">Year</a></li>
+        </ul>
+        <div class="luxury-input-group ms-3 d-flex align-items-center px-2 py-1 rounded-pill" style="background: rgba(255,255,255,0.1);">
+            <i class="bi bi-search text-dim ms-2"></i>
+            <input type="text" class="form-control bg-transparent border-0 text-pure shadow-none" placeholder="Search..." style="width: 150px;">
+        </div>
+        <a href="#" class="social-btn"><i class="bi bi-bell"></i></a>
+        <a href="#" class="social-btn"><i class="bi bi-clock"></i></a>
+    </div>
+</div>
+
+<div class="row g-4">
+    <div class="col-lg-5">
+        <div class="bento-card p-4 h-100" style="border-radius: 0 !important;">
+            <h5 class="fw-bold mb-4 text-pure">Daily sales</h5>
+            <div class="position-relative w-100" style="height: 200px; border-left: 1px solid var(--border-light); border-bottom: 1px solid var(--border-light);">
+                <div class="position-absolute bottom-0 start-0 w-100 h-100 d-flex flex-column justify-content-between pb-1">
+                    <hr class="m-0 border-light opacity-25">
+                    <hr class="m-0 border-light opacity-25">
+                    <hr class="m-0 border-light opacity-25">
+                    <hr class="m-0 border-light opacity-25">
+                    <hr class="m-0 border-light opacity-25">
+                </div>
+                <svg class="position-absolute w-100 h-100" viewBox="0 0 100 100" preserveAspectRatio="none">
+                    <polyline fill="none" stroke="#c5a059" stroke-width="2" points="0,80 20,60 40,30 60,70 80,40 100,60" />
+                    <polyline fill="none" stroke="#17a2b8" stroke-width="2" points="0,90 20,70 40,50 60,30 80,60 100,50" />
+                    <polyline fill="none" stroke="#dc3545" stroke-width="2" points="0,95 20,85 40,75 60,85 80,65 100,80" />
+                </svg>
+            </div>
+            <div class="d-flex justify-content-between mt-2 text-dim small">
+                <span>9 AM</span><span>12 PM</span><span>3 PM</span><span>6 PM</span><span>9 PM</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-4">
+        <div class="bento-card p-4 h-100 d-flex flex-column align-items-center position-relative" style="border-radius: 0 !important;">
+            <div class="w-100 d-flex justify-content-between align-items-center mb-3">
+                <h5 class="fw-bold text-pure m-0">Total Revenue</h5>
+                <select class="form-select form-select-sm bg-transparent border-light text-pure w-auto rounded-pill shadow-none">
+                    <option class="text-dark">Today</option>
+                </select>
+            </div>
+
+            <div class="position-relative mt-2 d-flex align-items-center justify-content-center"
+                 style="width: 180px; height: 180px; border-radius: 50%; background: conic-gradient(#17a2b8 0% 40%, #dc3545 40% 70%, #c5a059 70% 100%);">
+                <div class="bg-dark position-absolute rounded-circle d-flex align-items-center justify-content-center"
+                     style="width: 140px; height: 140px; background: rgba(0,0,0,0.5) !important; backdrop-filter: blur(10px);">
+                    <h3 class="fw-bold text-pure m-0">$8,950</h3>
+                </div>
+            </div>
+
+            <div class="d-flex gap-3 mt-4 small fw-medium">
+                <span class="text-pure"><i class="bi bi-circle-fill text-info me-1"></i> Dine-in</span>
+                <span class="text-pure"><i class="bi bi-circle-fill text-gold me-1"></i> Takeaway</span>
+                <span class="text-pure"><i class="bi bi-circle-fill text-danger me-1"></i> Delivery</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-3 d-flex flex-column gap-4">
+        <div class="bento-card p-4 flex-grow-1" style="border-radius: 0 !important;">
+            <div class="d-flex align-items-center gap-2 mb-2">
+                <div class="bg-danger rounded p-2" style="width: 15px; height: 15px;"></div>
+                <h6 class="m-0 fw-bold text-pure">Total Order</h6>
+            </div>
+            <small class="text-danger d-block mb-2">-2.34%</small>
+            <h2 class="fw-bold text-pure m-0">278</h2>
+            <div class="progress mt-3" style="height: 4px; background: var(--border-light);">
+                <div class="progress-bar bg-danger" style="width: 70%"></div>
+            </div>
+        </div>
+
+        <div class="bento-card p-4 flex-grow-1" style="border-radius: 0 !important;">
+            <div class="d-flex align-items-center gap-2 mb-2">
+                <div class="bg-gold rounded p-2" style="width: 15px; height: 15px;"></div>
+                <h6 class="m-0 fw-bold text-pure">New Customers</h6>
+            </div>
+            <small class="text-success d-block mb-2">23.65%</small>
+            <h2 class="fw-bold text-pure m-0">58</h2>
+            <div class="progress mt-3" style="height: 4px; background: var(--border-light);">
+                <div class="progress-bar bg-gold" style="width: 45%"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-6">
+        <div class="bento-card p-4 h-100" style="border-radius: 0 !important;">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h5 class="fw-bold text-pure m-0">Best Employees</h5>
+                <select class="form-select form-select-sm bg-transparent border-light text-pure w-auto rounded-pill shadow-none">
+                    <option class="text-dark">Today</option>
+                </select>
+            </div>
+
+            <div class="d-flex justify-content-between text-dim small fw-bold mb-3 border-bottom border-light pb-2">
+                <span>Employees</span>
+                <span>Sales</span>
+            </div>
+
+            <div class="d-flex flex-column gap-3">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div class="d-flex align-items-center gap-3">
+                        <img src="https://i.pravatar.cc/150?img=1" class="rounded-circle" width="40" height="40">
+                        <div>
+                            <h6 class="m-0 text-pure fw-bold">Maria Gonzalez</h6>
+                            <small class="text-dim">Floor Supervisor</small>
+                        </div>
+                    </div>
+                    <span class="fw-bold text-pure fs-5">$3,240</span>
+                </div>
+
+                <div class="d-flex justify-content-between align-items-center">
+                    <div class="d-flex align-items-center gap-3">
+                        <img src="https://i.pravatar.cc/150?img=11" class="rounded-circle" width="40" height="40">
+                        <div>
+                            <h6 class="m-0 text-pure fw-bold">Daniel Okafor</h6>
+                            <small class="text-dim">Waiter</small>
+                        </div>
+                    </div>
+                    <span class="fw-bold text-pure fs-5">$2,980</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-6">
+        <div class="bento-card p-4 h-100" style="border-radius: 0 !important;">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h5 class="fw-bold text-pure m-0">Trending Dishes</h5>
+                <select class="form-select form-select-sm bg-transparent border-light text-pure w-auto rounded-pill shadow-none">
+                    <option class="text-dark">Today</option>
+                </select>
+            </div>
+
+            <div class="d-flex justify-content-between text-dim small fw-bold mb-3 border-bottom border-light pb-2">
+                <span>Item</span>
+                <span>Orders</span>
+            </div>
+
+            <div class="d-flex flex-column gap-3">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div class="d-flex align-items-center gap-3">
+                        <div class="rounded-circle bg-light d-flex justify-content-center align-items-center" style="width: 40px; height: 40px;">
+                            <i class="bi bi-egg-fried text-dark fs-5"></i>
+                        </div>
+                        <div>
+                            <span class="badge bg-success bg-opacity-25 text-success rounded-pill mb-1">Food</span>
+                            <h6 class="m-0 text-pure fw-bold">Grilled Salmon</h6>
+                        </div>
+                    </div>
+                    <span class="fw-bold text-pure fs-5">64</span>
+                </div>
+
+                <div class="d-flex justify-content-between align-items-center">
+                    <div class="d-flex align-items-center gap-3">
+                        <div class="rounded-circle bg-light d-flex justify-content-center align-items-center" style="width: 40px; height: 40px;">
+                            <i class="bi bi-cup-hot text-dark fs-5"></i>
+                        </div>
+                        <div>
+                            <span class="badge bg-gold bg-opacity-25 text-warning rounded-pill mb-1">Drinks</span>
+                            <h6 class="m-0 text-pure fw-bold">Iced Latte</h6>
+                        </div>
+                    </div>
+                    <span class="fw-bold text-pure fs-5">74</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
