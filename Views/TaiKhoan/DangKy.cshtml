@@ -1,6 +1,6 @@
 ﻿@model OceanShellCraft.Models.ViewModels.DangKyViewModel
 @{
-    ViewData["Title"] = "Đăng Ký";
+    ViewData["Title"] = "Đăng ký";
     ViewData["HideHeaderFooter"] = true;
 }
 
@@ -9,78 +9,78 @@
 
         <div class="col-lg-6 d-flex flex-column justify-content-center p-5 position-relative">
             <div class="my-auto animate__animated animate__fadeInLeft">
-                <h1 class="display-3 fw-bold text-white mb-0" style="line-height: 1.1;">
+                <h1 class="display-3 mb-0" style="line-height: 1.1;">
                     Tham gia ngay <br />cùng OceanShellCraft
                 </h1>
             </div>
 
             <div class="mt-auto animate__animated animate__fadeInUp">
-                <div class="glass-sub-box p-3 px-4 rounded-4 d-inline-block">
-                    <p class="mb-1 small opacity-75 text-white">Đã có tài khoản?</p>
-                    <a asp-controller="TaiKhoan" asp-action="DangNhap" class="text-white text-decoration-none fw-bold fs-5">
-                        đăng nhập <i class="bi bi-chevron-right small"></i>
+                <div class="glass-card p-3 px-4 d-inline-block">
+                    <p class="mb-1 small opacity-75">Đã có tài khoản?</p>
+                    <a asp-controller="TaiKhoan" asp-action="DangNhap" class="text-decoration-none fs-5">
+                        Đăng nhập <i class="bi bi-chevron-right small"></i>
                     </a>
                 </div>
             </div>
         </div>
 
-        <div class="col-lg-6 glass-panel d-flex align-items-center justify-content-center p-4 p-md-5">
+        <div class="col-lg-6 glass-effect d-flex align-items-center justify-content-center p-4 p-md-5 border-start-0 border-top-0 border-bottom-0 border-end-0">
             <div class="w-100" style="max-width: 420px;">
 
-                <h2 class="text-white mb-4 fw-normal fs-1">đăng ký</h2>
+                <h2 class="mb-4 fs-1">Đăng ký</h2>
 
                 <form asp-action="DangKy" method="post" autocomplete="off">
                     @Html.AntiForgeryToken()
 
                     <div class="mb-3">
-                        <label class="text-white mb-1 ps-2 small">Họ và Tên</label>
-                        <input asp-for="HoTen" class="form-control pill-input" placeholder="Nhập họ tên của bạn" />
+                        <label class="mb-1 ps-2 small opacity-75">Họ và tên</label>
+                        <input asp-for="HoTen" class="glass-input pill-style" placeholder="Nhập họ tên của bạn" />
                         <span asp-validation-for="HoTen" class="text-danger small ms-2"></span>
                     </div>
 
                     <div class="mb-3">
-                        <label class="text-white mb-1 ps-2 small">E-mail</label>
-                        <input asp-for="Email" class="form-control pill-input" placeholder="name@example.com" />
+                        <label class="mb-1 ps-2 small opacity-75">E-mail</label>
+                        <input asp-for="Email" class="glass-input pill-style" placeholder="name@example.com" />
                         <span asp-validation-for="Email" class="text-danger small ms-2"></span>
                     </div>
 
                     <div class="mb-3">
-                        <label class="text-white mb-1 ps-2 small">Mật khẩu</label>
-                        <div class="position-relative">
-                            <input asp-for="MatKhau" type="password" id="pass" class="form-control pill-input" placeholder="••••••••" />
-                            <button class="btn btn-link text-white opacity-50 p-0 position-absolute end-0 top-50 translate-middle-x me-3 shadow-none border-0" type="button" onclick="togglePass('pass', 'eye-pass')">
-                                <i class="bi bi-eye-slash" id="eye-pass"></i>
+                        <label class="mb-1 ps-2 small opacity-75">Mật khẩu</label>
+                        <div class="position-relative d-flex align-items-center">
+                            <input asp-for="MatKhau" type="password" id="pass" class="glass-input pill-style w-100 pe-5" placeholder="••••••••" />
+                            <button class="position-absolute end-0 me-3 p-0" type="button" onclick="togglePass('pass', 'eye-pass')" style="background: transparent; border: none; outline: none; color: var(--text-main);">
+                                <i class="bi bi-eye-slash opacity-50" id="eye-pass"></i>
                             </button>
                         </div>
                         <span asp-validation-for="MatKhau" class="text-danger small ms-2"></span>
                     </div>
 
                     <div class="mb-4">
-                        <label class="text-white mb-1 ps-2 small">Xác nhận mật khẩu</label>
-                        <div class="position-relative">
-                            <input asp-for="NhapLaiMatKhau" type="password" id="re-pass" class="form-control pill-input" placeholder="••••••••" />
-                            <button class="btn btn-link text-white opacity-50 p-0 position-absolute end-0 top-50 translate-middle-x me-3 shadow-none border-0" type="button" onclick="togglePass('re-pass', 'eye-re-pass')">
-                                <i class="bi bi-eye-slash" id="eye-re-pass"></i>
+                        <label class="mb-1 ps-2 small opacity-75">Xác nhận mật khẩu</label>
+                        <div class="position-relative d-flex align-items-center">
+                            <input asp-for="NhapLaiMatKhau" type="password" id="re-pass" class="glass-input pill-style w-100 pe-5" placeholder="••••••••" />
+                            <button class="position-absolute end-0 me-3 p-0" type="button" onclick="togglePass('re-pass', 'eye-re-pass')" style="background: transparent; border: none; outline: none; color: var(--text-main);">
+                                <i class="bi bi-eye-slash opacity-50" id="eye-re-pass"></i>
                             </button>
                         </div>
                         <span asp-validation-for="NhapLaiMatKhau" class="text-danger small ms-2"></span>
                     </div>
 
-                    <button type="submit" class="btn btn-light w-100 py-2 rounded-pill fw-bold text-primary mb-4 shadow-sm">
-                        Tạo Tài Khoản
+                    <button type="submit" class="glass-btn w-100 py-2 mb-4 fs-5">
+                        Tạo tài khoản
                     </button>
 
-                    <p class="text-center text-white-50 small mb-4">hoặc đăng ký với</p>
+                    <p class="text-center opacity-50 small mb-4">Hoặc đăng ký với</p>
 
                     <div class="d-flex justify-content-center gap-3">
-                        <a href="#" class="social-circle"><i class="bi bi-twitter-x"></i></a>
-                        <a href="#" class="social-circle"><i class="bi bi-facebook"></i></a>
-                        <a href="#" class="social-circle"><i class="bi bi-google"></i></a>
+                        <a href="#" class="glass-circle"><i class="bi bi-twitter-x"></i></a>
+                        <a href="#" class="glass-circle"><i class="bi bi-facebook"></i></a>
+                        <a href="#" class="glass-circle"><i class="bi bi-google"></i></a>
                     </div>
 
                     <div class="text-center mt-4">
-                        <a asp-controller="TrangChu" asp-action="TrangChu" class="text-white-50 text-decoration-none small">
-                            quay lại trang chủ
+                        <a asp-controller="TrangChu" asp-action="TrangChu" class="text-decoration-none small opacity-75">
+                            Quay lại trang chủ
                         </a>
                     </div>
                 </form>

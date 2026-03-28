@@ -1,0 +1,229 @@
+﻿@model IEnumerable<OceanShellCraft.Models.BaiViet>
+@{
+    ViewData["Title"] = "Hệ thống hỗ trợ - OceanShellCraft";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+<div class="row g-3 h-100">
+
+    @* --- DANH SÁCH KHÁCH HÀNG (BÊN TRÁI) --- *@
+    <div class="col-lg-4 d-flex flex-column h-100">
+        <div class="glass-card p-4 d-flex flex-column h-100">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h4 class="m-0 fw-normal">Chat</h4>
+                <span class="glass-effect px-3 py-1 rounded-pill small">
+                    <i class="bi bi-circle-fill me-1 small" style="color: #28a745; font-size: 0.5rem;"></i> Trực tuyến
+                </span>
+            </div>
+
+            <div id="active-chats" class="flex-grow-1 overflow-auto hide-scrollbar">
+                @if (ViewBag.CustomerList != null)
+                {
+                    foreach (var item in ViewBag.CustomerList)
+                    {
+                        <div id="user-item-@item.UserId"
+                             class="p-2 mb-3 d-flex align-items-center gap-3 cursor-pointer border-0"
+                             onclick="selectCustomer('@item.UserId', '@item.UserName')">
+
+                            <img src="/img/meo.jpg" class="rounded-circle" width="48" height="48" style="object-fit: cover; border: 1px solid var(--border-light);">
+
+                            @* Thêm border và style giống nhãn trực tuyến vào đây *@
+                            <div class="flex-grow-1 overflow-hidden glass-effect px-3 py-2 rounded-4">
+                                <div class="d-flex justify-content-between align-items-center mb-1">
+                                    <span class="text-truncate small">@item.UserName</span>
+                                    <small class="opacity-50 msg-time" style="font-size: 0.65rem;">@item.LastTime.ToString("HH:mm")</small>
+                                </div>
+                                <p class="m-0 opacity-50 text-truncate small last-msg">@item.LastMessage</p>
+                            </div>
+                        </div>
+                    }
+                }
+                else
+                {
+                    <div class="text-center opacity-25 py-5">
+                        <i class="bi bi-chat-left-dots fs-1 d-block mb-3"></i>
+                        <small>Chưa có cuộc hội thoại nào...</small>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+
+    @* --- KHUNG CHAT CHI TIẾT (BÊN PHẢI) --- *@
+    <div class="col-lg-8 d-flex flex-column h-100">
+        <div class="glass-card p-0 d-flex flex-column h-100 overflow-hidden">
+
+            @* Header Khung Chat *@
+            <div class="p-3 d-flex justify-content-between align-items-center" style="border-bottom: 1px solid var(--border-light);">
+                <div class="d-flex align-items-center gap-3">
+                    <div class="position-relative">
+                        <img id="current-user-img" src="/img/meo.jpg" class="rounded-circle" width="45" height="45" style="object-fit: cover; border: 1px solid var(--border-light);">
+                        <span id="status-dot" class="position-absolute bottom-0 end-0 rounded-circle d-none" style="width: 10px; height: 10px; background: #28a745; border: 2px solid var(--glass-bg);"></span>
+                    </div>
+                    <div>
+                        <h6 id="current-user-name" class="m-0 fw-normal">Chọn hội thoại</h6>
+                        <small id="current-user-status" class="opacity-50">Chưa có kết nối</small>
+                    </div>
+                </div>
+                <div class="d-flex gap-2">
+                    <button class="glass-circle" style="width: 35px; height: 35px;"><i class="bi bi-telephone"></i></button>
+                    <button class="glass-circle" style="width: 35px; height: 35px;"><i class="bi bi-info-circle"></i></button>
+                </div>
+            </div>
+
+            @* Nội dung tin nhắn *@
+            <div id="messages-container" class="flex-grow-1 p-4 overflow-auto hide-scrollbar d-flex flex-column gap-3" style="background: rgba(255,255,255,0.02);">
+                <div class="text-center my-auto opacity-25">
+                    <i class="bi bi-chat-quote fs-1 d-block mb-2"></i>
+                    <p>Vui lòng chọn một khách hàng để xem tin nhắn</p>
+                </div>
+            </div>
+
+            @* Ô nhập liệu *@
+            <div class="p-3" style="border-top: 1px solid var(--border-light);">
+                <div class="d-flex gap-2 align-items-center">
+                    <input type="hidden" id="target-user-id">
+                    <button class="glass-circle" style="width: 40px; height: 40px; flex-shrink: 0;"><i class="bi bi-plus-lg"></i></button>
+
+                    <input type="text" id="admin-message-input"
+                           class="glass-input pill-style flex-grow-1 fw-normal"
+                           placeholder="Phản hồi khách hàng..." disabled>
+
+                    <button id="btn-send-reply" class="glass-circle"
+                            style="width: 45px; height: 45px; flex-shrink: 0;" disabled>
+                        <i class="bi bi-send-fill"></i>
+                    </button>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/7.0.5/signalr.min.js"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            const connection = new signalR.HubConnectionBuilder()
+                .withUrl("/chatHub")
+                .withAutomaticReconnect()
+                .build();
+
+            let activeUserId = "";
+
+            connection.start().catch(err => console.error("SignalR error: ", err));
+
+            // Lắng nghe tin nhắn thời gian thực
+            connection.on("ReceiveMessage", function (userId, userName, message, role, time) {
+                updateCustomerList(userId, userName, message, role, time);
+                if (activeUserId == userId) {
+                    appendMessage(userName, message, role, time);
+                }
+            });
+
+            // Cập nhật danh sách bên trái
+            function updateCustomerList(userId, userName, lastMsg, role, time) {
+                const listArea = document.getElementById("active-chats");
+                let item = document.getElementById(`user-item-${userId}`);
+                const prefix = (role === 'Admin' || role === 'AdminReply') ? 'Bạn: ' : '';
+
+                if (!item) {
+                    const emptyText = listArea.querySelector('.opacity-25');
+                    if (emptyText) emptyText.remove();
+
+                    const html = `
+                        <div id="user-item-${userId}" class="p-2 mb-3 d-flex align-items-center gap-3 cursor-pointer border-0"
+                             onclick="selectCustomer('${userId}', '${userName}')">
+                            <img src="/img/meo.jpg" class="rounded-circle" width="48" height="48" style="border: 1px solid var(--border-light);">
+                            <div class="flex-grow-1 overflow-hidden glass-effect px-3 py-2 rounded-4">
+                                <div class="d-flex justify-content-between align-items-center mb-1">
+                                    <span class="text-truncate small">${userName}</span>
+                                    <small class="opacity-50 msg-time" style="font-size: 0.65rem;">${time}</small>
+                                </div>
+                                <p class="m-0 opacity-50 text-truncate small last-msg">${prefix}${lastMsg}</p>
+                            </div>
+                        </div>`;
+                    listArea.insertAdjacentHTML('afterbegin', html);
+                } else {
+                    item.querySelector('.last-msg').innerText = `${prefix}${lastMsg}`;
+                    item.querySelector('.msg-time').innerText = time;
+                    listArea.prepend(item);
+                }
+            }
+
+            // Chọn khách hàng
+            window.selectCustomer = async function(userId, userName) {
+                activeUserId = userId;
+                document.getElementById("target-user-id").value = userId;
+                document.getElementById("current-user-name").innerText = userName;
+                document.getElementById("current-user-status").innerText = "Đang trực tuyến";
+                document.getElementById("status-dot").classList.remove("d-none");
+
+                document.getElementById("admin-message-input").disabled = false;
+                document.getElementById("btn-send-reply").disabled = false;
+                document.getElementById("admin-message-input").focus();
+
+                // Highlight UI: Tìm đến khung thông tin bên trong
+                document.querySelectorAll('#active-chats .flex-grow-1').forEach(el => {
+                    el.classList.remove('active-chat-pill');
+                    el.style.background = "var(--glass-bg)";
+                });
+
+                const activeItem = document.getElementById(`user-item-${userId}`);
+                if(activeItem) {
+                    const infoBox = activeItem.querySelector('.flex-grow-1');
+                    infoBox.style.background = "rgba(255,255,255,0.2)";
+                }
+
+                const container = document.getElementById("messages-container");
+                container.innerHTML = `<div class="text-center opacity-25 py-5"><div class="spinner-border spinner-border-sm"></div> Đang tải lịch sử...</div>`;
+
+                try {
+                    const response = await fetch(`/Admin/GetChatHistory?userId=${userId}`);
+                    const history = await response.json();
+                    container.innerHTML = "";
+                    history.forEach(msg => appendMessage(msg.userName, msg.noiDung, msg.isAdmin ? "Admin" : "KhachHang", msg.thoiGian));
+                } catch (err) {
+                    container.innerHTML = `<div class="text-center opacity-50">Lỗi tải tin nhắn.</div>`;
+                }
+            };
+
+            // Vẽ bong bóng chat
+            function appendMessage(userName, message, role, time) {
+                const container = document.getElementById("messages-container");
+                const isAdmin = (role === "Admin" || role === "AdminReply");
+                const avatar = isAdmin ? '/img/logo-small.jpg' : '/img/meo.jpg';
+
+                const html = `
+                    <div class="d-flex gap-2 ${isAdmin ? 'flex-row-reverse align-self-end' : ''}" style="max-width: 85%;">
+                        <img src="${avatar}" class="rounded-circle mt-auto" width="30" height="30" style="border: 1px solid var(--border-light);">
+                        <div class="d-flex flex-column ${isAdmin ? 'align-items-end' : ''}">
+                            <div class="p-3 fw-normal"
+                                 style="background: ${isAdmin ? 'rgba(255,255,255,0.1)' : 'var(--glass-bg)'};
+                                        border: 1px solid var(--border-light);
+                                        border-radius: ${isAdmin ? '18px 18px 0 18px' : '18px 18px 18px 0'};">
+                                <span class="small opacity-85" style="word-break: break-word;">${message}</span>
+                            </div>
+                            <small class="opacity-25 mt-1" style="font-size: 0.6rem;">${time}</small>
+                        </div>
+                    </div>`;
+
+                container.insertAdjacentHTML('beforeend', html);
+                container.scrollTop = container.scrollHeight;
+            }
+
+            async function sendMessage() {
+                const input = document.getElementById("admin-message-input");
+                const targetId = document.getElementById("target-user-id").value;
+                const text = input.value.trim();
+                if (text && targetId) {
+                    await connection.invoke("AdminReplyMessage", targetId, text);
+                    input.value = "";
+                }
+            }
+
+            document.getElementById("btn-send-reply").onclick = sendMessage;
+            document.getElementById("admin-message-input").onkeypress = e => { if(e.key === "Enter") sendMessage(); };
+        });
+    </script>
+}

@@ -15,15 +15,30 @@ namespace OceanShellCraft.Models
         public DbSet<NguoiDung> NguoiDungs { get; set; }
         public DbSet<BaiViet> BaiViets { get; set; }
         public DbSet<DanhGia> DanhGias { get; set; }
+        public DbSet<GiamGia> GiamGias { get; set; }
+        public DbSet<TinNhan> TinNhans { get; set; }
+        public DbSet<SanPhamYeuThich> SanPhamYeuThiches { get; set; }
+        public DbSet<BienTheSanPham> BienTheSanPhams { get; set; }
+        public DbSet<LichSuTonKho> LichSuTonKhos { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
-
-            // Cấu hình kiểu dữ liệu tiền tệ cho SQL Server
+            // Cấu hình decimal cho các bảng mới
             modelBuilder.Entity<SanPham>().Property(p => p.GiaTien).HasColumnType("decimal(18,2)");
+            modelBuilder.Entity<SanPham>().Property(p => p.GiaKhuyenMai).HasColumnType("decimal(18,2)");
+
+            // Cấu hình giá riêng của biến thể
+            modelBuilder.Entity<BienTheSanPham>().Property(b => b.GiaRieng).HasColumnType("decimal(18,2)");
+
             modelBuilder.Entity<DonHang>().Property(d => d.TongTien).HasColumnType("decimal(18,2)");
             modelBuilder.Entity<ChiTietDonHang>().Property(c => c.GiaLucMua).HasColumnType("decimal(18,2)");
 
+            // Cấu hình quan hệ 1-Nhiều (Nếu cần chi tiết hơn)
+            modelBuilder.Entity<BienTheSanPham>()
+                .HasOne(b => b.SanPham)
+                .WithMany(s => s.BienThes)
+                .HasForeignKey(b => b.SanPhamId)
+                .OnDelete(DeleteBehavior.Cascade); // Xóa sản phẩm thì xóa luôn biến thể
             // Ràng buộc khóa ngoại
             modelBuilder.Entity<ChiTietDonHang>()
                 .HasOne(c => c.DonHang)

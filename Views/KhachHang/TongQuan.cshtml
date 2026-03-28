@@ -4,37 +4,31 @@
     ViewData["Title"] = "Tổng quan hồ sơ";
     Layout = "~/Views/Shared/_KhachHangLayout.cshtml";
 
-    // 1. Kiểm tra an toàn: Nếu Model null thì gán ảnh mặc định, ngược lại kiểm tra AnhDaiDien
     var avatarUrl = (Model == null || string.IsNullOrEmpty(Model.AnhDaiDien))
         ? "/img/meo.jpg"
         : Model.AnhDaiDien;
 
-    // 2. Các giá trị khác cũng cần bảo vệ tương tự nếu Model null
+    // Giữ nguyên định dạng gốc của dữ liệu
     var hoTen = Model?.HoTen ?? "Khách hàng";
     var email = Model?.Email ?? "Chưa cập nhật email";
 }
+
 <div class="container-fluid py-4 min-vh-100 hide-scrollbar">
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h3 class="fw-bold text-white m-0" style="font-family: 'Playfair Display', serif;">
-            <i class="bi bi-list-nested me-2"></i>Tổng quan hồ sơ
-        </h3>
-    </div>
 
     <div class="row g-4 mb-4">
-
         <div class="col-xl-3 col-lg-4">
-            <div class="bento-card p-4 d-flex flex-column align-items-center text-center h-100 shadow-sm">
+            <div class="glass-card p-4 d-flex flex-column align-items-center text-center h-100">
                 <div class="position-relative mb-3">
                     <img id="avatarPreview" src="@avatarUrl"
-                         class="rounded-circle object-fit-cover border border-light border-opacity-50 shadow"
-                         width="130" height="130" style="padding: 4px;">
+                         class="rounded-circle object-fit-cover"
+                         width="130" height="130" style="padding: 4px; border: 1px solid var(--border-light);">
                 </div>
-                <h5 class="fw-bold text-white mb-1 tracking-wider">@Model.HoTen</h5>
-                <p class="text-white opacity-50 small mb-4">@Model.Email</p>
+                <h5 class="mb-1" style="letter-spacing: 1px;">@hoTen</h5>
+                <p class="opacity-50 small mb-4">@email</p>
 
                 <div class="w-100 mt-auto">
-                    <label for="AvatarUpload" class="btn btn-white-outline w-100 py-2 m-0 shadow-sm" style="cursor: pointer;">
-                        <i class="bi bi-camera me-2"></i> Đổi ảnh
+                    <label for="AvatarUpload" class="glass-btn w-100 py-2 m-0" style="cursor: pointer;">
+                        <i class="bi bi-camera me-2"></i>Đổi ảnh
                     </label>
                     <input type="file" id="AvatarUpload" class="d-none" accept="image/*" onchange="autoUploadAvatar(event)">
                 </div>
@@ -42,41 +36,42 @@
         </div>
 
         <div class="col-xl-6 col-lg-8">
-            <form asp-action="CapNhatHoSo" asp-controller="KhachHang" method="post" class="bento-card p-4 h-100 d-flex flex-column shadow-sm">
+            <form asp-action="CapNhatHoSo" asp-controller="KhachHang" method="post" class="glass-card p-4 h-100 d-flex flex-column">
+                @Html.AntiForgeryToken()
                 <input type="hidden" asp-for="Id" id="UserId" />
 
-                <div class="d-flex justify-content-between align-items-center mb-4 pb-2 border-bottom border-light border-opacity-25">
-                    <h5 class="fw-bold text-white mb-0"><i class="bi bi-person-lines-fill me-2"></i>Thông tin cá nhân</h5>
-                    <button type="submit" class="btn btn-white-outline btn-sm px-4 rounded-pill">
-                        <i class="bi bi-pencil-square me-1"></i> Lưu
+                <div class="d-flex justify-content-between align-items-center mb-4 pb-2" style="border-bottom: 1px solid var(--border-light);">
+                    <h5 class="mb-0"><i class="bi bi-person-lines-fill me-2"></i>Thông tin cá nhân</h5>
+                    <button type="submit" class="glass-btn small px-4">
+                        <i class="bi bi-pencil-square me-1"></i>Lưu
                     </button>
                 </div>
 
                 <div class="row g-3">
                     <div class="col-md-6">
-                        <label class="form-label text-white opacity-50 small mb-1">Họ và tên</label>
-                        <input asp-for="HoTen" class="form-control rounded-3 p-2 text-white border-light border-opacity-25" style="background: transparent;">
+                        <label class="opacity-50 small mb-1 ps-2">Họ và tên</label>
+                        <input asp-for="HoTen" class="glass-input" placeholder="Nhập họ tên">
                     </div>
                     <div class="col-md-6">
-                        <label class="form-label text-white opacity-50 small mb-1">Số điện thoại</label>
-                        <input asp-for="SoDienThoai" class="form-control rounded-3 p-2 text-white border-light border-opacity-25" style="background: transparent;">
+                        <label class="opacity-50 small mb-1 ps-2">Số điện thoại</label>
+                        <input asp-for="SoDienThoai" class="glass-input" placeholder="Nhập số điện thoại">
                     </div>
                     <div class="col-md-6">
-                        <label class="form-label text-white opacity-50 small mb-1">Ngày sinh</label>
-                        <input asp-for="NgaySinh" type="date" class="form-control rounded-3 p-2 text-white border-light border-opacity-25" style="background: transparent; color-scheme: dark;">
+                        <label class="opacity-50 small mb-1 ps-2">Ngày sinh</label>
+                        <input asp-for="NgaySinh" type="date" class="glass-input" style="color-scheme: dark;">
                     </div>
                     <div class="col-md-6">
-                        <label class="form-label text-white opacity-50 small mb-1">Giới tính</label>
+                        <label class="opacity-50 small mb-1 ps-2">Giới tính</label>
                         <input type="hidden" asp-for="GioiTinh" id="GioiTinhHidden" />
                         <div class="dropdown w-100">
-                            <button class="form-select text-white border-light border-opacity-25 rounded-3 p-2 shadow-none text-start d-flex justify-content-between align-items-center w-100"
-                                    style="background: transparent;" type="button" data-bs-toggle="dropdown" id="GioiTinhDropdownBtn">
-                                -- Chọn --
+                            <button class="glass-input text-start d-flex justify-content-between align-items-center w-100"
+                                    type="button" data-bs-toggle="dropdown" id="GioiTinhDropdownBtn" style="border: 1px solid var(--border-light) !important;">
+                                @(string.IsNullOrEmpty(Model?.GioiTinh) ? "-- Chọn --" : Model.GioiTinh)
                             </button>
-                            <ul class="dropdown-menu glass-effect border-light border-opacity-25 p-2 mt-1 w-100 shadow">
-                                <li><a class="dropdown-item rounded-2 mb-1" href="#" data-value="Nam">Nam</a></li>
-                                <li><a class="dropdown-item rounded-2 mb-1" href="#" data-value="Nữ">Nữ</a></li>
-                                <li><a class="dropdown-item rounded-2 mb-1" href="#" data-value="Khác">Khác</a></li>
+                            <ul class="dropdown-menu glass-dropdown w-100">
+                                <li><a class="dropdown-item glass-dropdown-item" href="#" data-value="Nam">Nam</a></li>
+                                <li><a class="dropdown-item glass-dropdown-item" href="#" data-value="Nữ">Nữ</a></li>
+                                <li><a class="dropdown-item glass-dropdown-item" href="#" data-value="Khác">Khác</a></li>
                             </ul>
                         </div>
                     </div>
@@ -85,123 +80,117 @@
         </div>
 
         <div class="col-xl-3 col-lg-12">
-            <div class="bento-card p-4 h-100 d-flex flex-column justify-content-center shadow-sm">
-                <h5 class="fw-bold text-white mb-4 pb-2 border-bottom border-light border-opacity-25">
+            <div class="glass-card p-4 h-100 d-flex flex-column justify-content-center">
+                <h5 class="mb-4 pb-2" style="border-bottom: 1px solid var(--border-light);">
                     <i class="bi bi-bar-chart me-2"></i>Tổng quát
                 </h5>
 
                 <div class="d-flex align-items-center justify-content-between mb-4">
                     <div class="d-flex align-items-center gap-3">
-                        <div class="border border-light border-opacity-50 p-2 rounded-circle text-white d-flex align-items-center justify-content-center" style="width: 45px; height: 45px;">
-                            <i class="bi bi-box2-heart fs-5"></i>
+                        <div class="glass-circle" style="width: 45px; height: 45px;">
+                            <i class="bi bi-box2-heart"></i>
                         </div>
-                        <span class="text-white opacity-75">Đơn đã mua</span>
+                        <span class="opacity-75">Đơn đã mua</span>
                     </div>
-                    <h5 class="mb-0 fw-bold text-white">12</h5>
+                    <h5 class="mb-0">@(ViewBag.DonDaMua ?? 0)</h5>
                 </div>
 
                 <div class="d-flex align-items-center justify-content-between mb-4">
                     <div class="d-flex align-items-center gap-3">
-                        <div class="border border-light border-opacity-50 p-2 rounded-circle text-white d-flex align-items-center justify-content-center" style="width: 45px; height: 45px;">
-                            <i class="bi bi-truck fs-5"></i>
+                        <div class="glass-circle" style="width: 45px; height: 45px;">
+                            <i class="bi bi-truck"></i>
                         </div>
-                        <span class="text-white opacity-75">Đang giao</span>
+                        <span class="opacity-75">Đang giao</span>
                     </div>
-                    <h5 class="mb-0 fw-bold text-white">2</h5>
+                    <h5 class="mb-0">@(ViewBag.DonDangGiao ?? 0)</h5>
                 </div>
 
                 <div class="d-flex align-items-center justify-content-between">
                     <div class="d-flex align-items-center gap-3">
-                        <div class="border border-light border-opacity-50 p-2 rounded-circle text-white d-flex align-items-center justify-content-center" style="width: 45px; height: 45px;">
-                            <i class="bi bi-coin fs-5"></i>
+                        <div class="glass-circle" style="width: 45px; height: 45px;">
+                            <i class="bi bi-coin"></i>
                         </div>
-                        <span class="text-white opacity-75">Tích lũy</span>
+                        <span class="opacity-75">Tích lũy</span>
                     </div>
-                    <h5 class="mb-0 fw-bold text-white">1,250</h5>
+                    <h5 class="mb-0">@(ViewBag.DiemTichLuy ?? 0)</h5>
                 </div>
             </div>
         </div>
     </div>
 
     <div class="row g-4">
-
         <div class="col-xl-8">
-            <div class="bento-card p-4 h-100 shadow-sm">
-                <div class="d-flex justify-content-between align-items-center mb-4 pb-2 border-bottom border-light border-opacity-25">
-                    <h5 class="fw-bold text-white m-0"><i class="bi bi-clock-history me-2"></i>Đơn hàng gần đây</h5>
-                    <a href="/Customer/Orders" class="btn btn-white-outline btn-sm px-4 rounded-pill">Xem tất cả</a>
+            <div class="glass-card p-4 h-100">
+                <div class="d-flex justify-content-between align-items-center mb-4 pb-2" style="border-bottom: 1px solid var(--border-light);">
+                    <h5 class="m-0"><i class="bi bi-clock-history me-2"></i>Đơn hàng gần đây</h5>
+                    <a href="/KhachHang/Orders" class="glass-btn small px-4">Xem tất cả</a>
                 </div>
 
-                <div class="d-flex align-items-center justify-content-between py-3 px-3 mb-2 border border-light border-opacity-25 rounded-3 transition-row">
-                    <div class="d-flex align-items-center gap-3" style="width: 30%;">
-                        <div class="border border-light border-opacity-50 p-2 rounded text-white">
-                            <i class="bi bi-bag-check fs-5"></i>
-                        </div>
-                        <div>
-                            <h6 class="mb-1 fw-bold text-white">#ORD-089</h6>
-                            <small class="text-white opacity-50">15/03/2026</small>
-                        </div>
-                    </div>
-                    <div class="text-center" style="width: 40%;">
-                        <span class="border border-light px-3 py-1 rounded-pill small text-white">Đang giao hàng</span>
-                    </div>
-                    <div class="text-end" style="width: 30%;">
-                        <small class="text-white opacity-50 d-block mb-1">Tổng tiền</small>
-                        <h6 class="m-0 fw-bold text-white">1,250,000đ</h6>
-                    </div>
-                </div>
+                @if (ViewBag.DonHangGanDay != null && ((IEnumerable<OceanShellCraft.Models.DonHang>)ViewBag.DonHangGanDay).Any())
+                {
+                    foreach (var donHang in (IEnumerable<OceanShellCraft.Models.DonHang>)ViewBag.DonHangGanDay)
+                    {
+                        var isFinished = donHang.TrangThai == "Đã hoàn thành";
+                        var iconClass = isFinished ? "bi-check2-all" : "bi-bag-check";
 
-                <div class="d-flex align-items-center justify-content-between py-3 px-3 border border-light border-opacity-25 rounded-3 transition-row opacity-75">
-                    <div class="d-flex align-items-center gap-3" style="width: 30%;">
-                        <div class="border border-light border-opacity-50 p-2 rounded text-white">
-                            <i class="bi bi-check2-all fs-5"></i>
+                        <div class="d-flex align-items-center justify-content-between py-3 px-3 mb-2" style="border: 1px solid var(--border-light); border-radius: 12px;">
+                            <div class="d-flex align-items-center gap-3" style="width: 30%;">
+                                <div class="glass-circle" style="width: 40px; height: 40px; border-radius: 8px;">
+                                    <i class="bi @iconClass"></i>
+                                </div>
+                                <div>
+                                    <h6 class="mb-0">#ORD-@donHang.Id.ToString("D3")</h6>
+                                    <small class="opacity-50">@donHang.NgayDat.ToString("dd/MM/yyyy")</small>
+                                </div>
+                            </div>
+                            <div class="text-center" style="width: 40%;">
+                                <span class="glass-effect px-3 py-1 rounded-pill small">@donHang.TrangThai</span>
+                            </div>
+                            <div class="text-end" style="width: 30%;">
+                                <small class="opacity-50 d-block mb-1">Tổng tiền</small>
+                                <h6 class="m-0">@donHang.TongTien.ToString("N0")đ</h6>
+                            </div>
                         </div>
-                        <div>
-                            <h6 class="mb-1 fw-bold text-white">#ORD-042</h6>
-                            <small class="text-white opacity-50">01/02/2026</small>
-                        </div>
+                    }
+                }
+                else
+                {
+                    <div class="text-center opacity-50 py-4">
+                        <i class="bi bi-box2 fs-1 d-block mb-2"></i>
+                        <p>Bạn chưa có đơn hàng nào.</p>
                     </div>
-                    <div class="text-center" style="width: 40%;">
-                        <span class="border border-light border-opacity-25 px-3 py-1 rounded-pill small text-white">Đã hoàn thành</span>
-                    </div>
-                    <div class="text-end" style="width: 30%;">
-                        <small class="text-white opacity-50 d-block mb-1">Tổng tiền</small>
-                        <h6 class="m-0 fw-bold text-white">850,000đ</h6>
-                    </div>
-                </div>
+                }
             </div>
         </div>
 
         <div class="col-xl-4">
-            <div class="bento-card p-4 h-100 shadow-sm">
-                <h5 class="fw-bold text-white mb-4 pb-2 border-bottom border-light border-opacity-25">
+            <div class="glass-card p-4 h-100 d-flex flex-column">
+                <h5 class="mb-4 pb-2" style="border-bottom: 1px solid var(--border-light);">
                     <i class="bi bi-ticket-perforated me-2"></i>Voucher của bạn
                 </h5>
 
-                <div class="border border-light border-opacity-25 p-3 rounded-3 mb-3 transition-row">
-                    <div class="d-flex justify-content-between align-items-start mb-2">
-                        <h6 class="text-white fw-bold m-0">Giảm 10% đơn tiếp theo</h6>
-                        <i class="bi bi-download text-white opacity-50 cursor-pointer hover-white"></i>
-                    </div>
-                    <small class="text-white opacity-50 d-block mb-3">Hết hạn: 30/03/2026</small>
-                    <div class="d-flex justify-content-between align-items-center border border-light border-opacity-25 px-3 py-2 rounded">
-                        <span class="fw-mono tracking-widest text-white">OCEAN10</span>
-                        <i class="bi bi-clipboard text-white opacity-50 cursor-pointer hover-white" title="Copy"></i>
-                    </div>
+                <div class="hide-scrollbar flex-grow-1" style="overflow-y: auto; max-height: 300px;">
+                    @if (ViewBag.GiamGia != null && ((IEnumerable<OceanShellCraft.Models.GiamGia>)ViewBag.GiamGia).Any())
+                    {
+                        foreach (var voucher in (IEnumerable<OceanShellCraft.Models.GiamGia>)ViewBag.GiamGia)
+                        {
+                            <div class="p-3 mb-3" style="border: 1px solid var(--border-light); border-radius: 12px;">
+                                <h6 class="m-0">@voucher.TenVoucher</h6>
+                                <small class="opacity-50 d-block mb-3">Hết hạn: @voucher.HanSuDung.ToString("dd/MM/yyyy")</small>
+                                <div class="d-flex justify-content-between align-items-center p-2 rounded" style="background: var(--glass-bg); border: 1px solid var(--border-light);">
+                                    <span style="letter-spacing: 2px;" id="voucher-@voucher.Id">@voucher.MaVoucher</span>
+                                    <i class="bi bi-clipboard opacity-50 cursor-pointer" onclick="navigator.clipboard.writeText(document.getElementById('voucher-@voucher.Id').innerText); alert('Đã copy mã: ' + document.getElementById('voucher-@voucher.Id').innerText);"></i>
+                                </div>
+                            </div>
+                        }
+                    }
+                    else
+                    {
+                        <div class="text-center opacity-50 py-4 flex-grow-1 d-flex align-items-center justify-content-center">
+                            <p class="m-0">Bạn chưa có voucher nào.</p>
+                        </div>
+                    }
                 </div>
-
-                <div class="border border-light border-opacity-25 p-3 rounded-3 transition-row opacity-75">
-                    <div class="d-flex justify-content-between align-items-start mb-2">
-                        <h6 class="text-white fw-bold m-0">Freeship đơn từ 500k</h6>
-                        <i class="bi bi-download text-white opacity-50 cursor-pointer hover-white"></i>
-                    </div>
-                    <small class="text-white opacity-50 d-block mb-3">Hết hạn: 15/04/2026</small>
-                    <div class="d-flex justify-content-between align-items-center border border-light border-opacity-25 px-3 py-2 rounded">
-                        <span class="fw-mono tracking-widest text-white">FREESHIP50</span>
-                        <i class="bi bi-clipboard text-white opacity-50 cursor-pointer hover-white" title="Copy"></i>
-                    </div>
-                </div>
-
             </div>
         </div>
     </div>
@@ -212,7 +201,6 @@
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
     }
     <script>
-        // Xử lý upload ảnh
         async function autoUploadAvatar(event) {
             const file = event.target.files[0];
             if (!file) return;
@@ -231,20 +219,18 @@
             } catch (error) { alert('Lỗi kết nối server.'); }
         }
 
-        // Xử lý Dropdown Giới tính
         document.addEventListener("DOMContentLoaded", function () {
-            const dropdownItems = document.querySelectorAll('.dropdown-menu .dropdown-item');
+            const dropdownItems = document.querySelectorAll('.dropdown-item');
             const hiddenInput = document.getElementById('GioiTinhHidden');
             const dropdownBtn = document.getElementById('GioiTinhDropdownBtn');
-
-            if (hiddenInput?.value) dropdownBtn.innerText = hiddenInput.value;
 
             dropdownItems.forEach(item => {
                 item.addEventListener('click', function (e) {
                     e.preventDefault();
                     const value = this.getAttribute('data-value');
+                    const text = this.innerText;
                     hiddenInput.value = value;
-                    dropdownBtn.innerText = this.innerText;
+                    dropdownBtn.innerText = text;
                 });
             });
         });

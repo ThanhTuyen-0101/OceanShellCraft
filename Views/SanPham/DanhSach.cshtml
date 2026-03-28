@@ -1,30 +1,32 @@
 ﻿@model IEnumerable<OceanShellCraft.Models.SanPham>
 
 @{
-    ViewData["Title"] = "Bộ Sưu Tập Sản Phẩm";
+    ViewData["Title"] = "bộ sưu tập sản phẩm";
 }
 
 <div class="container py-5">
     <div class="d-flex justify-content-between align-items-center mb-5">
-        <h2 class="luxury-title fs-1 mb-0">Sản Phẩm Nghệ Thuật</h2>
+        <h2 class="display-5 mb-0">sản phẩm nghệ thuật</h2>
 
         @if (User.IsInRole("Admin"))
         {
-            <div class="btn-group shadow-sm">
-                <a asp-action="TaoMoi" class="btn btn-outline-warning">
-                    <i class="fas fa-plus me-1"></i>Thêm Thủ Công
+            <div class="d-flex gap-2">
+                <a asp-action="TaoMoi" class="glass-btn">
+                    <i class="bi bi-plus-lg me-2"></i>thêm thủ công
                 </a>
-                <a asp-action="NhapExcel" class="btn btn-warning">
-                    <i class="fas fa-file-excel me-1"></i>Nhập Excel
+                <a asp-action="NhapExcel" class="glass-btn">
+                    <i class="bi bi-file-earmark-excel me-2"></i>nhập excel
                 </a>
             </div>
         }
     </div>
 
-    <ul class="luxury-filter-menu list-unstyled d-flex justify-content-center flex-wrap gap-4 border-bottom border-secondary-subtle pb-2 mb-5">
+    <ul class="list-unstyled d-flex justify-content-center flex-wrap gap-4 mb-5 pb-3" style="border-bottom: 1px solid var(--border-light);">
         <li>
             <a href="@Url.Action("DanhSach", new { maDanhMuc = (int?)null })"
-               class="@(ViewBag.CurrentCategory == null ? "active" : "")">TẤT CẢ</a>
+               class="text-decoration-none @(ViewBag.CurrentCategory == null ? "opacity-100" : "opacity-50")">
+                tất cả
+            </a>
         </li>
         @if (ViewBag.DanhMucs != null)
         {
@@ -32,7 +34,9 @@
             {
                 <li>
                     <a href="@Url.Action("DanhSach", new { maDanhMuc = dm.Id })"
-                       class="@(ViewBag.CurrentCategory == dm.Id ? "active" : "")">@dm.TenDanhMuc.ToUpper()</a>
+                       class="text-decoration-none @(ViewBag.CurrentCategory == dm.Id ? "opacity-100" : "opacity-50")">
+                        @dm.TenDanhMuc.ToLower()
+                    </a>
                 </li>
             }
         }
@@ -41,37 +45,43 @@
     <div class="row g-4">
         @if (!Model.Any())
         {
-            <div class="col-12 text-center text-white-50 py-5">
-                <p>Không có sản phẩm nào trong danh mục này.</p>
+            <div class="col-12 text-center py-5 opacity-50">
+                <p>không có sản phẩm nào trong danh mục này.</p>
             </div>
         }
+
         @foreach (var sp in Model)
         {
             <div class="col-md-4">
-                <div class="luxury-grid-card p-3 p-md-4 text-center h-100 d-flex flex-column rounded-4">
+                <div class="glass-card p-4 text-center h-100 d-flex flex-column">
 
-                    <div class="card-img-container d-flex align-items-center justify-content-center w-100 overflow-hidden">
-                        <img src="@(string.IsNullOrEmpty(sp.HinhAnh) ? "/images/default-shell.png" : sp.HinhAnh)" alt="@sp.TenSanPham">
+                    <div class="d-flex align-items-center justify-content-center w-100 overflow-hidden mb-4" style="height: 250px;">
+                        <img src="@(string.IsNullOrEmpty(sp.HinhAnh) ? "/images/default-shell.png" : sp.HinhAnh)"
+                             alt="@sp.TenSanPham?.ToLower()"
+                             class="rounded-4 img-fluid"
+                             style="max-height: 100%; object-fit: cover; border: 1px solid var(--border-light);">
                     </div>
 
-                    <div class="card-content mt-auto pt-4">
-                        <h4 class="text-warning fw-bold fs-5 text-uppercase mb-2" style="letter-spacing: 0.5px;">@sp.TenSanPham</h4>
-                        <p class="text-white-50 small mb-2">@sp.ChatLieu</p>
-                        <p class="text-white fw-bold fs-5 mb-4">@sp.GiaTien.ToString("N0") VNĐ</p>
+                    <div class="mt-auto">
+                        <h4 class="fs-5 mb-2">@sp.TenSanPham?.ToLower()</h4>
+                        <p class="opacity-50 small mb-2">@sp.ChatLieu?.ToLower()</p>
+                        <p class="fs-5 mb-4">@sp.GiaTien.ToString("N0") vnđ</p>
 
-                        <div class="d-flex justify-content-center gap-4">
-                            <a asp-controller="SanPham" asp-action="ChiTiet" asp-route-id="@sp.Id" class="btn-luxury-text">CHI TIẾT</a>
+                        <div class="d-flex justify-content-center gap-3">
+                            <a asp-controller="SanPham" asp-action="ChiTiet" asp-route-id="@sp.Id" class="glass-btn">
+                                chi tiết
+                            </a>
 
                             @if (User.Identity.IsAuthenticated)
                             {
-                                <form asp-controller="GioHang" asp-action="ThemVaoGio" method="get">
+                                <form asp-controller="GioHang" asp-action="ThemVaoGio" method="get" class="m-0">
                                     <input type="hidden" name="sanPhamId" value="@sp.Id" />
-                                    <button type="submit" class="btn-luxury-text border-0 bg-transparent">THÊM VÀO GIỎ</button>
+                                    <button type="submit" class="glass-btn border-0">thêm vào giỏ</button>
                                 </form>
                             }
                             else
                             {
-                                <a asp-controller="TaiKhoan" asp-action="DangNhap" class="btn-luxury-text">ĐĂNG NHẬP MUA</a>
+                                <a asp-controller="TaiKhoan" asp-action="DangNhap" class="glass-btn">đăng nhập mua</a>
                             }
                         </div>
                     </div>
@@ -82,11 +92,14 @@
 
     @if (ViewBag.TotalPages > 1)
     {
-        <div class="luxury-pagination d-flex justify-content-center align-items-center gap-3 mt-5 pt-3">
+        <div class="d-flex justify-content-center align-items-center gap-3 mt-5 pt-3">
             @for (int i = 1; i <= ViewBag.TotalPages; i++)
             {
                 <a href="@Url.Action("DanhSach", new { maDanhMuc = ViewBag.CurrentCategory, page = i })"
-                   class="d-flex align-items-center justify-content-center @(i == ViewBag.CurrentPage ? "active" : "")">@i</a>
+                   class="glass-circle text-decoration-none @(i == ViewBag.CurrentPage ? "opacity-100" : "opacity-50")"
+                   style="width: 40px; height: 40px;">
+                    @i
+                </a>
             }
         </div>
     }

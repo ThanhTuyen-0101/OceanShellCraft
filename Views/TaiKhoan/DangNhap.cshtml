@@ -1,6 +1,6 @@
 ﻿@model OceanShellCraft.Models.ViewModels.DangNhapViewModel
 @{
-    ViewData["Title"] = "Đăng Nhập";
+    ViewData["Title"] = "Đăng nhập";
     ViewData["HideHeaderFooter"] = true;
 }
 
@@ -9,60 +9,60 @@
 
         <div class="col-lg-6 d-flex flex-column justify-content-center p-5 position-relative">
             <div class="my-auto animate__animated animate__fadeInLeft">
-                <h1 class="display-3 fw-bold text-white mb-0" style="line-height: 1.1;">
-                    Đăng kí ngay <br />để mua hàng
+                <h1 class="display-3 mb-0" style="line-height: 1.1;">
+                    Đăng ký ngay <br />để mua hàng
                 </h1>
             </div>
 
             <div class="mt-auto animate__animated animate__fadeInUp">
-                <div class="glass-sub-box p-3 px-4 rounded-4 d-inline-block">
-                    <p class="mb-1 small opacity-75 text-white">Chưa có tài khoản?</p>
-                    <a asp-controller="TaiKhoan" asp-action="DangKy" class="text-white text-decoration-none fw-bold fs-5">
-                        đăng ký <i class="bi bi-chevron-right small"></i>
+                <div class="glass-card p-3 px-4 d-inline-block">
+                    <p class="mb-1 small opacity-75">Chưa có tài khoản?</p>
+                    <a asp-controller="TaiKhoan" asp-action="DangKy" class="text-decoration-none fs-5">
+                        Đăng ký <i class="bi bi-chevron-right small"></i>
                     </a>
                 </div>
             </div>
         </div>
 
-        <div class="col-lg-6 glass-panel d-flex align-items-center justify-content-center p-4 p-md-5">
+        <div class="col-lg-6 glass-effect d-flex align-items-center justify-content-center p-4 p-md-5 border-start-0 border-top-0 border-bottom-0 border-end-0">
             <div class="w-100" style="max-width: 420px;">
 
-                <h2 class="text-white mb-5 fw-normal fs-1">Đăng nhập</h2>
+                <h2 class="mb-5 fs-1">Đăng nhập</h2>
 
                 <form asp-action="DangNhap" method="post" autocomplete="off">
                     @Html.AntiForgeryToken()
 
                     <div class="mb-4">
-                        <label class="text-white mb-2 ps-2 small">E-mail</label>
-                        <input asp-for="Email" class="form-control pill-input" placeholder="Tên đăng nhập / Email" />
+                        <label class="mb-2 ps-2 small opacity-75">E-mail</label>
+                        <input asp-for="Email" class="glass-input pill-style" placeholder="Tên đăng nhập / Email" />
                         <span asp-validation-for="Email" class="text-danger small ms-2"></span>
                     </div>
 
                     <div class="mb-5">
-                        <label class="text-white mb-2 ps-2 small">Password</label>
-                        <div class="position-relative">
-                            <input asp-for="MatKhau" type="password" id="login-pass" class="form-control pill-input" placeholder="••••••••" />
-                            <button class="btn btn-link text-white opacity-50 p-0 position-absolute end-0 top-50 translate-middle-x me-3 shadow-none border-0" type="button" id="togglePassword">
-                                <i class="bi bi-eye-slash" id="eye-icon"></i>
+                        <label class="mb-2 ps-2 small opacity-75">Mật khẩu</label>
+                        <div class="position-relative d-flex align-items-center">
+                            <input asp-for="MatKhau" type="password" id="login-pass" class="glass-input pill-style w-100 pe-5" placeholder="••••••••" />
+                            <button class="position-absolute end-0 me-3 p-0" type="button" id="togglePassword" style="background: transparent; border: none; outline: none; color: var(--text-main);">
+                                <i class="bi bi-eye-slash opacity-50" id="eye-icon"></i>
                             </button>
                         </div>
                         <span asp-validation-for="MatKhau" class="text-danger small ms-2"></span>
                     </div>
 
-                    <button type="submit" class="btn btn-light w-100 py-2 rounded-pill fw-bold text-primary mb-4 shadow-sm">
-                        Đăng Nhập
+                    <button type="submit" class="glass-btn w-100 py-2 mb-4 fs-5">
+                        Đăng nhập
                     </button>
 
-                    <p class="text-center text-white-50 small mb-4">hoặc đăng nhập với</p>
+                    <p class="text-center opacity-50 small mb-4">Hoặc đăng nhập với</p>
 
                     <div class="d-flex justify-content-center gap-3">
-                        <a href="#" class="social-circle"><i class="bi bi-twitter"></i></a>
-                        <a href="#" class="social-circle"><i class="bi bi-facebook"></i></a>
-                        <a href="#" class="social-circle"><i class="bi bi-google"></i></a>
+                        <a href="#" class="glass-circle"><i class="bi bi-twitter-x"></i></a>
+                        <a href="#" class="glass-circle"><i class="bi bi-facebook"></i></a>
+                        <a href="#" class="glass-circle"><i class="bi bi-google"></i></a>
                     </div>
 
                     <div class="text-center mt-5">
-                        <a asp-controller="TrangChu" asp-action="TrangChu" class="text-white-50 text-decoration-none small">
+                        <a asp-controller="TrangChu" asp-action="TrangChu" class="text-decoration-none small opacity-75">
                             Quay lại trang chủ
                         </a>
                     </div>
@@ -78,8 +78,13 @@
             const passInput = document.querySelector('#login-pass');
             const icon = document.querySelector('#eye-icon');
             passInput.type = passInput.type === 'password' ? 'text' : 'password';
-            icon.classList.toggle('bi-eye');
-            icon.classList.toggle('bi-eye-slash');
+
+            // Chuyển đổi class icon giống hệt trang đăng ký
+            if (passInput.type === 'password') {
+                icon.classList.replace('bi-eye', 'bi-eye-slash');
+            } else {
+                icon.classList.replace('bi-eye-slash', 'bi-eye');
+            }
         });
     </script>
 }

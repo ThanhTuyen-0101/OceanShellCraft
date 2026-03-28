@@ -7,120 +7,92 @@
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
-
     <link rel="stylesheet" href="~/css/site.css" />
-
-    <style>
-        /* Tùy biến Sidebar Kính mờ ám xanh đen giống ảnh, tràn viền */
-        .sidebar-glass {
-            background: rgba(18, 43, 39, 0.4) !important;
-            backdrop-filter: blur(25px);
-            -webkit-backdrop-filter: blur(25px);
-            border-right: 1px solid var(--border-light);
-        }
-
-        /* Tùy biến Main Content Kính mờ, tràn viền */
-        .main-glass {
-            background: rgba(255, 255, 255, 0.05) !important;
-            backdrop-filter: blur(15px);
-            -webkit-backdrop-filter: blur(15px);
-        }
-
-        /* Nút Menu */
-        .menu-item {
-            color: var(--text-dim) !important;
-            border-radius: 0px; /* Bỏ bo góc nút menu nếu muốn vuông vức hoàn toàn */
-            transition: all 0.3s ease;
-        }
-
-            .menu-item:hover {
-                color: var(--text-pure) !important;
-                background: rgba(255, 255, 255, 0.1);
-            }
-
-            .menu-item.active {
-                background: var(--gt-gold) !important;
-                color: #1a1612 !important;
-            }
-
-                .menu-item.active i {
-                    color: #1a1612 !important;
-                }
-
-        /* Khung App Full Màn Hình */
-        .full-screen-app {
-            height: 100vh;
-            width: 100vw;
-        }
-    </style>
 </head>
-<body style="background: url('/img/bien.jpg') no-repeat center center fixed; background-size: cover; overflow: hidden; margin: 0; padding: 0;">
+<body class="overflow-hidden p-0 m-0">
 
-    <div class="d-flex flex-nowrap full-screen-app">
+    <div class="d-flex flex-nowrap vh-100 vw-100">
 
-        <div class="sidebar-glass d-flex flex-column p-4 h-100" style="width: 280px; z-index: 10;">
-            <a href="/" class="d-flex align-items-center mb-5 text-decoration-none">
-                <span class="fs-3 text-gold me-2">SP</span>
-                <span class="fs-4 fw-bold text-pure" style="font-family: 'Playfair Display', serif !important;">ServePoint</span>
+        <div class="glass-effect d-flex flex-column p-4 h-100" style="width: 280px; z-index: 10;">
+
+            <a href="/" class="d-flex align-items-center mb-5 text-decoration-none text-white px-2">
+                <span class="fs-4 fw-light">Admin</span>
             </a>
 
             <ul class="nav flex-column gap-2 mb-4">
                 <li class="nav-item">
-                    <a href="/Admin" class="nav-link menu-item active d-flex align-items-center fw-medium px-3 py-2">
-                        <i class="bi bi-grid-1x2-fill me-3"></i> Dashboard
+                    <a href="/Admin" class="glass-btn w-100 d-flex align-items-center justify-content-start ps-4 py-2 border-0 bg-transparent text-decoration-none text-white">
+                        <i class="bi bi-grid-1x2-fill me-3"></i>
+                        <span>Tổng quan</span>
                     </a>
                 </li>
+
                 <li class="nav-item">
-                    <a href="/Admin/BaiViet" class="nav-link menu-item d-flex align-items-center fw-medium px-3 py-2">
-                        <i class="bi bi-journal-text me-3"></i> Bài Viết
+                    <a href="#collapseManagement"
+                       class="glass-btn w-100 d-flex align-items-center justify-content-between ps-4 py-2 opacity-75 border-0 bg-transparent text-decoration-none text-white"
+                       data-bs-toggle="collapse"
+                       role="button">
+                        <div class="d-flex align-items-center">
+                            <i class="bi bi-collection-fill me-3"></i>
+                            <span>Quản lý</span>
+                        </div>
+                        <i class="bi bi-chevron-down small pe-3"></i>
+                    </a>
+
+                    <div class="collapse" id="collapseManagement">
+                        <ul class="nav flex-column mt-1 gap-1">
+                            <li class="nav-item">
+                                <a href="/Admin/BaiViet" class="glass-btn w-100 d-flex align-items-center ps-5 py-2 opacity-75 border-0 bg-transparent text-decoration-none text-white">
+                                    <i class="bi bi-journal-text me-3"></i>
+                                    <span>Bài viết</span>
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="/Admin/SanPham" class="glass-btn w-100 d-flex align-items-center ps-5 py-2 opacity-75 border-0 bg-transparent text-decoration-none text-white">
+                                    <i class="bi bi-box-seam me-3"></i>
+                                    <span>Sản phẩm</span>
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="/Admin/GiamGia" class="glass-btn w-100 d-flex align-items-center ps-5 py-2 opacity-75 border-0 bg-transparent text-decoration-none text-white">
+                                    <i class="bi bi-box-seam me-3"></i>
+                                    <span>Mã giảm giá</span>
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="/Admin/NguoiDung" class="glass-btn w-100 d-flex align-items-center ps-5 py-2 opacity-75 border-0 bg-transparent text-decoration-none text-white">
+                                    <i class="bi bi-box-seam me-3"></i>
+                                    <span>Người dùng</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </li>
+
+                <li class="nav-item">
+                    <a href="/Admin/Chat" class="glass-btn w-100 d-flex align-items-center justify-content-start ps-4 py-2 opacity-75 border-0 bg-transparent text-decoration-none text-white">
+                        <i class="bi bi-chat-dots me-3"></i>
+                        <span>Trò chuyện</span>
                     </a>
                 </li>
+
                 <li class="nav-item">
-                    <a href="/Admin/SanPham" class="nav-link menu-item d-flex align-items-center fw-medium px-3 py-2">
-                        <i class="bi bi-box-seam me-3"></i> Sản Phẩm
+                    <a href="/Admin/HoaDon" class="glass-btn w-100 d-flex align-items-center justify-content-start ps-4 py-2 opacity-75 border-0 bg-transparent text-decoration-none text-white">
+                        <i class="bi bi-receipt me-3"></i>
+                        <span>Hóa đơn</span>
                     </a>
                 </li>
+
                 <li class="nav-item">
-                    <a href="/Admin/Messages" class="nav-link menu-item d-flex align-items-center fw-medium px-3 py-2">
-                        <i class="bi bi-receipt me-3"></i> Trò Chuyện
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a href="/Admin/HoaDon" class="nav-link menu-item d-flex align-items-center fw-medium px-3 py-2">
-                        <i class="bi bi-receipt me-3"></i> Hóa Đơn
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a href="/Admin/Settings" class="nav-link menu-item d-flex align-items-center fw-medium px-3 py-2">
-                        <i class="bi bi-gear me-3"></i> Cài Đặt
+                    <a href="/Admin/CaiDat" class="glass-btn w-100 d-flex align-items-center justify-content-start ps-4 py-2 opacity-75 border-0 bg-transparent text-decoration-none text-white">
+                        <i class="bi bi-gear me-3"></i>
+                        <span>Cài đặt</span>
                     </a>
                 </li>
             </ul>
-
-            <small class="text-dim mb-2 fw-bold text-uppercase mt-auto" style="font-size: 0.75rem;">Others</small>
-            <ul class="nav flex-column gap-2 mb-4">
-                <li class="nav-item">
-                    <a href="#" class="nav-link menu-item d-flex align-items-center fw-medium px-3 py-2">
-                        <i class="bi bi-bell me-3"></i> Notifications
-                        <span class="badge bg-gold text-dark ms-auto rounded-pill">5</span>
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a href="#" class="nav-link menu-item d-flex align-items-center fw-medium px-3 py-2">
-                        <i class="bi bi-headset me-3"></i> Support
-                    </a>
-                </li>
-            </ul>
-
-            <div class="bento-card p-3 mt-auto text-center" style="border-radius: 0 !important;">
-                <img src="https://i.pravatar.cc/150?img=47" alt="User" class="rounded-circle mb-2 border border-light" width="55" height="55" style="object-fit: cover;">
-                <h6 class="text-pure mb-0 fw-bold">Joy Ezechukwu</h6>
-                <small class="text-dim d-block mb-3" style="font-size: 0.75rem;">Supervisor. 08:00 - 16:00</small>
-                <button class="btn btn-white-outline btn-sm w-100 rounded-pill" style="font-size: 0.8rem;">Open profile</button>
-            </div>
         </div>
 
-        <div class="main-glass flex-grow-1 p-4 p-md-5 d-flex flex-column h-100 overflow-auto" style="z-index: 5;">
+        <div class="glass-effect flex-grow-1 p-4 p-md-5 d-flex flex-column h-100 overflow-auto border-start-0" style="z-index: 5;">
             @RenderBody()
         </div>
 

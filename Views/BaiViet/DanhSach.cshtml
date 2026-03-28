@@ -1,26 +1,35 @@
 ﻿@model IEnumerable<OceanShellCraft.Models.BaiViet>
 
-<div class="ds-scroll-container bg-transparent" id="mainScroll">
-    <div class="text-center pt-5 mt-5">
-        <h6 class="text-white opacity-50 fw-bold text-uppercase small mb-2 ls-3">Collection</h6>
-        <h1 class="display-4 fw-bold text-white mb-0">Câu Chuyện Đại Dương</h1>
-    </div>
+<div class="ds-scroll-container hide-scrollbar" id="mainScroll">
 
-    <section class="d-flex align-items-center" style="height: 100vh; scroll-snap-align: start;">
+    @* --- SECTION 1: SLIDER THẺ BÀI VIẾT --- *@
+    <section class="d-flex align-items-start" style="height: 100vh; scroll-snap-align: start; padding-top: 15vh;">
         <div class="w-100 overflow-hidden py-5">
             <div class="ds-slider-track" id="sliderTrack">
                 @if (Model != null)
                 {
+                    @* Nhân bản dữ liệu để tạo hiệu ứng chạy vô tận *@
                     @for (int i = 0; i < 3; i++)
                     {
                         @foreach (var item in Model)
                         {
-                            <div class="shell-card p-4 m-3 rounded-5 shadow" onclick="loadArticle('@item.Id')" style="width: 350px; cursor: pointer;">
-                                <div class="text-center">
-                                    <img src="@(item.AnhNen ?? "/img/bien.jpg")" class="rounded-circle border border-white border-opacity-25 mb-4 shadow-sm" style="width:140px; height:140px; object-fit:cover;" />
-                                    <h3 class="text-white fs-5 fw-bold mb-3">@item.TieuDe</h3>
-                                    <p class="text-white-50 small opacity-75">ĐỌC CÂU CHUYỆN <i class="bi bi-arrow-right ms-1"></i></p>
+                            // Xử lý viết hoa chữ cái đầu tiên cho Tiêu đề bài viết
+                            string tieuDe = item.TieuDe?.ToLower() ?? "Bài viết";
+                            if (!string.IsNullOrEmpty(tieuDe))
+                            {
+                                tieuDe = char.ToUpper(tieuDe[0]) + tieuDe.Substring(1);
+                            }
+
+                            <div class="glass-card m-3 text-center d-flex flex-column align-items-center" onclick="loadArticle('@item.Id')" style="width: 350px; cursor: pointer; border-radius: 40px;">
+                                <div class="mb-4">
+                                    <img src="@(item.AnhNen ?? "/img/bien.jpg")"
+                                         class="rounded-circle"
+                                         style="width:140px; height:140px; object-fit:cover; border: 1px solid var(--border-light); padding: 5px; background: var(--glass-bg);" />
                                 </div>
+                                <h3 class="fs-5 mb-3">@tieuDe</h3>
+                                <p class="small opacity-50">
+                                    Đọc câu chuyện <i class="bi bi-arrow-right ms-1"></i>
+                                </p>
                             </div>
                         }
                     }
@@ -29,10 +38,11 @@
         </div>
     </section>
 
+    @* --- SECTION 2: CHI TIẾT BÀI VIẾT --- *@
     <section id="section-detail" class="position-relative" style="min-height: 100vh; scroll-snap-align: start;">
         <div class="container py-5 h-100 d-flex align-items-center justify-content-center">
             <div id="detailPlaceholder" class="w-100 h-100">
-                <div class="text-center text-white opacity-25 py-5">
+                <div class="text-center opacity-25 py-5">
                     <i class="bi bi-mouse fs-1 d-block mb-3"></i>
                     <p class="fs-5">Cuộn hoặc chọn một câu chuyện để khám phá</p>
                 </div>
@@ -42,20 +52,36 @@
 </div>
 
 <script>
+    // Hàm tải chi tiết bài viết qua AJAX
     function loadArticle(id) {
         const placeholder = document.getElementById('detailPlaceholder');
         const detailSection = document.getElementById('section-detail');
 
-        placeholder.innerHTML = `<div class="d-flex justify-content-center py-5"><div class="spinner-border text-light opacity-50" role="status"></div></div>`;
+        // Hiệu ứng loading kính mờ
+        placeholder.innerHTML = `
+            <div class="d-flex justify-content-center py-5">
+                <div class="spinner-border opacity-25" style="width: 3rem; height: 3rem;" role="status"></div>
+            </div>`;
+
+        // Cuộn xuống phần chi tiết mượt mà
         detailSection.scrollIntoView({ behavior: 'smooth' });
 
+        // Gọi API lấy nội dung bài viết
         fetch(`/BaiViet/GetChiTiet/${id}`)
-            .then(res => res.text())
+            .then(res => {
+                if (!res.ok) throw new Error("Không thể tải bài viết");
+                return res.text();
+            })
             .then(html => {
-                placeholder.innerHTML = `<div class="glass-detail-box p-4 p-md-5 rounded-5 animate__animated animate__fadeInUp">${html}</div>`;
+                // Bọc trong glass-card chuẩn hệ thống
+                placeholder.innerHTML = `<div class="glass-card p-4 p-md-5" style="border-radius: 40px;">${html}</div>`;
+            })
+            .catch(err => {
+                placeholder.innerHTML = `<div class="text-center opacity-50">Có lỗi xảy ra khi tải nội dung.</div>`;
             });
     }
 
+    // Điều khiển hiệu ứng dừng/chạy khi tương tác với slider (Giữ lại logic chạy tự động)
     const track = document.getElementById('sliderTrack');
     if (track) {
         track.addEventListener('mouseenter', () => track.style.animationPlayState = 'paused');

@@ -1,80 +1,66 @@
 ﻿@model IEnumerable<OceanShellCraft.Models.BaiViet>
 @{
-    ViewData["Title"] = "Quản lý tin tức";
     Layout = "~/Views/Shared/_AdminLayout.cshtml";
+    ViewData["Title"] = "Quản lý bài viết";
 }
 
-<div class="container-fluid py-4 min-vh-100 text-white">
-    <h4 class="fw-bold text-white mb-3">@ViewData["Title"]</h4>
+<div class="container-fluid py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h4 class="m-0 fw-normal">@ViewData["Title"]</h4>
 
-    <div class="card bg-transparent glass-effect border-light shadow-lg rounded-3">
-        <div class="card-header bg-transparent py-3 border-bottom border-light">
-            <div class="row align-items-center">
-                <div class="col-md-6 d-flex gap-3 mb-2 mb-md-0">
-                    <div class="input-group" style="max-width: 250px;">
-                        <span class="input-group-text bg-transparent text-white border-light border-end-0">
-                            <i class="bi bi-search"></i>
-                        </span>
-                        <input type="text" class="form-control bg-transparent text-white border-light border-start-0 ps-0 shadow-none" placeholder="Tìm kiếm...">
-                    </div>
-                    <div class="dropdown" style="max-width: 180px; width: 100%;">
-                        <button class="form-select bg-transparent text-white border-light shadow-none text-start w-100 no-hover-bg" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                            Bài viết
-                        </button>
-
-                        <ul class="dropdown-menu glass-effect border-light p-2 mt-1">
-                            <li><a class="dropdown-item rounded-2 mb-1" href="#">Bài viết</a></li>
-                        </ul>
-                    </div>
-                </div>
-                <div class="col-md-6 text-md-end">
-                    <a href="/Admin/ThemSuaBaiViet" id="btnAdd" class="btn btn-outline-light shadow-sm fw-medium no-hover-bg">
-                        <i class="bi bi-person-plus me-1"></i> Thêm (F7)
-                    </a>
-                </div>
-            </div>
+        <div class="d-flex gap-3 align-items-center">
+            <a href="/Admin/ThemSuaBaiViet" id="btnAdd" class="glass-btn small py-1 px-3 fw-normal">
+                <i class="bi bi-plus-circle me-1"></i> Thêm mới (F7)
+            </a>
         </div>
+    </div>
 
-        <div class="table-responsive">
-            <table class="table table-borderless align-middle mb-0 text-white bg-transparent">
-                <thead class="border-bottom border-light bg-transparent">
+    <div class="glass-card p-0 overflow-hidden">
+        <div class="table-responsive hide-scrollbar">
+            <table class="glass-table mb-0 align-middle">
+                <thead>
                     <tr>
-                        <th class="fw-bold px-3 py-3 bg-transparent text-white" style="width: 15%;">Ảnh Thumbnail</th>
-                        <th class="fw-bold px-3 py-3 bg-transparent text-white" style="width: 25%;">Tiêu Đề</th>
-                        <th class="fw-bold px-3 py-3 bg-transparent text-white" style="width: 35%;">Nội Dung Tóm Tắt</th>
-                        <th class="fw-bold px-3 py-3 bg-transparent text-white" style="width: 15%;">Tác Giả</th>
-                        <th class="px-3 py-3 bg-transparent text-white" style="width: 10%;"></th>
+                        <th class="ps-4 fw-normal" style="width: 10%;">Ảnh nền</th>
+                        <th class="fw-normal" style="width: 25%;">Tiêu đề</th>
+                        <th class="fw-normal" style="width: 35%;">Nội dung tóm tắt</th>
+                        <th class="text-center fw-normal" style="width: 15%;">Tác giả</th>
+                        <th class="text-end pe-4 fw-normal" style="width: 15%;">Thao tác</th>
                     </tr>
                 </thead>
-                <tbody class="bg-transparent">
+                <tbody>
                     @if (Model != null && Model.Any())
                     {
                         foreach (var item in Model)
                         {
-                            <tr class="border-bottom border-light border-opacity-25 bg-transparent">
-                                <td class="px-3 py-2 bg-transparent">
-                                    @if (!string.IsNullOrEmpty(item.AnhNen))
-                                    {
-                                        <img src="@item.AnhNen" alt="Thumbnail" class="object-fit-cover rounded-1" style="width: 110px; height: 60px;" />
-                                    }
-                                    else
-                                    {
-                                        <span class="text-white-50 fst-italic small">Chưa có ảnh</span>
-                                    }
+                            <tr>
+                                <td class="ps-4 py-3">
+                                    <img src="@(string.IsNullOrEmpty(item.AnhNen) ? "/img/no-image.png" : item.AnhNen)"
+                                         class="rounded-circle object-fit-cover"
+                                         style="width: 45px; height: 45px; border: 1px solid var(--border-light);" alt="thumbnail" />
                                 </td>
-                                <td class="px-3 bg-transparent text-white">@item.TieuDe</td>
-                                <td class="px-3 bg-transparent text-white-50">
-                                    @(string.IsNullOrEmpty(item.NoiDungTomTat) ? "" : (item.NoiDungTomTat.Length > 80 ? item.NoiDungTomTat.Substring(0, 80) + "..." : item.NoiDungTomTat))
+                                <td>
+                                    @* Bỏ ToLower() để giữ định dạng tiêu đề chuẩn *@
+                                    <span class="opacity-100">@item.TieuDe</span>
                                 </td>
-                                <td class="px-3 bg-transparent text-white-50">admin</td>
-                                <td class="px-3 text-center bg-transparent">
-                                    <div class="d-flex justify-content-center gap-2">
-                                        <a asp-action="ThemSuaBaiViet" asp-route-id="@item.Id" class="btn btn-outline-light btn-sm d-flex align-items-center justify-content-center no-hover-bg" style="width: 32px; height: 32px;" title="Sửa">
-                                            <i class="bi bi-pencil"></i>
+                                <td>
+                                    <span class="opacity-75 small">
+                                        @(string.IsNullOrEmpty(item.NoiDungTomTat) ? "" : (item.NoiDungTomTat.Length > 80 ? item.NoiDungTomTat.Substring(0, 80) + "..." : item.NoiDungTomTat))
+                                    </span>
+                                </td>
+                                <td class="text-center">
+                                    <span class="small opacity-75">Admin</span>
+                                </td>
+                                <td class="text-end pe-4">
+                                    <div class="d-flex justify-content-end gap-2">
+                                        <a asp-action="ThemSuaBaiViet" asp-route-id="@item.Id" class="glass-btn py-1 px-2 fw-normal" title="Sửa">
+                                            <i class="bi bi-pencil small"></i>
                                         </a>
-                                        <a asp-action="XoaBaiViet" asp-route-id="@item.Id" class="btn btn-outline-light btn-sm d-flex align-items-center justify-content-center no-hover-bg" style="width: 32px; height: 32px;" title="Xóa" onclick="return confirm('Bạn có chắc chắn muốn xóa bài viết này không?');">
-                                            <i class="bi bi-trash"></i>
-                                        </a>
+                                        <form asp-action="XoaBaiViet" asp-route-id="@item.Id" method="post"
+                                              onsubmit="return confirm('Bạn có chắc chắn muốn xóa bài viết này không?')" style="display:inline;">
+                                            <button type="submit" class="glass-btn py-1 px-2 fw-normal opacity-75" title="Xóa">
+                                                <i class="bi bi-trash small"></i>
+                                            </button>
+                                        </form>
                                     </div>
                                 </td>
                             </tr>
@@ -83,60 +69,35 @@
                     else
                     {
                         <tr>
-                            <td colspan="5" class="px-3 py-4 text-white-50 text-center bg-transparent">
-                                Không có dữ liệu
-                            </td>
+                            <td colspan="5" class="text-center py-5 opacity-50 fw-normal fw-italic">Không có dữ liệu bài viết</td>
                         </tr>
                     }
                 </tbody>
             </table>
         </div>
+    </div>
 
-        <div class="card-footer bg-transparent py-3 border-top border-light d-flex flex-column flex-md-row justify-content-center align-items-center gap-4">
-            @{
-                var totalItems = Model?.Count() ?? 0;
-            }
-            <span class="text-white-50 small">Showing @(totalItems > 0 ? 1 : 0) to @totalItems of @totalItems entries</span>
-
-            <div class="d-flex align-items-center gap-3">
-                <div class="d-flex align-items-center gap-3 text-white fs-6">
-                    <i class="bi bi-chevron-double-left text-white-50" style="cursor: not-allowed;"></i>
-                    <i class="bi bi-chevron-left text-white-50" style="cursor: not-allowed;"></i>
-                    <div class="d-flex align-items-center justify-content-center fw-medium border border-light text-white shadow-sm" style="width: 36px; height: 36px; border-radius: 50%; cursor: pointer;">1</div>
-                    <i class="bi bi-chevron-right text-white-50" style="cursor: not-allowed;"></i>
-                    <i class="bi bi-chevron-double-right text-white-50" style="cursor: not-allowed;"></i>
-                </div>
-                <select class="form-select form-select-sm bg-transparent text-white border-light shadow-none" style="width: 70px;">
-                    <option value="10" class="text-dark">10</option>
-                    <option value="20" class="text-dark">20</option>
-                    <option value="50" class="text-dark">50</option>
-                </select>
+    @if (Model != null && Model.Any())
+    {
+        <div class="d-flex justify-content-between align-items-center mt-4 pt-3 opacity-75 small" style="border-top: 1px solid var(--border-light);">
+            <span>Hiển thị @Model.Count() bài viết</span>
+            <div class="d-flex gap-2">
+                <button class="glass-btn small py-1 px-3 border-0 opacity-50 fw-normal">Trước</button>
+                <button class="glass-btn small py-1 px-3 border-0 fw-normal">Sau</button>
             </div>
         </div>
-    </div>
+    }
 </div>
 
 @section Scripts {
     <script>
-        // Bắt sự kiện phím tắt F7 để Thêm mới
+        // Bắt sự kiện phím tắt F7 để thêm mới bài viết
         document.addEventListener('keydown', function(e) {
             if (e.key === 'F7') {
                 e.preventDefault();
-                document.getElementById('btnAdd').click();
+                const btn = document.getElementById('btnAdd');
+                if(btn) btn.click();
             }
         });
     </script>
 }
-
-<style>
-    /* Ghi đè thuộc tính hover của Bootstrap cho class btn-outline-light
-           (Áp dụng cho nút Sửa, Xóa, Thêm và combobox Bài viết)
-        */
-    .no-hover-bg:hover,
-    .no-hover-bg:focus,
-    .no-hover-bg:active {
-        background-color: transparent !important;
-        color: white !important;
-        border-color: rgba(255, 255, 255, 0.5) !important; /* Làm viền sáng lên một chút khi hover để dễ nhận biết */
-    }
-</style>

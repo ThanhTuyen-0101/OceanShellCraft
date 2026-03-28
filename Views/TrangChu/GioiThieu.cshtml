@@ -1,106 +1,96 @@
 ﻿@model dynamic
 @{
-    ViewData["Title"] = "Artisanal Heritage - Ocean Shell Craft";
+    ViewData["Title"] = "Artisanal heritage - OceanShellCraft";
 }
-
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Plus+Jakarta+Sans:wght@300;400;600&display=swap" rel="stylesheet">
 
 <div class="gt-page-wrapper artisanal-scope py-5 px-3">
     <div class="container g-0">
         <div class="bento-grid">
 
-            <div class="bento-card hero-card overflow-hidden shadow-lg border-0">
-                <div class="position-absolute inset-0 p-5 d-flex flex-column justify-content-center h-100" style="background: linear-gradient(to right, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0.2) 100%);">
-                    <span class="text-gold fw-bold small text-uppercase mb-2" style="letter-spacing: 5px;">Est. 2026</span>
-                    <h1 class="sunakka-title display-2 text-gold fw-bold mb-3 lh-sm">OCEAN SHELL<br>CRAFT</h1>
-                    <p class="fst-italic fs-5 text-white opacity-75 fw-light mt-3">"Biến những mảnh vỡ của đại dương thành kiệt tác thời đại."</p>
+            <div class="glass-card hero-card overflow-hidden p-0">
+                <div class="position-absolute inset-0 p-5 d-flex flex-column justify-content-center h-100" style="background: linear-gradient(to right, rgba(0,0,0,0.5) 0%, transparent 100%);">
+                    <span class="small mb-2 opacity-75" style="letter-spacing: 5px;">Năm. 2026</span>
+                    <h1 class="display-2 mb-3 lh-sm">Ocean Shell<br>Craft</h1>
                 </div>
             </div>
 
-            <div class="bento-card legacy-card p-5 d-flex flex-column" style="grid-row: span 2;">
-                <span class="text-gold small fw-bold text-uppercase mb-3 d-block" style="letter-spacing: 2px;">The Legacy</span>
-                <h2 class="sunakka-title display-5 text-gold mb-3">HÀNH TRÌNH CỦA<br>NHỮNG BÁU VẬT</h2>
-                <p class="text-white opacity-75 lh-lg mb-5" style="max-width: 95%;">Ocean Shell Craft ra đời từ niềm đam mê đánh thức vẻ đẹp của những "báu vật" thầm lặng. Chúng tôi bảo tồn linh hồn của biển cả qua từng lớp xà cừ tuyển chọn.</p>
+            <div class="glass-card legacy-card p-5 d-flex flex-column" style="grid-row: span 2;">
+                <h2 class="display-5 mb-3">Hành trình của<br>những báu vật</h2>
+                <p class="opacity-75 lh-lg mb-5" style="max-width: 95%;">OceanShellCraft ra đời từ niềm đam mê đánh thức vẻ đẹp của những "báu vật" thầm lặng. Chúng tôi bảo tồn linh hồn của biển cả qua từng lớp xà cừ tuyển chọn.</p>
 
                 <div class="row align-items-center mt-auto">
                     <div class="col-md-6 mb-4 mb-md-0 text-center">
-                        <img src="/img/sobien.png" class="img-fluid" style="max-height: 220px; object-fit: contain; filter: drop-shadow(0 10px 15px rgba(0,0,0,0.3));" alt="Ocean Treasure">
+                        <img src="/img/sobien.png" class="img-fluid" style="max-height: 220px; object-fit: contain; filter: drop-shadow(0 10px 15px rgba(255,255,255,0.05));" alt="ocean treasure">
                     </div>
-                    <div class="col-md-6 ps-md-4" style="border-left: 2px solid #c5a059;">
-                        <p class="fst-italic text-white opacity-75 fs-6 mb-0 lh-lg">"Cái đẹp thực sự bắt nguồn từ sự nguyên bản của thiên nhiên."</p>
+                    <div class="col-md-6 ps-md-4" style="border-left: 1px solid var(--border-light);">
+                        <p class="fst-italic opacity-75 fs-6 mb-0 lh-lg">"Cái đẹp thực sự bắt nguồn từ sự nguyên bản của thiên nhiên."</p>
                     </div>
                 </div>
             </div>
 
-            <div class="bento-card philosophy-card p-5">
-                <span class="text-gold small fw-bold text-uppercase mb-4 d-block" style="letter-spacing: 2px;">Philosophy</span>
+            <div class="glass-card philosophy-card p-5">
                 <div class="mb-4 pb-2">
-                    <h6 class="fw-bold text-white mb-2">Sứ mệnh</h6>
-                    <p class="small text-white opacity-75 lh-lg mb-0">Kết nối vẻ đẹp nguyên sơ của biển cả với phong cách sống hiện đại.</p>
+                    <h6 class="mb-2">Sứ mệnh</h6>
+                    <p class="small opacity-75 lh-lg mb-0">Kết nối vẻ đẹp nguyên sơ của biển cả với phong cách sống hiện đại.</p>
                 </div>
                 <div>
-                    <h6 class="fw-bold text-white mb-2">Tầm nhìn</h6>
-                    <p class="small text-white opacity-75 lh-lg mb-0">Biểu tượng toàn cầu của ngành thủ công mỹ nghệ xà cừ bền vững.</p>
+                    <h6 class="mb-2">Tầm nhìn</h6>
+                    <p class="small opacity-75 lh-lg mb-0">Biểu tượng toàn cầu của ngành thủ công mỹ nghệ xà cừ bền vững.</p>
                 </div>
             </div>
 
-            <div class="bento-card values-card p-5 d-flex flex-column justify-content-center">
-                <span class="text-gold small fw-bold text-uppercase mb-4 d-block" style="letter-spacing: 2px;">Core Values</span>
+            <div class="glass-card values-card p-5 d-flex flex-column justify-content-center">
                 <div class="row g-4 text-center mt-2">
                     <div class="col-6">
-                        <i class="bi bi-water text-gold fs-2"></i>
-                        <p class="small text-uppercase mt-3 text-white opacity-75 mb-0" style="font-size: 0.75rem; letter-spacing: 1px;">Tự nhiên</p>
+                        <i class="bi bi-water fs-2"></i>
+                        <p class="small mt-3 opacity-75 mb-0" style="font-size: 0.75rem; letter-spacing: 1px;">Tự nhiên</p>
                     </div>
                     <div class="col-6">
-                        <i class="bi bi-lightbulb text-gold fs-2"></i>
-                        <p class="small text-uppercase mt-3 text-white opacity-75 mb-0" style="font-size: 0.75rem; letter-spacing: 1px;">Sáng tạo</p>
+                        <i class="bi bi-lightbulb fs-2"></i>
+                        <p class="small mt-3 opacity-75 mb-0" style="font-size: 0.75rem; letter-spacing: 1px;">Sáng tạo</p>
                     </div>
                     <div class="col-6 mt-4 pt-2">
-                        <i class="bi bi-recycle text-gold fs-2"></i>
-                        <p class="small text-uppercase mt-3 text-white opacity-75 mb-0" style="font-size: 0.75rem; letter-spacing: 1px;">Bền vững</p>
+                        <i class="bi bi-recycle fs-2"></i>
+                        <p class="small mt-3 opacity-75 mb-0" style="font-size: 0.75rem; letter-spacing: 1px;">Bền vững</p>
                     </div>
                     <div class="col-6 mt-4 pt-2">
-                        <i class="bi bi-heart text-gold fs-2"></i>
-                        <p class="small text-uppercase mt-3 text-white opacity-75 mb-0" style="font-size: 0.75rem; letter-spacing: 1px;">Tâm huyết</p>
+                        <i class="bi bi-heart fs-2"></i>
+                        <p class="small mt-3 opacity-75 mb-0" style="font-size: 0.75rem; letter-spacing: 1px;">Tâm huyết</p>
                     </div>
                 </div>
             </div>
 
-            <div class="bento-card collections-card p-5 text-center d-flex flex-column align-items-center justify-content-between">
+            <div class="glass-card collections-card p-5 text-center d-flex flex-column align-items-center justify-content-between">
                 <div class="w-100">
-                    <span class="text-gold small fw-bold text-uppercase mb-3 d-block" style="letter-spacing: 2px;">Collections</span>
-                    <h4 class="sunakka-title text-gold mb-4">SẢN PHẨM TIÊU BIỂU</h4>
+                    <h4 class="mb-4">Sản phẩm tiêu biểu</h4>
                 </div>
-
                 <div class="my-4">
-                    <img src="/img/logo.png" alt="Ocean Shell Craft Logo" style="width: 100px; height: auto; max-height: 100px; object-fit: contain;" />
+                    <img src="/img/logo.png" alt="Ocean Shell Craft logo" style="width: 100px; height: auto; max-height: 100px; object-fit: contain; filter: drop-shadow(0 0 10px rgba(255,255,255,0.1));" />
                 </div>
-
-                <a href="/SanPham/DanhSach" class="btn btn-gold rounded-pill w-100 py-3 mt-4 fw-bold text-uppercase" style="letter-spacing: 1px;">Khám phá ngay</a>
+                <a href="/SanPham/DanhSach" class="glass-btn w-100 py-3 mt-4" style="letter-spacing: 1px;">Khám phá ngay</a>
             </div>
 
-            <div class="bento-card atelier-card p-5 d-flex flex-column justify-content-center">
-                <span class="text-gold small fw-bold text-uppercase mb-3 d-block" style="letter-spacing: 2px;">The Atelier</span>
-                <h2 class="sunakka-title text-gold mb-5">QUY TRÌNH TỈ MỈ</h2>
+            <div class="glass-card atelier-card p-5 d-flex flex-column justify-content-center">
+                <h2 class="mb-5">Quy trình tỉ mỉ</h2>
                 <div class="row g-4 mt-2">
                     <div class="col-md-6">
                         <div class="d-flex align-items-center mb-5">
-                            <h3 class="text-gold fw-bold me-4 mb-0" style="width: 30px;">01</h3>
-                            <p class="mb-0 text-white opacity-85 fs-6">Tuyển chọn xà cừ vùng biển sâu.</p>
+                            <h3 class="me-4 mb-0" style="width: 30px;">01</h3>
+                            <p class="mb-0 opacity-85 fs-6">Tuyển chọn xà cừ vùng biển sâu.</p>
                         </div>
                         <div class="d-flex align-items-center mb-md-0 mb-5">
-                            <h3 class="text-gold fw-bold me-4 mb-0" style="width: 30px;">02</h3>
-                            <p class="mb-0 text-white opacity-85 fs-6">Xử lý kỹ thuật ép lạnh tinh xảo.</p>
+                            <h3 class="me-4 mb-0" style="width: 30px;">02</h3>
+                            <p class="mb-0 opacity-85 fs-6">Xử lý kỹ thuật ép lạnh tinh xảo.</p>
                         </div>
                     </div>
                     <div class="col-md-6">
                         <div class="d-flex align-items-center mb-5">
-                            <h3 class="text-gold fw-bold me-4 mb-0" style="width: 30px;">03</h3>
-                            <p class="mb-0 text-white opacity-85 fs-6">Chế tác độc bản bởi nghệ nhân.</p>
+                            <h3 class="me-4 mb-0" style="width: 30px;">03</h3>
+                            <p class="mb-0 opacity-85 fs-6">Chế tác độc bản bởi nghệ nhân.</p>
                         </div>
                         <div class="d-flex align-items-center">
-                            <h3 class="text-gold fw-bold me-4 mb-0" style="width: 30px;">04</h3>
-                            <p class="mb-0 text-white opacity-85 fs-6">Kiểm định & đánh bóng Luxury.</p>
+                            <h3 class="me-4 mb-0" style="width: 30px;">04</h3>
+                            <p class="mb-0 opacity-85 fs-6">Kiểm định & đánh bóng luxury.</p>
                         </div>
                     </div>
                 </div>

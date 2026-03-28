@@ -1,82 +1,210 @@
 ﻿@model IEnumerable<OceanShellCraft.Models.GioHang>
+@{
+    ViewData["Title"] = "Giỏ hàng - OceanShellCraft";
+    Layout = "~/Views/Shared/_Layout.cshtml";
 
-<div class="container mt-4">
-    <h2 class="mb-4 fw-bold text-primary"><i class="bi bi-cart3"></i> Giỏ Hàng Của Bạn</h2>
-
-    @if (Model == null || !Model.Any())
+    // Tính toán tổng tiền giỏ hàng
+    decimal tongTien = 0;
+    if (Model != null && Model.Any())
     {
-        <div class="text-center py-5 border rounded bg-white shadow-sm">
-            <i class="bi bi-cart-x display-1 text-muted"></i>
-            <h3 class="mt-3">Giỏ hàng đang trống</h3>
-            <a asp-controller="SanPham" asp-action="DanhSach" class="btn btn-primary mt-3">Tiếp tục mua sắm</a>
+        tongTien = Model.Sum(item =>
+            (item.SanPham.GiaKhuyenMai.HasValue && item.SanPham.GiaKhuyenMai.Value > 0
+                ? item.SanPham.GiaKhuyenMai.Value
+                : item.SanPham.GiaTien) * item.SoLuong);
+    }
+}
+
+<div class="container py-5" style="min-height: 80vh;">
+    <div class="d-flex align-items-center mb-4 pb-3" style="border-bottom: 1px solid var(--border-light);">
+        <h2 class="display-5 mb-0">Giỏ hàng của bạn</h2>
+        @if (User.Identity.IsAuthenticated)
+        {
+            <span class="ms-4 glass-effect px-3 py-1 rounded-pill small">
+                @(Model?.Count() ?? 0) Sản phẩm
+            </span>
+        }
+    </div>
+
+    @if (!User.Identity.IsAuthenticated)
+    {
+        <div class="glass-card p-5 text-center d-flex flex-column align-items-center justify-content-center mt-4" style="min-height: 50vh;">
+            <i class="bi bi-person-lock display-1 opacity-25 mb-3"></i>
+            <h3 class="mb-3">Vui lòng đăng nhập</h3>
+            <p class="opacity-75 mb-5 fs-5">Bạn cần đăng nhập để xem và quản lý giỏ hàng của mình.</p>
+            <div class="d-flex gap-3 flex-wrap justify-content-center">
+                <a asp-controller="TaiKhoan" asp-action="DangNhap" class="glass-btn px-5 py-3">
+                    <i class="bi bi-box-arrow-in-right me-2"></i>Đăng nhập ngay
+                </a>
+                <a asp-controller="TaiKhoan" asp-action="DangKy" class="text-decoration-none px-4 py-3 opacity-75">
+                    Chưa có tài khoản? Đăng ký
+                </a>
+            </div>
+        </div>
+    }
+    else if (Model == null || !Model.Any())
+    {
+        <div class="glass-card p-5 text-center d-flex flex-column align-items-center justify-content-center mt-4" style="min-height: 50vh;">
+            <i class="bi bi-cart-x display-1 opacity-25 mb-3"></i>
+            <h3 class="mb-3">Giỏ hàng trống</h3>
+            <p class="opacity-75 mb-5">Bạn chưa chọn sản phẩm nào. Hãy khám phá những tuyệt tác từ biển cả ngay nhé!</p>
+            <a asp-controller="SanPham" asp-action="DanhSach" class="glass-btn px-5 py-3">
+                Tiếp tục mua sắm <i class="bi bi-arrow-right ms-2"></i>
+            </a>
         </div>
     }
     else
     {
-        <div class="card shadow-sm border-0">
-            <table class="table align-middle mb-0">
-                <thead class="table-light">
-                    <tr>
-                        <th class="ps-4">Sản phẩm</th>
-                        <th>Giá</th>
-                        <th style="width: 120px;">Số lượng</th>
-                        <th>Thành tiền</th>
-                        <th class="text-center">Hành động</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach (var item in Model)
-                    {
-                        <tr>
-                            <td class="ps-4">
-                                <img src="@item.SanPham?.HinhAnh" width="60" class="rounded border me-2" />
-                                <strong>@item.SanPham?.TenSanPham</strong>
-                            </td>
-                            <td>@item.SanPham?.GiaTien.ToString("N0") đ</td>
-                            <td>
-                                @* Thay đổi số lượng tự động gọi AJAX *@
-                                <input type="number" value="@item.SoLuong" min="1"
-                                       class="form-control text-center fw-bold border-primary"
-                                       data-id="@item.Id"
-                                       onchange="updateCart(this)" />
-                            </td>
-                            <td class="fw-bold text-primary">
-                                @((item.SoLuong * (item.SanPham?.GiaTien ?? 0)).ToString("N0")) đ
-                            </td>
-                            <td class="text-center">
-                                <a asp-action="XoaKhoiGio" asp-route-id="@item.Id"
-                                   class="btn btn-link text-danger p-0"
-                                   onclick="return confirm('Xóa sản phẩm này?')">
-                                    Xóa
-                                </a>
-                            </td>
-                        </tr>
-                    }
-                </tbody>
-            </table>
-        </div>
+        <div class="row g-4 mt-2">
+            <div class="col-lg-8">
+                <div class="glass-card p-4">
+                    <div class="table-responsive hide-scrollbar">
+                        <table class="glass-table align-middle">
+                            <thead class="opacity-75 small" style="letter-spacing: 1px;">
+                                <tr>
+                                    <th scope="col" style="min-width: 250px;">Sản phẩm</th>
+                                    <th scope="col" class="text-center">Đơn giá</th>
+                                    <th scope="col" class="text-center">Số lượng</th>
+                                    <th scope="col" class="text-end">Tạm tính</th>
+                                    <th scope="col"></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var item in Model)
+                                {
+                                    bool hasDiscount = item.SanPham.GiaKhuyenMai.HasValue && item.SanPham.GiaKhuyenMai.Value > 0 && item.SanPham.GiaKhuyenMai.Value < item.SanPham.GiaTien;
+                                    var donGia = hasDiscount ? item.SanPham.GiaKhuyenMai.Value : item.SanPham.GiaTien;
+                                    var thanhTien = donGia * item.SoLuong;
 
-        <div class="mt-4 d-flex justify-content-between align-items-center">
-            <a asp-controller="SanPham" asp-action="DanhSach" class="btn btn-outline-secondary">
-                <i class="bi bi-arrow-left"></i> Tiếp tục mua sắm
-            </a>
-            <a asp-action="DatHang" class="btn btn-success btn-lg w-100 mt-3 fw-bold text-uppercase shadow">
-                Tiến Hành Đặt Hàng <i class="bi bi-chevron-right"></i>
-            </a>
+                                    <tr>
+                                        <td class="py-4">
+                                            <div class="d-flex align-items-center gap-4">
+                                                <a href="/SanPham/ChiTiet/@item.SanPham.Id">
+                                                    <img src="@(item.SanPham.HinhAnh ?? "/images/default-shell.png")" alt="product" class="rounded-circle" width="70" height="70" style="border: 1px solid var(--border-light); object-fit: cover;">
+                                                </a>
+                                                <div>
+                                                    <a href="/SanPham/ChiTiet/@item.SanPham.Id" class="text-decoration-none d-block mb-1" style="font-size: 1.1rem;">
+                                                        @item.SanPham.TenSanPham
+                                                    </a>
+                                                    @if (hasDiscount)
+                                                    {
+                                                        <span class="glass-effect px-2 py-0 small rounded" style="font-size: 0.7rem;">
+                                                            Flash sale
+                                                        </span>
+                                                    }
+                                                </div>
+                                            </div>
+                                        </td>
+
+                                        <td class="text-center py-4">
+                                            <span>@donGia.ToString("N0") đ</span>
+                                            @if (hasDiscount)
+                                            {
+                                                <div class="opacity-50 small text-decoration-line-through">@item.SanPham.GiaTien.ToString("N0") đ</div>
+                                            }
+                                        </td>
+
+                                        <td class="text-center py-4">
+                                            <form class="form-capnhat-sl d-flex align-items-center justify-content-center">
+                                                <input type="hidden" name="id" value="@item.Id" />
+                                                <div class="d-flex glass-effect rounded-pill overflow-hidden" style="width: 100px; border: 1px solid var(--border-light);">
+                                                    <button type="submit" name="soLuong" value="@(item.SoLuong - 1)" class="border-0 bg-transparent opacity-75 w-25 px-0">-</button>
+                                                    <input type="text" class="bg-transparent border-0 text-center w-50 small" value="@item.SoLuong" readonly>
+                                                    <button type="submit" name="soLuong" value="@(item.SoLuong + 1)" class="border-0 bg-transparent opacity-75 w-25 px-0">+</button>
+                                                </div>
+                                            </form>
+                                        </td>
+
+                                        <td class="text-end py-4">
+                                            @thanhTien.ToString("N0") đ
+                                        </td>
+
+                                        <td class="text-end py-4 px-3">
+                                            <form asp-action="XoaKhoiGio" asp-controller="GioHang" method="post" class="m-0">
+                                                <input type="hidden" name="id" value="@item.Id" />
+                                                <button type="submit" class="glass-circle border-0 opacity-50" title="Xóa sản phẩm" style="width: 30px; height: 30px;">
+                                                    <i class="bi bi-x-lg" style="font-size: 0.8rem;"></i>
+                                                </button>
+                                            </form>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="mt-4 ms-2">
+                    <a asp-controller="SanPham" asp-action="DanhSach" class="text-decoration-none opacity-75 small" style="letter-spacing: 1px;">
+                        <i class="bi bi-arrow-left me-2"></i>Tiếp tục mua sắm
+                    </a>
+                </div>
+            </div>
+
+            <div class="col-lg-4">
+                <div class="glass-card p-4 p-xl-5 sticky-top" style="top: 100px;">
+                    <h4 class="mb-4 pb-3" style="border-bottom: 1px solid var(--border-light);">Tóm tắt</h4>
+
+                    <div class="d-flex justify-content-between mb-3 opacity-75">
+                        <span>Tạm tính</span>
+                        <span>@tongTien.ToString("N0") đ</span>
+                    </div>
+
+                    <div class="d-flex justify-content-between mb-3 opacity-75">
+                        <span>Vận chuyển</span>
+                        <span class="fst-italic small">(Tính sau)</span>
+                    </div>
+
+                    <hr class="opacity-25 my-4" style="border-color: var(--border-light);">
+
+                    <div class="d-flex flex-column mb-5">
+                        <span class="opacity-50 mb-1 small">Tổng thanh toán</span>
+                        <span class="display-6">@tongTien.ToString("N0") <span class="fs-4">đ</span></span>
+                    </div>
+
+                    <a asp-controller="GioHang" asp-action="DatHang" class="glass-btn w-100 py-3 d-flex justify-content-center align-items-center gap-2">
+                        <i class="bi bi-bag-check fs-5"></i>Thanh toán
+                    </a>
+
+                    <div class="text-center mt-4 opacity-50 small d-flex flex-column gap-2">
+                        <span><i class="bi bi-shield-check me-2"></i>Thanh toán bảo mật 100%</span>
+                        <span><i class="bi bi-box-seam me-2"></i>Đóng gói tiêu chuẩn an toàn</span>
+                    </div>
+                </div>
+            </div>
         </div>
     }
 </div>
 
 @section Scripts {
     <script>
-        function updateCart(input) {
-            var id = $(input).data('id');
-            var qty = $(input).val();
-            if (qty < 1) { $(input).val(1); qty = 1; }
+        document.addEventListener("DOMContentLoaded", function () {
+            document.querySelectorAll('.form-capnhat-sl').forEach(form => {
+                form.addEventListener('submit', async function (e) {
+                    e.preventDefault();
+                    const submitter = e.submitter;
+                    const id = form.querySelector('input[name="id"]').value;
+                    const soLuong = submitter.value;
 
-            $.get('/GioHang/CapNhatSoLuong', { id: id, soLuong: qty }, function () {
-                location.reload(); // Reload để cập nhật tiền và badge ở Header
+                    if (soLuong <= 0) return;
+
+                    try {
+                        const formData = new FormData();
+                        formData.append('id', id);
+                        formData.append('soLuong', soLuong);
+
+                        const response = await fetch('@Url.Action("CapNhatSoLuong", "GioHang")', {
+                            method: 'POST',
+                            body: formData
+                        });
+
+                        if (response.ok) {
+                            window.location.reload();
+                        }
+                    } catch (error) {
+                        console.error('Lỗi:', error);
+                    }
+                });
             });
-        }
+        });
     </script>
 }

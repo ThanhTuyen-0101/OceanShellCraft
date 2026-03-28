@@ -1,11 +1,10 @@
 ﻿@model IEnumerable<OceanShellCraft.Models.SanPham>
 @{
-    ViewData["Title"] = "Trang Chủ - OceanShellCraft";
+    ViewData["Title"] = "Trang chủ - OceanShellCraft";
     Layout = "~/Views/Shared/_Layout.cshtml";
 
     var allProducts = Model?.OrderByDescending(x => x.Id).ToList() ?? new List<OceanShellCraft.Models.SanPham>();
 
-    // 1. LOGIC HOT PRODUCTS (sidebar)
     var hotProducts = allProducts.Where(x => x.IsFavorite || x.IsFeatured).Take(3).ToList();
     if (hotProducts.Count < 3)
     {
@@ -14,7 +13,6 @@
         hotProducts.AddRange(fallbackHot);
     }
 
-    // 2. LOGIC SẢN PHẨM NỔI BẬT
     var featuredProducts = allProducts.Where(x => x.IsFeatured).Take(8).ToList();
     if (featuredProducts.Count < 8)
     {
@@ -25,7 +23,6 @@
 
     var bestSellingProducts = allProducts.Skip(11).Take(8).ToList();
 
-    // 3. LOGIC FLASH SALE
     var flashSaleProducts = allProducts
         .Where(x => x.GiaKhuyenMai.HasValue && x.GiaKhuyenMai.Value > 0 && x.GiaKhuyenMai.Value < x.GiaTien)
         .OrderByDescending(x => (1 - ((double)x.GiaKhuyenMai.Value / (double)x.GiaTien)) * 100)
@@ -36,32 +33,27 @@
         flashSaleProducts = allProducts.Skip(19).Take(4).ToList();
     }
 
-    // 4. LOGIC HÀNG SẮP HẾT
     var lastChanceProducts = allProducts
         .Where(x => x.SoLuong > 0 && x.SoLuong < 10)
         .OrderBy(x => x.SoLuong)
         .Take(4).ToList();
 
-    var newArrivals = allProducts.Skip(23).Take(4).ToList();
-    var bottomListProducts = allProducts.Skip(27).Take(4).ToList();
+    var newArrivals = allProducts.Take(4).ToList();
+    var bottomListProducts = allProducts.OrderBy(x => Guid.NewGuid()).Take(4).ToList();
 }
 
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Plus+Jakarta+Sans:wght@300;400;600&display=swap" rel="stylesheet">
-
-<div class="home-artisanal-scope container-fluid py-4 px-lg-5 text-white">
+<div class="container-fluid py-4 px-lg-5">
     <div class="row g-4">
-
-        <!-- Sidebar trái (giữ nguyên) -->
+        @* CỘT TRÁI: DANH MỤC & HOT *@
         <div class="col-lg-2 d-none d-lg-block">
-            <!-- Danh mục -->
-            <div class="bento-glass-card p-4 mb-4">
-                <h6 class="text-white fw-bold mb-3 border-bottom border-light pb-2">
-                    <i class="bi bi-list me-1"></i> Danh Mục
+            <div class="glass-card p-4 mb-4">
+                <h6 class="mb-3 pb-2" style="border-bottom: 1px solid var(--border-light);">
+                    <i class="bi bi-list me-1"></i> Danh mục
                 </h6>
                 <ul class="list-unstyled mb-0 small lh-lg">
                     <li>
                         <a href="@Url.Action("DanhSach", "SanPham", new { maDanhMuc = (int?)null })"
-                           class="text-white opacity-75 text-decoration-none hover-white d-block py-1">
+                           class="opacity-75 text-decoration-none d-block py-1">
                             Tất cả sản phẩm
                         </a>
                     </li>
@@ -71,7 +63,7 @@
                         {
                             <li>
                                 <a href="@Url.Action("DanhSach", "SanPham", new { maDanhMuc = dm.Id })"
-                                   class="text-white opacity-75 text-decoration-none hover-white d-block py-1">
+                                   class="opacity-75 text-decoration-none d-block py-1">
                                     @dm.TenDanhMuc
                                 </a>
                             </li>
@@ -80,73 +72,55 @@
                 </ul>
             </div>
 
-            <!-- Hot Products sidebar (giữ nguyên) -->
-            <div class="bento-glass-card p-4 mb-4">
-                <h6 class="text-white fw-bold mb-4">Hot Products</h6>
+            <div class="glass-card p-4 mb-4">
+                <h6 class="mb-4">Sản phẩm Hot</h6>
                 @foreach (var item in hotProducts)
                 {
                     bool hasDiscount = item.GiaKhuyenMai.HasValue && item.GiaKhuyenMai.Value > 0 && item.GiaKhuyenMai.Value < item.GiaTien;
                     <div class="d-flex align-items-center mb-3">
-                        <img src="@(item?.HinhAnh ?? "/images/default-shell.png")" class="rounded-4 me-3 object-fit-cover shadow-sm" width="55" height="55" alt="Hot">
+                        <img src="@(item?.HinhAnh ?? "/images/default-shell.png")" class="rounded-4 me-3 object-fit-cover" width="55" height="55" alt="Hot" style="border: 1px solid var(--border-light);">
                         <div class="overflow-hidden flex-grow-1">
-                            <p class="text-white opacity-85 text-truncate mb-1" style="font-size: 0.8rem;" title="@item?.TenSanPham">@(item?.TenSanPham ?? "Sản phẩm")</p>
-                            <span class="text-white fw-bold" style="font-size: 0.8rem;">@(hasDiscount? item.GiaKhuyenMai.Value.ToString("N0") : item.GiaTien.ToString("N0")) đ</span>
-                        </div>
-                        <div class="d-flex flex-column gap-1 ms-1">
-                            <button class="btn btn-outline-light btn-sm rounded-circle shadow-none p-1 d-flex align-items-center justify-content-center" style="width: 24px; height: 24px;" title="Thêm vào giỏ">
-                                <i class="bi bi-cart-plus" style="font-size: 0.7rem;"></i>
-                            </button>
-                            <button class="btn btn-outline-light btn-sm rounded-circle shadow-none p-1 d-flex align-items-center justify-content-center" style="width: 24px; height: 24px;" title="Mua ngay">
-                                <i class="bi bi-bag-check" style="font-size: 0.7rem;"></i>
-                            </button>
+                            <p class="opacity-85 text-truncate mb-1" style="font-size: 0.8rem;" title="@item?.TenSanPham">@(item?.TenSanPham ?? "Sản phẩm")</p>
+                            <span style="font-size: 0.8rem;">@(hasDiscount? item.GiaKhuyenMai.Value.ToString("N0") : item.GiaTien.ToString("N0")) đ</span>
                         </div>
                     </div>
                 }
             </div>
 
-            <!-- Banner sidebar (giữ nguyên) -->
-            <div class="bento-glass-card bento-banner overflow-hidden position-relative" style="height: 320px;">
+            <div class="glass-card overflow-hidden position-relative p-0" style="height: 320px;">
                 <div class="position-absolute w-100 h-100 z-1 p-3 d-flex flex-column justify-content-center align-items-center text-center">
-                    <h4 class="fw-bold text-white opacity-75 fst-italic">Special</h4>
-                    <h1 class="display-4 fw-bold text-white mb-0">20<span class="fs-4">%</span></h1>
-                    <p class="text-white opacity-50 small">Off All Items</p>
+                    <h4 class="opacity-75 fst-italic">Giá giảm sâu</h4>
+                    <h1 class="display-4 mb-0">20<span class="fs-4">%</span></h1>
+                    <p class="opacity-50 small">Cho tất cả từ 25/4</p>
                 </div>
-                <img src="https://images.unsplash.com/photo-1544457070-4cd773b4d71e?w=500" class="w-100 h-100 object-fit-cover opacity-50 position-absolute top-0 start-0">
+                <img src="/img/bien.jpg" class="w-100 h-100 object-fit-cover opacity-50 position-absolute top-0 start-0">
             </div>
         </div>
 
-        <!-- Nội dung chính -->
+        @* CỘT GIỮA: NỘI DUNG CHÍNH *@
         <div class="col-lg-8">
-
-            <!-- Banner lớn (giữ nguyên) -->
-            <div class="bento-glass-card bento-banner mb-4 position-relative overflow-hidden shadow-lg" style="min-height: 280px;">
+            <div class="glass-card p-0 mb-4 position-relative overflow-hidden" style="min-height: 280px;">
                 <div class="row g-0 h-100">
                     <div class="col-md-6 p-5 d-flex flex-column justify-content-center position-relative z-1">
-                        <span class="text-white opacity-75 small fw-bold text-uppercase mb-2" style="letter-spacing: 2px;">The Legacy</span>
-                        <h1 class="playfair-title display-5 fw-bold text-white mb-3 lh-sm">Tuyệt Tác<br />Xà Cừ</h1>
-                        <p class="text-white opacity-75 fs-6 mb-0 fst-italic">Tinh hoa đại dương trong không gian của bạn.</p>
-                    </div>
-                    <div class="col-md-6 position-absolute end-0 top-0 h-100 w-75">
-                        <img src="https://images.unsplash.com/photo-1611077544835-ab3a30386eec?w=1000" class="w-100 h-100 object-fit-cover opacity-75" style="-webkit-mask-image: linear-gradient(to right, transparent, black 60%);">
+                        <h1 class="display-5 mb-3 lh-sm">Sản phẩm từ biển</h1>
+                        <p class="opacity-75 fs-6 mb-0 fst-italic">Hãy đến với chúng tôi.</p>
                     </div>
                 </div>
             </div>
 
-            <!-- Thông báo an toàn -->
-            <div class="bento-glass-card d-flex justify-content-between align-items-center px-4 py-3 mb-5" style="border-radius: 20px;">
-                <span class="small text-white opacity-85"><i class="bi bi-shield-check text-white me-2 fs-5"></i> Đóng gói an toàn & Bảo hành nguyên bản</span>
-                <a href="/SanPham" class="text-white text-decoration-none small fw-bold border-bottom pb-1">Xem ưu đãi</a>
+            <div class="glass-card d-flex justify-content-between align-items-center px-4 py-3 mb-5">
+                <span class="small opacity-85"><i class="bi bi-shield-check me-2 fs-5"></i> Đóng gói an toàn & bảo hành nguyên bản</span>
+                <a href="/SanPham/DanhSach" class="text-decoration-none small" style="border-bottom: 1px solid var(--text-main); padding-bottom: 2px;">Xem ưu đãi</a>
             </div>
 
-            <!-- Tuyệt Tác Nổi Bật (giữ nguyên) -->
+            @* Sản phẩm nổi bật *@
             <div class="d-flex justify-content-between align-items-end mb-4 px-2">
-                <h4 class="playfair-title text-white mb-0">Tuyệt Tác Nổi Bật</h4>
-                <div class="d-flex gap-4 text-white opacity-75 small fw-bold">
-                    <span class="cursor-pointer text-white border-bottom border-white pb-1">Tất cả</span>
-                    <span class="cursor-pointer hover-white transition opacity-75">Nội thất</span>
-                    <span class="cursor-pointer hover-white transition opacity-75">Trang sức</span>
+                <h4 class="mb-0">Sản phẩm nổi bật</h4>
+                <div class="d-flex gap-4 opacity-75 small">
+                    <span style="border-bottom: 1px solid var(--text-main); padding-bottom: 2px;">Tất cả</span>
                 </div>
             </div>
+
             <div class="row g-4 mb-5">
                 @foreach (var item in featuredProducts)
                 {
@@ -165,43 +139,44 @@
                 }
             </div>
 
-            <!-- Danh mục nghệ thuật (giữ nguyên) -->
-            <h4 class="playfair-title text-white mb-4 px-2 mt-5">Danh Mục Nghệ Thuật</h4>
+            @* Danh mục nghệ thuật *@
+            <h4 class="mb-4 px-2 mt-5">Danh mục nghệ thuật</h4>
             <div class="d-flex justify-content-between text-center overflow-auto hide-scrollbar pb-3 mb-5 gap-3">
-                @{
-                    string[] catIcons = { "bi-gem", "bi-cup-hot", "bi-lamp", "bi-palette", "bi-gift", "bi-stars" };
-                    int count = 0;
-                }
                 @if (ViewBag.DanhMucs != null)
                 {
                     foreach (var dm in ViewBag.DanhMucs)
                     {
-                        if (count >= 5) break;
-                        <div style="min-width: 100px;">
+                        string iconClass = "bi-stars";
+                        string tenDM = dm.TenDanhMuc;
+                        string tenDMLower = tenDM.ToLower();
+
+                        if (tenDMLower.Contains("vỏ ốc")) iconClass = "bi-life-preserver";
+                        else if (tenDMLower.Contains("chậu cây")) iconClass = "bi-flower1";
+                        else if (tenDMLower.Contains("chuông gió")) iconClass = "bi-bell";
+                        else if (tenDMLower.Contains("đèn")) iconClass = "bi-lightbulb";
+                        else if (tenDMLower.Contains("nội thất")) iconClass = "bi-house-heart";
+
+                        <div style="min-width: 120px;">
                             <a href="@Url.Action("DanhSach", "SanPham", new { maDanhMuc = dm.Id })" class="text-decoration-none">
-                                <div class="circle-category rounded-circle mx-auto mb-3 d-flex align-items-center justify-content-center transition hover-white">
-                                    <i class="bi @(catIcons[count % catIcons.Length]) fs-2 text-white opacity-85"></i>
+                                <div class="glass-circle mx-auto mb-3" style="width: 80px; height: 80px;">
+                                    <i class="bi @iconClass fs-2 opacity-85"></i>
                                 </div>
-                                <small class="text-white opacity-75 fw-bold">@dm.TenDanhMuc</small>
+                                <small class="opacity-75 d-block" style="line-height: 1.2;">@tenDM</small>
                             </a>
                         </div>
-                        count++;
                     }
-                }
-                else
-                {
-                    <div class="w-100 text-center"><small class="text-white-50">Chưa có danh mục</small></div>
                 }
             </div>
 
-            <!-- Sản Phẩm Bán Chạy (giữ nguyên) -->
+            @* Sản phẩm bán chạy *@
             <div class="d-flex justify-content-between align-items-end mb-4 px-2">
-                <h4 class="playfair-title text-white mb-0">Sản Phẩm Bán Chạy</h4>
+                <h4 class="mb-0">Sản phẩm bán chạy</h4>
                 <div class="d-flex gap-2">
-                    <button class="btn btn-sm text-white opacity-50 hover-white border-0"><i class="bi bi-arrow-left fs-5"></i></button>
-                    <button class="btn btn-sm text-white opacity-50 hover-white border-0"><i class="bi bi-arrow-right fs-5"></i></button>
+                    <button class="glass-btn p-1" style="width: 30px; height: 30px; border-radius: 50%;"><i class="bi bi-arrow-left"></i></button>
+                    <button class="glass-btn p-1" style="width: 30px; height: 30px; border-radius: 50%;"><i class="bi bi-arrow-right"></i></button>
                 </div>
             </div>
+
             <div class="row g-4 mb-5">
                 @foreach (var item in bestSellingProducts)
                 {
@@ -219,22 +194,22 @@
                 }
             </div>
 
-            <!-- Flash Sale - ĐÃ XÓA VIỀN VÀNG -->
+            @* Flash Sale *@
             <div class="mb-5">
                 <div class="d-flex justify-content-between align-items-center mb-4 px-2">
-                    <h4 class="playfair-title text-white mb-0 d-flex align-items-center">
-                        <i class="bi bi-lightning-charge-fill text-white opacity-85 me-2"></i> Flash Sale
+                    <h4 class="mb-0 d-flex align-items-center">
+                        <i class="bi bi-lightning-charge-fill opacity-85 me-2"></i> Flash Sale
                     </h4>
                     <div class="d-flex gap-2 align-items-center">
-                        <span class="text-white opacity-75 small d-none d-md-block me-2">Kết thúc trong:</span>
-                        <span class="bento-glass-card text-white fw-bold px-3 py-2" style="border-radius: 12px;" id="flash-hours">02</span>
-                        <span class="text-white fw-bold opacity-75">:</span>
-                        <span class="bento-glass-card text-white fw-bold px-3 py-2" style="border-radius: 12px;" id="flash-minutes">45</span>
-                        <span class="text-white fw-bold opacity-75">:</span>
-                        <span class="bento-glass-card text-white fw-bold px-3 py-2" style="border-radius: 12px; border-color: rgba(255,255,255,0.4);" id="flash-seconds">10</span>
+                        <span class="opacity-75 small d-none d-md-block me-2">Kết thúc trong:</span>
+                        <span class="glass-card px-3 py-2" style="border-radius: 12px; padding: 5px 10px !important;" id="flash-hours">02</span>
+                        <span class="opacity-75">:</span>
+                        <span class="glass-card px-3 py-2" style="border-radius: 12px; padding: 5px 10px !important;" id="flash-minutes">45</span>
+                        <span class="opacity-75">:</span>
+                        <span class="glass-card px-3 py-2" style="border-radius: 12px; padding: 5px 10px !important;" id="flash-seconds">10</span>
                     </div>
                 </div>
-                <div class="row g-4">
+                <div class="row g-4 mb-5">
                     @foreach (var item in flashSaleProducts)
                     {
                         <div class="col-6 col-md-3">
@@ -242,7 +217,6 @@
                                 ViewData["HienBadgeGiamGia"] = true;
                                 ViewData["HienBadgeSoLuong"] = false;
                                 ViewData["HienThanhTienDo"] = false;
-                                // Bỏ LaFlashSale → không còn viền vàng
                                 ViewData["AnhRoundedCircle"] = false;
                                 ViewData["AnhWidth"] = "110px";
                                 ViewData["AnhHeight"] = "110px";
@@ -253,67 +227,37 @@
                 </div>
             </div>
 
-            <!-- Phiên Bản Giới Hạn (giữ nguyên, badge số lượng đã thay đổi ở partial) -->
-            @if (lastChanceProducts.Any())
-            {
-                <div class="mb-5 mt-5">
-                    <div class="d-flex justify-content-between align-items-center mb-4 px-2">
-                        <h4 class="playfair-title text-white mb-0 d-flex align-items-center">
-                            <i class="bi bi-hourglass-split text-white opacity-85 me-2"></i> Phiên Bản Giới Hạn
-                        </h4>
-                        <a href="#" class="text-white text-decoration-none small fw-bold border-bottom pb-1">Khám phá ngay</a>
-                    </div>
-                    <div class="row g-4">
-                        @foreach (var item in lastChanceProducts)
-                        {
-                            <div class="col-6 col-md-3">
-                                @{
-                                    ViewData["HienBadgeGiamGia"] = true;
-                                    ViewData["HienBadgeSoLuong"] = true;
-                                    ViewData["HienThanhTienDo"] = true;
-                                    ViewData["HienTextSapChayHang"] = true;
-                                    ViewData["AnhRoundedCircle"] = false;
-                                    ViewData["AnhWidth"] = "110px";
-                                    ViewData["AnhHeight"] = "110px";
-                                }
-                                @await Html.PartialAsync("_TheSanPham", item)
-                            </div>
-                        }
-                    </div>
-                </div>
-            }
-
-            <!-- Hai banner Promotion + Arrivals (giữ nguyên) -->
+            @* Banner phụ *@
             <div class="row g-4 mb-5 mt-5">
                 <div class="col-md-6">
-                    <div class="bento-glass-card bento-banner overflow-hidden position-relative d-flex align-items-center" style="height: 180px;">
+                    <div class="glass-card p-0 overflow-hidden position-relative d-flex align-items-center" style="height: 180px;">
                         <div class="p-4 w-50 z-2">
-                            <p class="text-white opacity-75 small fw-bold text-uppercase mb-1" style="letter-spacing: 2px;">Promotion</p>
-                            <h2 class="playfair-title text-white mb-3">20% <span class="fs-5 fw-normal text-lowercase fst-italic opacity-75">off</span></h2>
-                            <a href="#" class="btn btn-white-outline rounded-pill btn-sm px-4 py-2 fw-bold">Xem Ngay</a>
+                            <p class="opacity-75 small mb-1" style="letter-spacing: 2px;">Free Ship</p>
+                            <h2 class="mb-3">20%</h2>
+                            <a href="#" class="glass-btn px-4 py-2">Xem ngay</a>
                         </div>
-                        <img src="https://images.unsplash.com/photo-1544457070-4cd773b4d71e?w=500" class="position-absolute end-0 top-0 h-100 w-50 object-fit-cover opacity-75" style="-webkit-mask-image: linear-gradient(to right, transparent, black 40%);">
+                        <img src="/img/bien.jpg" class="position-absolute end-0 top-0 h-100 w-50 object-fit-cover opacity-75" style="-webkit-mask-image: linear-gradient(to right, transparent, black 40%);">
                     </div>
                 </div>
                 <div class="col-md-6">
-                    <div class="bento-glass-card bento-banner overflow-hidden position-relative d-flex align-items-center" style="height: 180px;">
+                    <div class="glass-card p-0 overflow-hidden position-relative d-flex align-items-center" style="height: 180px;">
                         <div class="p-4 w-50 z-2">
-                            <p class="text-white opacity-75 small fw-bold text-uppercase mb-1" style="letter-spacing: 2px;">Arrivals</p>
-                            <h2 class="playfair-title text-white mb-3">MỚI</h2>
-                            <a href="#" class="btn btn-white-outline rounded-pill btn-sm px-4 py-2 fw-bold">Khám Phá</a>
+                            <p class="opacity-75 small mb-1" style="letter-spacing: 2px;">Sản phẩm</p>
+                            <h2 class="mb-3">Mới</h2>
+                            <a href="#" class="glass-btn px-4 py-2">Khám phá</a>
                         </div>
-                        <img src="https://images.unsplash.com/photo-1620800615433-2a4411132644?w=500" class="position-absolute end-0 top-0 h-100 w-50 object-fit-cover opacity-75" style="-webkit-mask-image: linear-gradient(to right, transparent, black 40%);">
+                        <img src="/img/bien.jpg" class="position-absolute end-0 top-0 h-100 w-50 object-fit-cover opacity-75" style="-webkit-mask-image: linear-gradient(to right, transparent, black 40%);">
                     </div>
                 </div>
             </div>
 
-            <!-- Hàng Mới Lên Kệ (giữ nguyên) -->
+            @* Hàng mới lên kệ *@
             <div class="mb-5 mt-5">
                 <div class="d-flex justify-content-between align-items-end mb-4 px-2">
-                    <h4 class="playfair-title text-white mb-0 d-flex align-items-center">
-                        <i class="bi bi-stars text-white opacity-85 me-2"></i> Hàng Mới Lên Kệ
+                    <h4 class="mb-0 d-flex align-items-center">
+                        <i class="bi bi-stars opacity-85 me-2"></i> Hàng mới lên kệ
                     </h4>
-                    <a href="#" class="text-white text-decoration-none small fw-bold border-bottom pb-1">Xem tất cả</a>
+                    <a href="#" class="text-decoration-none small" style="border-bottom: 1px solid var(--text-main); padding-bottom: 2px;">Xem tất cả</a>
                 </div>
                 <div class="row g-4">
                     @foreach (var item in newArrivals)
@@ -334,107 +278,85 @@
                 </div>
             </div>
 
-            <!-- Gợi Ý Cho Bạn (giữ nguyên) -->
-            <h4 class="playfair-title text-white mb-4 px-2 mt-5">Gợi Ý Cho Bạn</h4>
-            <div class="bento-glass-card p-4 mb-4">
+            @* Gợi ý cho bạn (ĐÃ DỜI XUỐNG ĐÂY) *@
+            <div class="mb-5 mt-5">
+                <div class="d-flex justify-content-between align-items-end mb-4 px-2">
+                    <h4 class="mb-0 d-flex align-items-center">
+                        <i class="bi bi-heart-fill text-danger opacity-85 me-2" style="font-size: 1.1rem;"></i> Gợi ý cho bạn
+                    </h4>
+                    <a href="@Url.Action("DanhSach", "SanPham")" class="text-decoration-none small" style="border-bottom: 1px solid var(--text-main); padding-bottom: 2px;">Xem thêm</a>
+                </div>
                 <div class="row g-4">
-                    @for (int i = 0; i < (bottomListProducts.Count > 0 ? bottomListProducts.Count : 4); i++)
+                    @if (bottomListProducts != null && bottomListProducts.Any())
                     {
-                        var item = bottomListProducts.ElementAtOrDefault(i);
-                        <div class="col-6 col-lg-3">
-                            <div class="d-flex align-items-center gap-3 p-2 rounded-4 transition hover-white" style="cursor: pointer;">
-                                <img src="@(item?.HinhAnh ?? "/images/default-shell.png")" class="rounded-circle object-fit-cover border border-light" width="50" height="50">
-                                <div class="overflow-hidden">
-                                    <h6 class="text-white opacity-85 m-0 text-truncate" style="font-size: 0.8rem;">@(item?.TenSanPham ?? "Muỗng Cà Phê Xà Cừ")</h6>
-                                    <span class="text-white fw-bold" style="font-size: 0.8rem;">@(item?.GiaTien.ToString("N0") ?? "80,000") đ</span>
-                                </div>
+                        foreach (var item in bottomListProducts)
+                        {
+                            <div class="col-6 col-md-3">
+                                @{
+                                    ViewData["HienBadgeGiamGia"] = true;
+                                    ViewData["LaSanPhamMoi"] = false;
+                                    ViewData["HienBadgeSoLuong"] = false;
+                                    ViewData["HienThanhTienDo"] = false;
+                                    ViewData["AnhRoundedCircle"] = true;
+                                    ViewData["AnhWidth"] = "120px";
+                                    ViewData["AnhHeight"] = "120px";
+                                }
+                                @await Html.PartialAsync("_TheSanPham", item)
                             </div>
-                        </div>
+                        }
                     }
                 </div>
             </div>
-
         </div>
 
-        <!-- Sidebar phải (giữ nguyên) -->
+        @* CỘT PHẢI: CHÍNH SÁCH & REVIEW *@
         <div class="col-lg-2 d-none d-lg-block">
-            <!-- Icon bảo hành -->
-            <div class="bento-glass-card p-4 mb-4">
+            <div class="glass-card p-4 mb-4">
                 <div class="d-flex flex-column align-items-center text-center mb-4">
-                    <i class="bi bi-shield-check text-white opacity-85 fs-2 mb-2"></i>
-                    <h6 class="text-white small fw-bold mb-1">100% Nguyên Bản</h6>
-                    <small class="text-white opacity-50" style="font-size: 0.75rem;">Không pha tạp chất</small>
+                    <i class="bi bi-shield-check opacity-85 fs-2 mb-2"></i>
+                    <h6 class="small mb-1">100% Nguyên bản</h6>
+                    <small class="opacity-50" style="font-size: 0.75rem;">Không pha tạp chất</small>
                 </div>
                 <div class="d-flex flex-column align-items-center text-center mb-4">
-                    <i class="bi bi-box-seam text-white opacity-85 fs-2 mb-2"></i>
-                    <h6 class="text-white small fw-bold mb-1">Giao Hàng An Toàn</h6>
-                    <small class="text-white opacity-50" style="font-size: 0.75rem;">Đóng gói tiêu chuẩn</small>
+                    <i class="bi bi-box-seam opacity-85 fs-2 mb-2"></i>
+                    <h6 class="small mb-1">Giao hàng an toàn</h6>
+                    <small class="opacity-50" style="font-size: 0.75rem;">Đóng gói tiêu chuẩn</small>
                 </div>
                 <div class="d-flex flex-column align-items-center text-center">
-                    <i class="bi bi-arrow-repeat text-white opacity-85 fs-2 mb-2"></i>
-                    <h6 class="text-white small fw-bold mb-1">Đổi Trả 7 Ngày</h6>
-                    <small class="text-white opacity-50" style="font-size: 0.75rem;">Hỗ trợ tận tâm</small>
+                    <i class="bi bi-arrow-repeat opacity-85 fs-2 mb-2"></i>
+                    <h6 class="small mb-1">Đổi trả 7 ngày</h6>
+                    <small class="opacity-50" style="font-size: 0.75rem;">Hỗ trợ tận tâm</small>
                 </div>
             </div>
 
-            <!-- Review -->
-            <div class="bento-glass-card p-4 mb-4 text-center">
-                <span class="text-white opacity-75 small fw-bold text-uppercase mb-3 d-block" style="letter-spacing: 2px;">Đánh giá</span>
-
+            <div class="glass-card p-4 mb-4 text-center">
+                <span class="opacity-75 small mb-3 d-block" style="letter-spacing: 2px;">Đánh giá</span>
                 @if (ViewBag.TopReview != null)
                 {
                     <div class="position-relative d-inline-block mb-2">
-                        <img src="/images/avatar-default.png" class="rounded-circle border border-3 border-light shadow" width="70" height="70">
-                        <span class="position-absolute bottom-0 start-50 translate-middle-x badge rounded-pill bg-danger shadow-sm" style="font-size: 0.6rem; white-space: nowrap; transform: translateY(30%) !important;">
-                            <i class="bi bi-bag-check-fill me-1"></i>Mua thường xuyên
-                        </span>
+                        <img src="/images/avatar-default.png" class="rounded-circle" style="border: 1px solid var(--border-light);" width="70" height="70">
                     </div>
-
-                    <h6 class="text-white mt-3 mb-1 fw-bold">@ViewBag.TopReview.TenKhachHang</h6>
-
-                    <div class="text-warning opacity-85 mt-1 mb-2 small">
+                    <h6 class="mt-3 mb-1">@ViewBag.TopReview.TenKhachHang</h6>
+                    <div class="opacity-85 mt-1 mb-2 small">
                         <i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i>
                     </div>
-
-                    <p class="text-white opacity-75 fst-italic mb-0 lh-base" style="font-size: 0.8rem;">"@ViewBag.TopReview.NoiDung"</p>
-
-                    <a href="/SanPham/ChiTiet/@ViewBag.TopReview.SanPhamId?topReviewId=@ViewBag.TopReview.Id#review-section" class="small text-white text-decoration-underline mt-3 d-block">Xem sản phẩm này</a>
+                    <p class="opacity-75 fst-italic mb-0 lh-base" style="font-size: 0.8rem;">"@ViewBag.TopReview.NoiDung"</p>
+                    <a href="/SanPham/ChiTiet/@ViewBag.TopReview.SanPhamId?topReviewId=@ViewBag.TopReview.Id#review-section" class="small text-decoration-underline mt-3 d-block">Xem sản phẩm</a>
                 }
                 else
                 {
                     <div class="position-relative d-inline-block mb-2">
-                        <img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100" class="rounded-circle border border-3 border-light shadow" width="70" height="70">
-                        <span class="position-absolute bottom-0 start-50 translate-middle-x badge rounded-pill bg-danger shadow-sm" style="font-size: 0.6rem; white-space: nowrap; transform: translateY(30%) !important;">
+                        <img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100" class="rounded-circle" style="border: 1px solid var(--border-light);" width="70" height="70">
+                        <span class="position-absolute bottom-0 start-50 translate-middle-x badge rounded-pill glass-effect" style="font-size: 0.6rem; white-space: nowrap; transform: translateY(30%) !important;">
                             <i class="bi bi-bag-check-fill me-1"></i>Mua thường xuyên
                         </span>
                     </div>
-
-                    <h6 class="text-white mt-3 mb-1 fw-bold">Chị Lan Hương</h6>
-                    <div class="text-warning opacity-85 mt-1 mb-2 small">
+                    <h6 class="mt-3 mb-1">Chị Lan Hương</h6>
+                    <div class="opacity-85 mt-1 mb-2 small">
                         <i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i>
                     </div>
-                    <p class="text-white opacity-75 fst-italic mb-0 lh-base" style="font-size: 0.8rem;">"Tuyệt tác khảm trai tỉ mỉ đến từng chi tiết nhỏ nhất."</p>
-                    <a href="/SanPham/ChiTiet/1?topReviewId=1#review-section" class="small text-white opacity-75 mt-3 d-block"><i class="bi bi-link-45deg"></i> Xem tuyệt tác này</a>
-                }
-            </div>
-
-            <div class="bento-glass-card p-4">
-                <span class="text-white opacity-75 small fw-bold text-uppercase mb-3 d-block" style="letter-spacing: 2px;">Bài viết</span>
-                @if (ViewBag.LatestBaiViet != null)
-                {
-                    <div class="rounded-4 overflow-hidden mb-3" style="height: 120px;">
-                        <img src="@(ViewBag.LatestBaiViet.AnhNen ?? "/images/default-news.png")" class="w-100 h-100 object-fit-cover transition hover-zoom">
-                    </div>
-                    <h6 class="text-white opacity-85 small lh-base mb-2">@ViewBag.LatestBaiViet.TieuDe</h6>
-                    <a href="/BaiViet/_ChiTietNoiDung/@ViewBag.LatestBaiViet.Id" class="text-white fw-bold d-block text-decoration-none" style="font-size: 0.75rem;">Đọc thêm <i class="bi bi-arrow-right"></i></a>
-                }
-                else
-                {
-                    <div class="rounded-4 overflow-hidden mb-3" style="height: 120px;">
-                        <img src="https://images.unsplash.com/photo-1590103504812-70b135930277?w=300" class="w-100 h-100 object-fit-cover transition hover-zoom">
-                    </div>
-                    <h6 class="text-white opacity-85 small lh-base mb-2">Bí quyết giữ độ bóng cho nội thất khảm trai</h6>
-                    <a href="/BaiViet/_ChiTietNoiDung/1" class="text-white fw-bold d-block text-decoration-none" style="font-size: 0.75rem;">Đọc thêm <i class="bi bi-arrow-right"></i></a>
+                    <p class="opacity-75 fst-italic mb-0 lh-base" style="font-size: 0.8rem;">"Tuyệt tác khảm trai tỉ mỉ đến từng chi tiết nhỏ nhất."</p>
+                    <a href="/SanPham/ChiTiet/1?topReviewId=1#review-section" class="small opacity-75 mt-3 d-block"><i class="bi bi-link-45deg"></i> Xem tuyệt tác</a>
                 }
             </div>
         </div>

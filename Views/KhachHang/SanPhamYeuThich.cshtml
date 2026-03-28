@@ -1,0 +1,73 @@
+﻿@model IEnumerable<OceanShellCraft.Models.SanPhamYeuThich>
+
+@{
+    ViewData["Title"] = "Sản phẩm yêu thích";
+    Layout = "~/Views/Shared/_KhachHangLayout.cshtml";
+}
+
+<div class="container-fluid hide-scrollbar h-100 py-2">
+    <div class="d-flex justify-content-between align-items-center mb-5 pb-3" style="border-bottom: 1px solid var(--border-light);">
+        <h3 class="mb-0">
+            <i class="bi bi-heart-fill opacity-75 me-2"></i>Sản phẩm yêu thích
+        </h3>
+        <span class="glass-effect px-4 py-2 rounded-pill small">
+            @Model.Count() sản phẩm
+        </span>
+    </div>
+
+    @if (Model != null && Model.Any())
+    {
+        <div class="row g-4 pb-4">
+            @foreach (var item in Model)
+            {
+                var sp = item.SanPham;
+                <div class="col-xl-3 col-lg-4 col-md-6">
+                    <div class="glass-card h-100 d-flex flex-column p-0 overflow-hidden position-relative">
+
+                        <form asp-action="XoaYeuThich" method="post" class="position-absolute" style="top: 15px; right: 15px; z-index: 10;">
+                            @Html.AntiForgeryToken()
+                            <input type="hidden" name="sanPhamId" value="@sp.Id" />
+                            <button type="submit" class="glass-circle border-0" style="width: 32px; height: 32px;" title="Bỏ yêu thích" onclick="return confirm('Bạn muốn xóa sản phẩm này khỏi danh sách yêu thích?');">
+                                <i class="bi bi-x-lg small"></i>
+                            </button>
+                        </form>
+
+                        <a href="@Url.Action("ChiTiet", "SanPham", new { id = sp.Id })" class="text-decoration-none d-block" style="height: 220px;">
+                            <img src="@(string.IsNullOrEmpty(sp.HinhAnh) ? "/images/default-shell.png" : sp.HinhAnh)" class="w-100 h-100 object-fit-cover" alt="product">
+                        </a>
+
+                        <div class="p-4 d-flex flex-column flex-grow-1">
+                            <small class="opacity-50 mb-2 d-block" style="font-size: 0.75rem;">
+                                <i class="bi bi-clock-history me-1"></i>Đã thêm: @item.NgayThem.ToString("dd/MM/yyyy")
+                            </small>
+
+                            <a href="@Url.Action("ChiTiet", "SanPham", new { id = sp.Id })" class="text-decoration-none mb-3">
+                                <h5 class="m-0 text-truncate" style="font-size: 1.1rem;">@sp.TenSanPham</h5>
+                            </a>
+
+                            <div class="mt-auto pt-3 d-flex justify-content-between align-items-center" style="border-top: 1px solid var(--border-light);">
+                                <span class="fs-5">@sp.GiaTien.ToString("N0") đ</span>
+                                <a href="@Url.Action("ThemVaoGio", "GioHang", new { sanPhamId = sp.Id })" class="glass-btn small py-1 px-3">
+                                    <i class="bi bi-cart-plus me-1"></i>Thêm giỏ
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+    else
+    {
+        <div class="glass-card p-5 text-center mt-4" style="border-style: dashed !important;">
+            <div class="glass-circle mx-auto mb-4" style="width: 80px; height: 80px; opacity: 0.5;">
+                <i class="bi bi-heartbreak fs-2"></i>
+            </div>
+            <h4 class="mb-3">Chưa có sản phẩm yêu thích nào</h4>
+            <p class="opacity-50 mb-4">Hãy khám phá cửa hàng và thả tim những sản phẩm bạn ưng ý nhé!</p>
+            <a href="@Url.Action("DanhSach", "SanPham")" class="glass-btn px-5 py-2">
+                <i class="bi bi-shop me-2"></i>Khám phá ngay
+            </a>
+        </div>
+    }
+</div>

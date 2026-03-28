@@ -1,104 +1,92 @@
 ﻿:root {
-    /* Độ mờ của hiệu ứng kính - DUY NHẤT MỘT MÀU NỀN */
-    --glass-bg: rgba(255, 255, 255, 0.05);
-    --glass-blur: blur(15px);
-    /* Tông chữ chính */
+    --glass-bg: rgba(255, 255, 255, 0.12);
+    /* Tăng độ nhòe nền từ 15px lên 20px giúp kính có cảm giác dày dặn hơn */
+    --glass-blur: blur(20px);
+    /* Tông chữ trắng nhạt dùng chung */
     --text-main: rgba(255, 255, 255, 0.85);
     --text-dim: rgba(255, 255, 255, 0.6);
     --text-pure: #ffffff;
-    /* Màu đường viền mảnh */
-    --border-light: rgba(255, 255, 255, 0.15);
+    /* Màu đổ bóng/viền sáng */
+    --shadow-light: rgba(0, 0, 0, 0.5);
 }
 
-/* --- Cài đặt chung --- */
+/* ================================================================
+   1. CÀI ĐẶT CHUNG (Font, Màu chữ, Nền)
+   ================================================================ */
 * {
     font-family: 'Times New Roman', Times, serif !important;
-    color: var(--text-main) !important;
+    color: var(--text-main) !important; /* Chữ trắng nhạt ở mọi nơi */
+    box-sizing: border-box;
 }
 
 body {
     background: url('/img/bien.jpg') no-repeat center center fixed;
     background-size: cover;
     margin: 0;
+    min-height: 100vh;
 }
 
-/* --- Chặn Bootstrap hover đổi nền màu trắng --- */
-.btn-outline-light:hover,
-.custom-glass-btn:hover {
-    background-color: transparent !important;
-    color: var(--text-pure) !important;
-    border-color: var(--text-pure) !important;
-}
-
-/* --- Hiệu ứng Kính mờ (Dùng chung) --- */
-.glass-effect, .glass-header, .glass-footer {
+/* ================================================================
+   2. UI KÍNH DÙNG CHUNG (Dùng cho Header, Footer, Panel)
+   ================================================================ */
+.glass-effect {
     background: var(--glass-bg) !important;
     backdrop-filter: var(--glass-blur);
     -webkit-backdrop-filter: var(--glass-blur);
-    border-color: var(--border-light) !important;
-}
-
-/* --- Menu & Link --- */
-.nav-link-glass, .dropdown-item, .footer-link, .nav-link {
-    transition: color 0.25s ease-in-out !important;
-    color: var(--text-main) !important;
-    background: transparent !important;
     border: none !important;
+    box-shadow: 0 4px 15px var(--shadow-light) !important; /* Đổi viền thành đổ bóng */
 }
 
-    .nav-link-glass:hover, .nav-link-glass.active,
-    .dropdown-item:hover, .dropdown-item:focus, .dropdown-item:active,
-    .footer-link:hover, .nav-link:hover {
-        color: var(--text-pure) !important;
-        background: transparent !important;
-        box-shadow: none !important;
-        outline: none !important;
-    }
-
-/* --- Social Icons --- */
-.social-btn {
+/* ================================================================
+   3. NÚT BẤM (Dùng chung cho mọi nút)
+   ================================================================ */
+.glass-btn {
+    background: var(--glass-bg) !important;
+    backdrop-filter: var(--glass-blur);
+    -webkit-backdrop-filter: var(--glass-blur);
+    border: none !important;
+    box-shadow: 0 2px 8px var(--shadow-light) !important; /* Đổi viền thành đổ bóng */
+    color: var(--text-main) !important;
+    border-radius: 30px;
+    padding: 8px 20px;
+    font-weight: normal; /* Chữ thường */
+    text-decoration: none;
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    width: 36px;
-    height: 36px;
-    border: 1px solid var(--border-light);
-    border-radius: 50%;
-    transition: color 0.3s ease;
-    background: transparent;
-    text-decoration: none;
+    outline: none !important;
+    transition: box-shadow 0.3s ease;
 }
 
-    .social-btn:hover {
-        border-color: var(--text-main);
-        color: var(--text-pure) !important;
-        background: transparent !important;
-    }
-
-/* --- Inputs --- */
-.luxury-input-group {
-    border-bottom: 1px solid var(--border-light);
+/* ================================================================
+   4. Ô NHẬP LIỆU (Input, Textarea)
+   ================================================================ */
+.glass-input {
+    background: transparent !important;
+    border: none !important;
+    box-shadow: 0 2px 8px var(--shadow-light) !important; /* Đổi viền đáy thành đổ bóng nhẹ */
+    color: var(--text-main) !important;
+    padding: 10px;
+    width: 100%;
+    outline: none !important;
+    transition: box-shadow 0.3s ease;
 }
 
-    .luxury-input-group:focus-within {
-        border-bottom: 1px solid var(--text-main);
-    }
-
-    .luxury-input-group .form-control {
-        background: transparent !important;
+    .glass-input.pill-style {
+        background: var(--glass-bg) !important;
         border: none !important;
-        box-shadow: none !important;
-        color: var(--text-main) !important;
-        padding-left: 10px;
+        box-shadow: 0 2px 8px var(--shadow-light) !important;
+        border-radius: 50px !important;
+        padding: 12px 20px;
     }
 
-.form-control::placeholder {
-    color: var(--text-dim) !important;
-    opacity: 1;
-}
+    .glass-input::placeholder {
+        color: var(--text-dim) !important;
+        opacity: 1;
+    }
 
+/* Fix lỗi đổi nền trắng khi trình duyệt tự động điền (Autofill) */
 input:-webkit-autofill,
-input:-webkit-autofill:hover,
 input:-webkit-autofill:focus,
 input:-webkit-autofill:active {
     -webkit-background-clip: text;
@@ -107,152 +95,54 @@ input:-webkit-autofill:active {
     box-shadow: inset 0 0 20px 20px transparent !important;
 }
 
-/* --- Nút bấm chính --- */
-.btn-white-outline {
-    color: var(--text-main) !important;
-    border: 1px solid var(--border-light) !important;
+/* ================================================================
+   5. COMBOBOX / DROPDOWN (Menu sổ xuống)
+   ================================================================ */
+.glass-dropdown {
+    border-radius: 15px !important;
+    background: var(--glass-bg) !important;
+    backdrop-filter: blur(25px) !important;
+    -webkit-backdrop-filter: blur(25px) !important;
+    border: none !important;
+    box-shadow: 0 8px 25px var(--shadow-light) !important; /* Đổ bóng sâu hơn cho menu nổi */
+    padding: 10px !important;
+    margin-top: 8px !important;
+    animation: dropdownFadeIn 0.3s ease-out;
+}
+
+.glass-dropdown-item {
+    border-radius: 8px !important;
+    padding: 10px 15px !important;
     background: transparent !important;
-    border-radius: 30px;
-    transition: color 0.3s ease;
-    text-transform: uppercase;
-    font-weight: 600;
-    letter-spacing: 1px;
+    color: var(--text-main) !important;
+    border: none !important;
 }
 
-    .btn-white-outline:hover {
-        border-color: var(--text-pure) !important;
-        color: var(--text-pure) !important;
-        background: transparent !important;
+@keyframes dropdownFadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
     }
 
-/* --- Tiện ích ẩn hiện --- */
-.opacity-50 {
-    opacity: 0.5 !important;
-}
-
-.opacity-75 {
-    opacity: 0.75 !important;
-}
-
-/* ================================================================
-   LOGIN SCOPE 
-   ================================================================ */
-.login-scope {
-    background: url('/img/bien.jpg') no-repeat center center fixed;
-    background-size: cover;
-    min-height: 100vh;
-}
-
-    .login-scope .glass-panel {
-        background: var(--glass-bg) !important;
-        backdrop-filter: blur(20px);
-        -webkit-backdrop-filter: blur(20px);
-        border-left: 1px solid var(--border-light);
-    }
-
-    .login-scope .glass-sub-box {
-        background: var(--glass-bg);
-        backdrop-filter: blur(10px);
-        border: 1px solid var(--border-light);
-    }
-
-    .login-scope .luxury-input {
-        border-bottom: 1px solid var(--border-light);
-    }
-
-        .login-scope .luxury-input:focus-within {
-            border-bottom-color: var(--text-pure);
-        }
-
-    .login-scope .pill-input {
-        background: var(--glass-bg) !important;
-        border: 1px solid var(--border-light) !important;
-        border-radius: 50px !important;
-        color: var(--text-pure) !important;
-        padding: 12px 20px;
-    }
-
-        .login-scope .pill-input::placeholder {
-            color: var(--text-dim) !important;
-        }
-
-    .login-scope .social-circle {
-        width: 40px;
-        height: 40px;
-        border-radius: 50%;
-        border: 1px solid var(--border-light);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        color: var(--text-pure) !important;
-        text-decoration: none;
-        background: transparent;
-    }
-
-        .login-scope .social-circle:hover {
-            border-color: var(--text-pure);
-            background: transparent;
-        }
-
-    .login-scope .btn-light {
-        border-radius: 50px !important;
-        background: transparent !important;
-        color: var(--text-pure) !important;
-        border: 1px solid var(--text-pure) !important;
-    }
-
-        .login-scope .btn-light:hover {
-            background: transparent !important;
-            color: var(--text-pure) !important;
-        }
-
-    .login-scope .ls-3 {
-        letter-spacing: 3px;
-    }
-
-    .login-scope .hover-white:hover {
-        color: var(--text-pure) !important;
-    }
-
-@media (max-width: 991.98px) {
-    .login-scope .display-3 {
-        font-size: 2.5rem;
-    }
-
-    .login-scope .glass-panel {
-        background: var(--glass-bg) !important; /* Đã đồng bộ màu nền kính mờ */
-        border-left: none;
-        border-top: 1px solid var(--border-light);
+    to {
+        opacity: 1;
+        transform: translateY(0);
     }
 }
 
 /* ================================================================
-   BENTO GRID & GLASS CARDS 
+   6. KHUNG CARD / BENTO / LOGIN (Dùng chung cho mọi khối hộp)
    ================================================================ */
-.gt-page-wrapper {
-    background: url('/img/bien.jpg') no-repeat center center fixed;
-    background-size: cover;
-    min-height: 100vh;
-}
-
-.bento-card {
+.glass-card {
     background: var(--glass-bg) !important;
     backdrop-filter: blur(20px);
     -webkit-backdrop-filter: blur(20px);
-    border-radius: 40px;
-    border: 1px solid var(--border-light);
+    border: none !important;
+    box-shadow: 0 8px 32px var(--shadow-light) !important; /* Đổ bóng rộng cho Card */
+    padding: 20px;
 }
 
-    .bento-card:hover {
-        background: var(--glass-bg) !important;
-        border-color: var(--text-pure);
-    }
-
-.sunakka-title {
-    font-family: 'Playfair Display', serif;
-    text-transform: uppercase;
-}
-
+/* Layout Grid cho trang Bento */
 .bento-grid {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
@@ -263,7 +153,6 @@ input:-webkit-autofill:active {
 .hero-card {
     grid-column: span 3;
     min-height: 450px;
-    background: url('/img/bien2.jpg') center/cover !important;
     position: relative;
 }
 
@@ -271,20 +160,12 @@ input:-webkit-autofill:active {
     grid-column: span 2;
 }
 
-.philosophy-card {
-    grid-column: span 1;
-}
-
-.collections-card {
+.philosophy-card, .collections-card, .values-card {
     grid-column: span 1;
 }
 
 .atelier-card {
     grid-column: span 2;
-}
-
-.values-card {
-    grid-column: span 1;
 }
 
 @media (max-width: 991px) {
@@ -298,20 +179,104 @@ input:-webkit-autofill:active {
 }
 
 /* ================================================================
-   HIỆU ỨNG TRANG CÂU CHUYỆN ĐẠI DƯƠNG & BÀI VIẾT
+   7. BẢNG DỮ LIỆU (Table cho Admin, Bài viết, Trang chủ)
    ================================================================ */
+.glass-table {
+    width: 100%;
+    background: transparent !important;
+    border-collapse: collapse;
+}
+
+    .glass-table th, .glass-table td, .glass-table tr {
+        background: transparent !important;
+        color: var(--text-main) !important;
+        border: none !important;
+        box-shadow: 0 1px 2px var(--shadow-light) !important; /* Thay viền đáy bằng đổ bóng mảnh phân cách dòng */
+        padding: 12px;
+    }
+
+/* ================================================================
+   8. CÁC NÚT TRÒN (Social Icon, Category Circle, Action Icon)
+   ================================================================ */
+.glass-circle {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    border: none;
+    box-shadow: 0 2px 8px var(--shadow-light); /* Đổ bóng thay viền */
+    border-radius: 50%;
+    background: var(--glass-bg) !important;
+    backdrop-filter: var(--glass-blur);
+    color: var(--text-main) !important;
+    text-decoration: none;
+}
+
+.glass-rect {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    /* Bạn có thể thay đổi width/height tùy ý cho hình chữ nhật */
+    padding: 10px 20px;
+    min-width: 40px;
+    height: 40px;
+    border: none;
+    box-shadow: 0 2px 8px var(--shadow-light);
+    background: var(--glass-bg) !important;
+    backdrop-filter: var(--glass-blur);
+    color: var(--text-main) !important;
+    text-decoration: none;
+}
+
+/* Ẩn nền và viền/đổ bóng của button */
+.glass-circle-ghost {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    border: none;
+    box-shadow: none !important; /* Không đổ bóng */
+    background: transparent !important;
+    backdrop-filter: none;
+    border-radius: 50%;
+    color: var(--text-main) !important;
+    text-decoration: none;
+}
+
+/* ================================================================
+   9. TIỆN ÍCH & CHAT MINI & CHỮ CÁI ĐẦU
+   ================================================================ */
+.opacity-50 {
+    opacity: 0.5 !important;
+}
+
+.opacity-75 {
+    opacity: 0.75 !important;
+}
+
+.ls-3 {
+    letter-spacing: 3px;
+}
+
+/* Ẩn thanh cuộn */
+.hide-scrollbar::-webkit-scrollbar {
+    display: none;
+}
+
+.hide-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+}
+
+/* Khung cuộn ngang (Câu chuyện đại dương) */
 .ds-scroll-container {
     background: transparent !important;
     height: 100vh;
     overflow-y: auto;
     scroll-snap-type: y mandatory;
     scroll-behavior: smooth;
-}
-
-#section-detail {
-    background: url('/img/bien.jpg') no-repeat center center fixed;
-    background-size: cover;
-    scroll-snap-align: start;
 }
 
 .ds-slider-track {
@@ -330,205 +295,34 @@ input:-webkit-autofill:active {
     }
 }
 
-.shell-card {
-    background: var(--glass-bg) !important;
-    backdrop-filter: blur(10px);
-    border: 1px solid var(--border-light);
-    border-radius: 25px;
-}
-
-    .shell-card:hover {
-        border-color: var(--text-pure);
-        background: var(--glass-bg) !important;
-    }
-
-.glass-detail-box {
-    background: var(--glass-bg) !important;
-    backdrop-filter: blur(25px);
-    -webkit-backdrop-filter: blur(25px);
-    border: 1px solid var(--border-light);
-    border-radius: 40px;
-    color: var(--text-pure) !important;
-}
-
-    .glass-detail-box hr {
-        border-color: var(--border-light) !important;
-    }
-
-.bv-article-body::first-letter {
+/* Chữ cái đầu bài viết */
+.article-first-letter::first-letter {
     float: left;
     font-size: 4.5rem;
     line-height: 1;
     font-weight: bold;
     margin-right: 12px;
-    color: var(--text-pure);
-    font-family: 'Playfair Display', serif;
+    color: var(--text-main);
 }
 
-.transition {
-    transition: all 0.3s ease;
+/* Chat Mini */
+.chat-bubble-sm {
+    padding: 8px 12px;
+    font-size: 0.85rem;
+    backdrop-filter: var(--glass-blur);
+    border: none;
+    box-shadow: 0 2px 8px var(--shadow-light); /* Đổ bóng thay viền */
+    color: var(--text-main);
 }
 
-.ls-3 {
-    letter-spacing: 3px;
-}
-
-@media (max-width: 768px) {
-    .ds-slider-track {
-        animation-duration: 20s;
-    }
-}
-
-/* ================================================================
-   GIAO DIỆN KÍNH BENTO CHO TRANG CHỦ
-   ================================================================ */
-.home-artisanal-scope .playfair-title {
-    font-family: 'Playfair Display', serif;
-    text-transform: uppercase;
-}
-
-.bento-glass-card {
+.received-sm {
     background: var(--glass-bg);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
-    border: 1px solid var(--border-light);
-    border-radius: 30px;
+    border-radius: 0 15px 15px 15px;
 }
 
-.bento-product-card:hover {
-    background: var(--glass-bg);
-    border-color: var(--text-pure);
-}
-
-.bento-banner {
-    border-radius: 40px;
-}
-
-.hover-zoom img {
-    transition: 0.4s ease;
-}
-
-.hover-zoom:hover img {
-    transform: scale(1.12);
-}
-
-.circle-category {
-    width: 80px;
-    height: 80px;
-    background: var(--glass-bg);
-    backdrop-filter: blur(10px);
-    border: 1px solid var(--border-light);
-}
-
-    .circle-category:hover, .circle-category.active {
-        border-color: var(--text-pure);
-        background: var(--glass-bg);
-    }
-
-.hide-scrollbar::-webkit-scrollbar {
-    display: none;
-}
-
-.hide-scrollbar {
-    -ms-overflow-style: none;
-    scrollbar-width: none;
-}
-
-/* ================================================================
-   BẢNG QUẢN TRỊ & HỒ SƠ 
-   ================================================================ */
-.transition-row:hover {
-    background: transparent !important;
-}
-
-.no-hover-bg:hover, .no-hover-bg:focus, .no-hover-bg:active {
-    background-color: transparent !important;
-    color: var(--text-pure) !important;
-    border-color: var(--text-pure) !important;
-}
-
-.action-icon {
-    width: 32px;
-    height: 32px;
-    padding: 0;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 6px;
-    background: transparent !important;
-}
-
-    .action-icon:hover {
-        background-color: transparent !important;
-        color: var(--text-pure) !important;
-        border: 1px solid var(--text-pure);
-    }
-
-.admin-table-transparent > :not(caption) > * > * {
-    box-shadow: none !important;
-}
-
-.form-control:focus, .form-select:focus {
-    border-color: var(--text-pure) !important;
-    background: transparent !important;
-    box-shadow: none !important;
-}
-
-.tracking-wider {
-    letter-spacing: 0.05em;
-}
-
-#avatarPreview {
-    transition: transform 0.3s ease;
-}
-
-    #avatarPreview:hover {
-        transform: scale(1.05);
-    }
-
-/* ================================================================
-   DROPDOWN / COMBOBOX
-   ================================================================ */
-#GioiTinhDropdownBtn[aria-expanded="true"],
-#GioiTinhDropdownBtn:focus {
-    background: transparent !important;
-    border-color: var(--text-pure) !important;
-    box-shadow: none !important;
-}
-
-.dropdown-menu.glass-effect {
-    border-radius: 15px !important;
-    background: var(--glass-bg) !important;
-    backdrop-filter: blur(25px) !important;
-    -webkit-backdrop-filter: blur(25px) !important;
-    border: 1px solid var(--border-light) !important;
-    box-shadow: none !important;
-    padding: 10px !important;
-    margin-top: 8px !important;
-    animation: dropdownFadeIn 0.3s ease-out;
-}
-
-.dropdown-menu .dropdown-item {
-    border-radius: 8px !important;
-    padding: 10px 15px !important;
-    background: transparent !important;
-}
-
-    .dropdown-menu .dropdown-item:hover {
-        background: transparent !important;
-        color: var(--text-pure) !important;
-        border-left: 2px solid var(--text-pure);
-        transform: translateX(5px);
-    }
-
-@keyframes dropdownFadeIn {
-    from {
-        opacity: 0;
-        transform: translateY(10px);
-    }
-
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
+.sent-sm {
+    background: rgba(255, 255, 255, 0.15);
+    border-radius: 15px 0 15px 15px;
+    border: none;
+    box-shadow: 0 2px 8px rgba(255, 255, 255, 0.4); /* Đổ bóng sáng hơn cho tin nhắn gửi */
 }

@@ -9,46 +9,72 @@
         else if (url.Contains("v=")) videoId = url.Split("v=")[1].Split('&')[0];
         else videoId = url;
     }
+
+    // Hàm hỗ trợ viết hoa chữ cái đầu tiên
+    string CapitalizeFirst(string input, string defaultVal)
+    {
+        if (string.IsNullOrWhiteSpace(input)) return defaultVal;
+        input = input.Trim().ToLower(); // Đưa về chữ thường trước
+        if (input.Length == 0) return defaultVal;
+        return char.ToUpper(input[0]) + input.Substring(1);
+    }
+
+    // Xử lý dữ liệu
+    string hinhThuc = CapitalizeFirst(Model.HinhThuc, "Artisanal");
+    string tieuDe = CapitalizeFirst(Model.TieuDe, "Tiêu đề bài viết");
+    string tomTat = CapitalizeFirst(Model.NoiDungTomTat, "");
 }
 
-<div class="article-inner">
+<div class="article-inner py-4">
     <div class="text-center mb-5">
-        <span class="text-white-50 fw-bold text-uppercase small ls-3">@(Model.HinhThuc ?? "ARTISANAL")</span>
-        <h1 class="display-3 fw-bold text-white mt-2 mb-4">@Model.TieuDe</h1>
-        <hr class="mx-auto border-white opacity-25" style="width: 80px;">
+        <span class="opacity-50 small" style="letter-spacing: 2px;">
+            @hinhThuc
+        </span>
+        <h1 class="display-3 mt-2 mb-4">
+            @tieuDe
+        </h1>
+        <div class="mx-auto" style="width: 60px; height: 1px; background: var(--border-light);"></div>
     </div>
 
-    @if (!string.IsNullOrEmpty(Model.NoiDungTomTat))
+    @if (!string.IsNullOrEmpty(tomTat))
     {
         <div class="px-lg-5 mb-5 text-center">
-            <p class="fs-4 fst-italic text-white opacity-75" style="line-height: 1.6;">"@Model.NoiDungTomTat"</p>
+            <p class="fs-4 fst-italic opacity-75" style="line-height: 1.6;">
+                "@tomTat"
+            </p>
         </div>
     }
 
-    <div class="bv-article-body fs-5 lh-lg text-white opacity-75 mb-5" style="text-align: justify;">
+    <div class="article-first-letter fs-5 lh-lg opacity-75 mb-5" style="text-align: justify;">
         @Html.Raw(Model.NoiDung)
     </div>
 
     @if (!string.IsNullOrEmpty(videoId))
     {
-        <div class="mt-5 ratio ratio-16x9 rounded-4 overflow-hidden border border-white border-opacity-10 shadow-lg">
+        <div class="mt-5 ratio ratio-16x9 rounded-4 overflow-hidden" style="border: 1px solid var(--border-light);">
             <iframe src="https://www.youtube.com/embed/@videoId" allowfullscreen frameborder="0"></iframe>
         </div>
     }
 
-    <div class="mt-5 pt-4 border-top border-white border-opacity-10 d-flex flex-column flex-md-row justify-content-between align-items-center gap-3">
-        <div class="small text-white-50 opacity-50">#OceanShellCraft #ArtisanalHeritage</div>
-        <div class="d-flex gap-4">
-            <span class="small text-white-50 opacity-50 text-uppercase">Chia sẻ:</span>
-            <a href="#" class="text-white opacity-50 hover-opacity-100 fs-5 transition"><i class="bi bi-facebook"></i></a>
-            <a href="#" class="text-white opacity-50 hover-opacity-100 fs-5 transition"><i class="bi bi-link-45deg"></i></a>
+    <div class="mt-5 pt-4 d-flex flex-column flex-md-row justify-content-between align-items-center gap-3" style="border-top: 1px solid var(--border-light);">
+        <div class="small opacity-50">
+            #OceanShellCraft #ArtisanalHeritage
+        </div>
+        <div class="d-flex align-items-center gap-4">
+            <span class="small opacity-50">Chia sẻ:</span>
+            <a href="#" class="glass-circle" style="width: 35px; height: 35px; border: none !important;">
+                <i class="bi bi-facebook"></i>
+            </a>
+            <a href="#" class="glass-circle" style="width: 35px; height: 35px; border: none !important;">
+                <i class="bi bi-link-45deg fs-5"></i>
+            </a>
         </div>
     </div>
 
     <div class="text-center mt-5">
-        <button class="btn btn-outline-light rounded-pill px-5 py-2 border-opacity-25 opacity-50 hover-opacity-100"
+        <button class="glass-btn px-5 py-2 opacity-75"
                 onclick="document.getElementById('mainScroll').scrollTo({top: 0, behavior: 'smooth'})">
-            <i class="bi bi-arrow-up me-2"></i> QUAY LẠI DANH SÁCH
+            <i class="bi bi-arrow-up me-2"></i>Quay lại đầu trang
         </button>
     </div>
 </div>

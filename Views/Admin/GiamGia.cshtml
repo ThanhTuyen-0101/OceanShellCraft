@@ -1,0 +1,115 @@
+﻿@model IEnumerable<OceanShellCraft.Models.GiamGia>
+@{
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+    ViewData["Title"] = "Quản lý mã giảm giá";
+}
+
+<div class="container-fluid py-4">
+    @* --- Đầu trang --- *@
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h4 class="m-0 fw-normal">@ViewData["Title"]</h4>
+        </div>
+
+        <div class="d-flex gap-2">
+            <a href="/Admin/ThemSuaGiamGia" class="glass-btn small py-1 px-3 fw-normal">
+                <i class="bi bi-plus-circle me-1"></i>Thêm mới (F7)
+            </a>
+        </div>
+    </div>
+
+    @* --- Bảng dữ liệu --- *@
+    <div class="glass-card p-0 overflow-hidden">
+        <div class="table-responsive">
+            <table class="glass-table mb-0 align-middle">
+                <thead>
+                    <tr>
+                        <th class="ps-4" style="width: 40px;"><input type="checkbox" class="form-check-input" id="selectAll"></th>
+                        <th class="fw-normal">Mã Voucher</th>
+                        <th class="fw-normal">Tên Voucher</th>
+                        <th class="text-center fw-normal">Hạn sử dụng</th>
+                        <th class="text-center fw-normal">Đối tượng áp dụng</th>
+                        <th class="text-center fw-normal">Trạng thái</th>
+                        <th class="text-end pe-4 fw-normal">Thao tác</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (Model != null && Model.Any())
+                    {
+                        foreach (var item in Model)
+                        {
+                            var isExpired = item.HanSuDung < DateTime.Now;
+                            <tr>
+                                <td class="ps-4">
+                                    <input type="checkbox" class="form-check-input item-checkbox" value="@item.Id">
+                                </td>
+                                <td>
+                                    <div class="fw-bold text-uppercase @(isExpired ? "opacity-50" : "")">@item.MaVoucher</div>
+                                </td>
+                                <td>
+                                    <div class="fw-normal @(isExpired ? "opacity-50" : "")">@item.TenVoucher</div>
+                                </td>
+                                <td class="text-center">
+                                    @* Nếu hết hạn thì làm mờ ngày tháng đi *@
+                                    <div class="small @(isExpired ? "opacity-50" : "")">@item.HanSuDung.ToString("dd/MM/yyyy")</div>
+                                    <div class="small opacity-50">@item.HanSuDung.ToString("HH:mm")</div>
+                                </td>
+                                <td class="text-center">
+                                    @* Dùng class glass-effect từ site.css *@
+                                    @if (item.NguoiDungId.HasValue)
+                                    {
+                                        <span class="badge glass-effect px-3 py-2 fw-normal @(isExpired ? "opacity-50" : "")">
+                                            Cá nhân: @(item.NguoiDung?.Id.ToString() ?? "N/A")
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge glass-effect px-3 py-2 fw-normal opacity-75 @(isExpired ? "opacity-50" : "")">
+                                            Dùng chung
+                                        </span>
+                                    }
+                                </td>
+                                <td class="text-center">
+                                    @* Phân biệt bằng độ mờ thay vì màu sắc *@
+                                    @if (isExpired)
+                                    {
+                                        <span class="badge glass-effect px-3 py-2 fw-normal opacity-50">Hết hạn</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge glass-effect px-3 py-2 fw-normal">Còn hạn</span>
+                                    }
+                                </td>
+                                <td class="text-end pe-4">
+                                    <div class="d-flex justify-content-end gap-2">
+                                        <a asp-action="ThemSuaGiamGia" asp-route-id="@item.Id" class="glass-btn p-1 px-2 fw-normal"><i class="bi bi-pencil small"></i></a>
+                                        @* Đã bỏ class text-danger ở icon thùng rác *@
+                                        <a asp-action="XoaGiamGia" asp-route-id="@item.Id" class="glass-btn p-1 px-2 fw-normal" onclick="return confirm('Xác nhận xóa mã voucher này?');"><i class="bi bi-trash small"></i></a>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    }
+                    else
+                    {
+                        <tr>
+                            <td colspan="7" class="text-center py-4 opacity-50">Chưa có mã giảm giá nào</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        // Phím tắt F7
+        document.addEventListener('keydown', e => {
+            if (e.key === 'F7') {
+                e.preventDefault();
+                window.location.href = '/Admin/ThemSuaGiamGia';
+            }
+        });
+    </script>
+}

@@ -2,7 +2,6 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.EntityFrameworkCore;
 using OceanShellCraft.Models;
 using OceanShellCraft.Hubs;
-
 var builder = WebApplication.CreateBuilder(args);
 
 // 1. Cấu hình DbContext
@@ -49,11 +48,11 @@ app.MapStaticAssets();
 app.UseRouting();
 app.UseAuthentication();
 app.UseAuthorization();
-
+app.MapHub<ChatHub>("/chatHub");
 // ==========================================
 // QUAN TRỌNG: ĐỊNH TUYẾN CHAT HUB
 // ==========================================
-app.MapHub<ChatHub>("/chatHub");
+
 
 // Cấu hình Routing
 app.MapControllerRoute(

@@ -1,21 +1,27 @@
 ﻿@model OceanShellCraft.Models.DanhMuc
 
-<div class="container mt-5">
+<div class="container py-5">
     <div class="row justify-content-center">
         <div class="col-md-6">
-            <div class="card shadow border-0">
-                <div class="card-header bg-primary text-white">
-                    <h4 class="mb-0">Thêm Loại Sản Phẩm Mới</h4>
+            <div class="glass-card p-0 overflow-hidden">
+                <div class="px-4 py-3" style="border-bottom: 1px solid var(--border-light);">
+                    <h4 class="mb-0 text-center">thêm loại sản phẩm mới</h4>
                 </div>
-                <div class="card-body p-4">
+
+                <div class="p-4">
                     <form asp-action="TaoMoi">
-                        <div class="mb-3">
-                            <label class="form-label fw-bold">Tên Danh Mục</label>
-                            <input asp-for="TenDanhMuc" class="form-control" placeholder="VD: Đèn Trang Trí" required />
+                        <div class="mb-4">
+                            <label class="small opacity-75 mb-2 ps-2">tên danh mục</label>
+                            <input asp-for="TenDanhMuc" class="glass-input" placeholder="vd: đèn trang trí" required />
                         </div>
-                        <div class="d-grid gap-2">
-                            <button type="submit" class="btn btn-primary">Lưu Danh Mục</button>
-                            <a asp-action="DanhSach" class="btn btn-outline-secondary">Hủy bỏ</a>
+
+                        <div class="d-grid gap-3">
+                            <button type="submit" class="glass-btn py-2">
+                                lưu danh mục
+                            </button>
+                            <a asp-action="DanhSach" class="text-center small opacity-50 text-decoration-none">
+                                hủy bỏ và quay lại
+                            </a>
                         </div>
                     </form>
                 </div>

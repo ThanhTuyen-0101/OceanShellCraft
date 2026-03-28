@@ -11,7 +11,6 @@ namespace OceanShellCraft.Models
         public int SanPhamId { get; set; }
         public int SoLuong { get; set; }
         public decimal GiaLucMua { get; set; }
-
         public virtual DonHang? DonHang { get; set; }
         public virtual SanPham? SanPham { get; set; }
     }

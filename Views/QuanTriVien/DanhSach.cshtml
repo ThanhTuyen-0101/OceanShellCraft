@@ -1,56 +1,57 @@
 ﻿@model IEnumerable<OceanShellCraft.Models.NguoiDung>
 
-<div class="container mt-4">
+<div class="container py-4">
     <div class="d-flex justify-content-between align-items-center mb-4">
-        <h2 class="fw-bold text-primary"><i class="bi bi-people-fill"></i> Quản Lý Thành Viên</h2>
+        <h2 class="mb-0"><i class="bi bi-people-fill me-2"></i>quản lý thành viên</h2>
     </div>
 
     @if (TempData["ThongBao"] != null)
     {
-        <div class="alert alert-success alert-dismissible fade show shadow-sm" role="alert">
-            <i class="bi bi-check-circle-fill me-2"></i> @TempData["ThongBao"]
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        <div class="glass-card mb-4 p-3 d-flex justify-content-between align-items-center" role="alert">
+            <span class="small"><i class="bi bi-check-circle-fill me-2"></i>@TempData["ThongBao"]?.ToString().ToLower()</span>
+            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="alert" aria-label="close" style="filter: invert(1);"></button>
         </div>
     }
 
-    <div class="card border-0 shadow-sm">
+    <div class="glass-card p-0 overflow-hidden">
         <div class="table-responsive">
-            <table class="table table-hover align-middle mb-0">
-                <thead class="table-light">
+            <table class="glass-table mb-0 align-middle">
+                <thead>
                     <tr>
-                        <th class="ps-4">Họ và Tên</th>
-                        <th>Email</th>
-                        <th>Vai Trò</th>
-                        <th class="text-center">Thao Tác</th>
+                        <th class="ps-4">họ và tên</th>
+                        <th>email</th>
+                        <th>vai trò</th>
+                        <th class="text-center">thao tác</th>
                     </tr>
                 </thead>
                 <tbody>
                     @foreach (var item in Model)
                     {
                         <tr>
-                            <td class="ps-4 fw-bold">@item.HoTen</td>
-                            <td>@item.Email</td>
+                            <td class="ps-4">@item.HoTen?.ToLower()</td>
+                            <td class="opacity-75">@item.Email?.ToLower()</td>
                             <td>
                                 @if (item.VaiTro == "Admin")
                                 {
-                                    <span class="badge bg-danger">Quản Trị Viên</span>
+                                    <span class="small">quản trị viên</span>
                                 }
                                 else
                                 {
-                                    <span class="badge bg-primary">Khách Hàng</span>
+                                    <span class="small opacity-50">khách hàng</span>
                                 }
                             </td>
-                            <td class="text-center">
-                                <div class="btn-group">
-                                    <a asp-action="SuaQuyen" asp-route-id="@item.Id" class="btn btn-sm btn-outline-warning">
-                                        <i class="bi bi-pencil-square"></i> Đổi Quyền
+                            <td class="text-center px-4">
+                                <div class="d-flex justify-content-center gap-2">
+                                    <a asp-action="SuaQuyen" asp-route-id="@item.Id" class="glass-btn py-1 px-3 small">
+                                        <i class="bi bi-pencil-square me-1"></i>đổi quyền
                                     </a>
+
                                     @if (item.Email != "admin@biendanang.com")
                                     {
                                         <form asp-action="XoaNguoiDung" asp-route-id="@item.Id" method="post"
-                                              onsubmit="return confirm('Bạn có chắc chắn muốn xóa người dùng này?')">
-                                            <button type="submit" class="btn btn-sm btn-outline-danger ms-1">
-                                                <i class="bi bi-trash"></i> Xóa
+                                              onsubmit="return confirm('bạn có chắc chắn muốn xóa người dùng này?')">
+                                            <button type="submit" class="glass-btn py-1 px-3 small opacity-75">
+                                                <i class="bi bi-trash me-1"></i>xóa
                                             </button>
                                         </form>
                                     }

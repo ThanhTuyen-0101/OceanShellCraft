@@ -1,11 +1,12 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using MiniExcelLibs;
 using OceanShellCraft.Models;
-using Microsoft.AspNetCore.Authorization;
 using System.Data;
+using System.Security.Claims;
 
 namespace OceanShellCraft.Controllers
 {
@@ -19,11 +20,11 @@ namespace OceanShellCraft.Controllers
         }
 
         #region 1. Danh sách Sản phẩm (Công khai cho mọi người)
-        [AllowAnonymous] // Đảm bảo ai cũng vào được
+        [AllowAnonymous]
         [HttpGet]
         public async Task<IActionResult> DanhSach(int? maDanhMuc, int page = 1)
         {
-            int pageSize = 9; // Thường chia hết cho 3 để đẹp lưới Bootstrap (col-md-4)
+            int pageSize = 9;
             var query = _context.SanPhams.Include(s => s.DanhMuc).AsQueryable();
 
             if (maDanhMuc.HasValue)
@@ -34,7 +35,6 @@ namespace OceanShellCraft.Controllers
             int totalItems = await query.CountAsync();
             int totalPages = (int)Math.Ceiling((double)totalItems / pageSize);
 
-            // Gửi dữ liệu qua ViewBag để View hiển thị
             ViewBag.TotalPages = totalPages;
             ViewBag.CurrentPage = page;
             ViewBag.CurrentCategory = maDanhMuc;
@@ -42,7 +42,7 @@ namespace OceanShellCraft.Controllers
 
             var data = await query.Skip((page - 1) * pageSize).Take(pageSize).ToListAsync();
 
-            return View(data); // Sẽ tìm file Views/SanPham/DanhSach.cshtml
+            return View(data);
         }
         #endregion
 
@@ -53,11 +53,37 @@ namespace OceanShellCraft.Controllers
         {
             var sanPham = await _context.SanPhams
                 .Include(s => s.DanhMuc)
+                .Include(s => s.DanhGias)
+                    .ThenInclude(dg => dg.NguoiDung)
                 .FirstOrDefaultAsync(m => m.Id == id);
 
             if (sanPham == null) return NotFound();
 
-            return View(sanPham); // Sẽ tìm file Views/SanPham/ChiTiet.cshtml
+            bool canReview = false;
+            bool isFavorite = false; // Biến kiểm tra sản phẩm đã được yêu thích chưa
+
+            if (User.Identity.IsAuthenticated)
+            {
+                var userIdClaim = User.FindFirstValue(ClaimTypes.NameIdentifier);
+                if (int.TryParse(userIdClaim, out int uId))
+                {
+                    // Check quyền đánh giá
+                    canReview = await _context.DonHangs
+                        .Include(dh => dh.ChiTietDonHangs)
+                        .AnyAsync(dh => dh.NguoiDungId == uId
+                                     && dh.TrangThai == "Đã hoàn thành"
+                                     && dh.ChiTietDonHangs.Any(ct => ct.SanPhamId == id));
+
+                    // Check trạng thái yêu thích
+                    isFavorite = await _context.SanPhamYeuThiches
+                        .AnyAsync(yt => yt.NguoiDungId == uId && yt.SanPhamId == id);
+                }
+            }
+
+            ViewBag.CanReview = canReview;
+            ViewBag.IsFavorite = isFavorite; // Truyền ra View
+
+            return View(sanPham);
         }
         #endregion
 
@@ -133,7 +159,6 @@ namespace OceanShellCraft.Controllers
             return File(stream.ToArray(), "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "Mau_Nhap_San_Pham.xlsx");
         }
 
-        // Hàm phụ lưu ảnh
         private async Task<string> SaveImage(IFormFile file)
         {
             string fileName = Guid.NewGuid().ToString() + Path.GetExtension(file.FileName);
@@ -143,6 +168,79 @@ namespace OceanShellCraft.Controllers
                 await file.CopyToAsync(stream);
             }
             return "/img/" + fileName;
+        }
+        #endregion
+
+        #region 5. Đánh giá Sản phẩm
+        [HttpPost]
+        [Authorize]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> ThemDanhGia(int SanPhamId, int SoSao, string NoiDung)
+        {
+            var userIdClaim = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (string.IsNullOrEmpty(userIdClaim) || !int.TryParse(userIdClaim, out int uId))
+                return RedirectToAction("DangNhap", "TaiKhoan");
+
+            var donHangHopLe = await _context.DonHangs
+                .Include(dh => dh.ChiTietDonHangs)
+                .FirstOrDefaultAsync(dh => dh.NguoiDungId == uId
+                                        && dh.TrangThai == "Đã hoàn thành"
+                                        && dh.ChiTietDonHangs.Any(ct => ct.SanPhamId == SanPhamId));
+
+            if (donHangHopLe == null)
+                return RedirectToAction("ChiTiet", "SanPham", new { id = SanPhamId }, "danh-gia");
+
+            var danhGiaMoi = new OceanShellCraft.Models.DanhGia
+            {
+                SanPhamId = SanPhamId,
+                NguoiDungId = uId,
+                DonHangId = donHangHopLe.Id,
+                SoSao = SoSao,
+                NoiDung = NoiDung,
+                NgayDanhGia = DateTime.Now
+            };
+
+            _context.DanhGias.Add(danhGiaMoi);
+            await _context.SaveChangesAsync();
+
+            return RedirectToAction("ChiTiet", "SanPham", new { id = SanPhamId }, "danh-gia");
+        }
+        #endregion
+
+        #region 6. Xử lý Sản Phẩm Yêu Thích (AJAX)
+        [HttpPost]
+        [Authorize]
+        public async Task<IActionResult> ToggleFavorite(int sanPhamId)
+        {
+            var userIdClaim = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (string.IsNullOrEmpty(userIdClaim) || !int.TryParse(userIdClaim, out int uId))
+            {
+                return Json(new { success = false, message = "Vui lòng đăng nhập" });
+            }
+
+            // Kiểm tra xem đã có trong danh sách yêu thích chưa
+            var existingFav = await _context.SanPhamYeuThiches
+                .FirstOrDefaultAsync(yt => yt.NguoiDungId == uId && yt.SanPhamId == sanPhamId);
+
+            if (existingFav != null)
+            {
+                // Nếu đã có -> Xóa khỏi danh sách (Bỏ tim)
+                _context.SanPhamYeuThiches.Remove(existingFav);
+                await _context.SaveChangesAsync();
+                return Json(new { success = true, isFavorite = false });
+            }
+            else
+            {
+                // Nếu chưa có -> Thêm vào danh sách (Thả tim)
+                var newFav = new SanPhamYeuThich
+                {
+                    NguoiDungId = uId,
+                    SanPhamId = sanPhamId
+                };
+                _context.SanPhamYeuThiches.Add(newFav);
+                await _context.SaveChangesAsync();
+                return Json(new { success = true, isFavorite = true });
+            }
         }
         #endregion
     }

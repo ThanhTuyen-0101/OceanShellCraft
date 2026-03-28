@@ -58,6 +58,34 @@ namespace OceanShellCraft.Migrations
                     b.ToTable("BaiViets");
                 });
 
+            modelBuilder.Entity("OceanShellCraft.Models.BienTheSanPham", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<decimal>("GiaRieng")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<int>("SanPhamId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("SoLuongRieng")
+                        .HasColumnType("int");
+
+                    b.Property<string>("TenBienThe")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("SanPhamId");
+
+                    b.ToTable("BienTheSanPhams");
+                });
+
             modelBuilder.Entity("OceanShellCraft.Models.ChiTietDonHang", b =>
                 {
                     b.Property<int>("Id")
@@ -179,6 +207,35 @@ namespace OceanShellCraft.Migrations
                     b.ToTable("DonHangs");
                 });
 
+            modelBuilder.Entity("OceanShellCraft.Models.GiamGia", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("HanSuDung")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("MaVoucher")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("NguoiDungId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("TenVoucher")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("NguoiDungId");
+
+                    b.ToTable("GiamGias");
+                });
+
             modelBuilder.Entity("OceanShellCraft.Models.GioHang", b =>
                 {
                     b.Property<int>("Id")
@@ -207,6 +264,37 @@ namespace OceanShellCraft.Migrations
                     b.ToTable("GioHangs");
                 });
 
+            modelBuilder.Entity("OceanShellCraft.Models.LichSuTonKho", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("GhiChu")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("LoaiThayDoi")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("NgayThayDoi")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("SanPhamId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("SoLuongThayDoi")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("SanPhamId");
+
+                    b.ToTable("LichSuTonKhos");
+                });
+
             modelBuilder.Entity("OceanShellCraft.Models.NguoiDung", b =>
                 {
                     b.Property<int>("Id")
@@ -220,6 +308,9 @@ namespace OceanShellCraft.Migrations
 
                     b.Property<string>("DiaChi")
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("DiemTichLuy")
+                        .HasColumnType("int");
 
                     b.Property<string>("Email")
                         .IsRequired()
@@ -289,15 +380,86 @@ namespace OceanShellCraft.Migrations
                     b.Property<int>("SoLuong")
                         .HasColumnType("int");
 
+                    b.Property<int>("SoLuongDaBan")
+                        .HasColumnType("int");
+
                     b.Property<string>("TenSanPham")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("TrangThai")
+                        .HasColumnType("int");
 
                     b.HasKey("Id");
 
                     b.HasIndex("DanhMucId");
 
                     b.ToTable("SanPhams");
+                });
+
+            modelBuilder.Entity("OceanShellCraft.Models.SanPhamYeuThich", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("NgayThem")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("NguoiDungId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("SanPhamId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("NguoiDungId");
+
+                    b.HasIndex("SanPhamId");
+
+                    b.ToTable("SanPhamYeuThiches");
+                });
+
+            modelBuilder.Entity("OceanShellCraft.Models.TinNhan", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<bool>("IsAdmin")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("NguoiDungId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("NoiDung")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("ThoiGian")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("NguoiDungId");
+
+                    b.ToTable("TinNhans");
+                });
+
+            modelBuilder.Entity("OceanShellCraft.Models.BienTheSanPham", b =>
+                {
+                    b.HasOne("OceanShellCraft.Models.SanPham", "SanPham")
+                        .WithMany("BienThes")
+                        .HasForeignKey("SanPhamId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("SanPham");
                 });
 
             modelBuilder.Entity("OceanShellCraft.Models.ChiTietDonHang", b =>
@@ -331,7 +493,7 @@ namespace OceanShellCraft.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("OceanShellCraft.Models.SanPham", null)
+                    b.HasOne("OceanShellCraft.Models.SanPham", "SanPham")
                         .WithMany("DanhGias")
                         .HasForeignKey("SanPhamId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -340,6 +502,8 @@ namespace OceanShellCraft.Migrations
                     b.Navigation("DonHang");
 
                     b.Navigation("NguoiDung");
+
+                    b.Navigation("SanPham");
                 });
 
             modelBuilder.Entity("OceanShellCraft.Models.DonHang", b =>
@@ -353,7 +517,27 @@ namespace OceanShellCraft.Migrations
                     b.Navigation("NguoiDung");
                 });
 
+            modelBuilder.Entity("OceanShellCraft.Models.GiamGia", b =>
+                {
+                    b.HasOne("OceanShellCraft.Models.NguoiDung", "NguoiDung")
+                        .WithMany()
+                        .HasForeignKey("NguoiDungId");
+
+                    b.Navigation("NguoiDung");
+                });
+
             modelBuilder.Entity("OceanShellCraft.Models.GioHang", b =>
+                {
+                    b.HasOne("OceanShellCraft.Models.SanPham", "SanPham")
+                        .WithMany()
+                        .HasForeignKey("SanPhamId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("SanPham");
+                });
+
+            modelBuilder.Entity("OceanShellCraft.Models.LichSuTonKho", b =>
                 {
                     b.HasOne("OceanShellCraft.Models.SanPham", "SanPham")
                         .WithMany()
@@ -375,6 +559,36 @@ namespace OceanShellCraft.Migrations
                     b.Navigation("DanhMuc");
                 });
 
+            modelBuilder.Entity("OceanShellCraft.Models.SanPhamYeuThich", b =>
+                {
+                    b.HasOne("OceanShellCraft.Models.NguoiDung", "NguoiDung")
+                        .WithMany()
+                        .HasForeignKey("NguoiDungId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("OceanShellCraft.Models.SanPham", "SanPham")
+                        .WithMany()
+                        .HasForeignKey("SanPhamId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("NguoiDung");
+
+                    b.Navigation("SanPham");
+                });
+
+            modelBuilder.Entity("OceanShellCraft.Models.TinNhan", b =>
+                {
+                    b.HasOne("OceanShellCraft.Models.NguoiDung", "KhachHang")
+                        .WithMany("TinNhans")
+                        .HasForeignKey("NguoiDungId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("KhachHang");
+                });
+
             modelBuilder.Entity("OceanShellCraft.Models.DanhMuc", b =>
                 {
                     b.Navigation("SanPhams");
@@ -390,10 +604,14 @@ namespace OceanShellCraft.Migrations
             modelBuilder.Entity("OceanShellCraft.Models.NguoiDung", b =>
                 {
                     b.Navigation("DanhGias");
+
+                    b.Navigation("TinNhans");
                 });
 
             modelBuilder.Entity("OceanShellCraft.Models.SanPham", b =>
                 {
+                    b.Navigation("BienThes");
+
                     b.Navigation("DanhGias");
                 });
 #pragma warning restore 612, 618

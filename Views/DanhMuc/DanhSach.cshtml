@@ -1,30 +1,38 @@
 ﻿@model IEnumerable<OceanShellCraft.Models.DanhMuc>
 
-<div class="container mt-4">
+<div class="container py-4">
     <div class="d-flex justify-content-between align-items-center mb-4">
-        <h2>Quản Lý Danh Mục Mỹ Nghệ</h2>
-        <a asp-action="TaoMoi" class="btn btn-success"><i class="fas fa-plus"></i> Thêm Loại Mới</a>
+        <h2 class="mb-0">quản lý danh mục mỹ nghệ</h2>
+        <a asp-action="TaoMoi" class="glass-btn">
+            <i class="bi bi-plus-lg me-2"></i>thêm loại mới
+        </a>
     </div>
 
-    <table class="table table-hover shadow-sm">
-        <thead class="table-dark">
-            <tr>
-                <th>Mã (ID)</th>
-                <th>Tên Loại Sản Phẩm</th>
-                <th>Thao tác</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var item in Model)
-            {
-                <tr>
-                    <td>@item.Id</td>
-                    <td>@item.TenDanhMuc</td>
-                    <td>
-                        <button class="btn btn-sm btn-outline-danger"><i class="fas fa-trash"></i></button>
-                    </td>
-                </tr>
-            }
-        </tbody>
-    </table>
+    <div class="glass-card p-0 overflow-hidden">
+        <div class="table-responsive">
+            <table class="glass-table mb-0 align-middle">
+                <thead>
+                    <tr>
+                        <th class="ps-4" style="width: 150px;">mã (id)</th>
+                        <th>tên loại sản phẩm</th>
+                        <th class="text-center" style="width: 150px;">thao tác</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model)
+                    {
+                        <tr>
+                            <td class="ps-4 opacity-75">#@item.Id.ToString("D3")</td>
+                            <td>@item.TenDanhMuc?.ToLower()</td>
+                            <td class="text-center px-4">
+                                <button class="glass-btn py-1 px-3 small opacity-75">
+                                    <i class="bi bi-trash me-1"></i>xóa
+                                </button>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
 </div>

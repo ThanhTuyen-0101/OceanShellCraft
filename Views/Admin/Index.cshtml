@@ -1,204 +1,302 @@
-﻿@{
-    ViewData["Title"] = "Dashboard";
+﻿@model OceanShellCraft.Models.ViewModels.AdminDashboardVM
+@{
     Layout = "~/Views/Shared/_AdminLayout.cshtml";
 }
 
-<style>
-    /* Chỉnh nhỏ lại thanh scrollbar cho khu vực main */
-    ::-webkit-scrollbar {
-        width: 6px;
-    }
-
-    ::-webkit-scrollbar-thumb {
-        background: rgba(255,255,255,0.2);
-        border-radius: 10px;
-    }
-</style>
-
-<div class="d-flex justify-content-between align-items-center mb-4">
-    <div>
-        <nav aria-label="breadcrumb">
-            <ol class="breadcrumb mb-1">
-                <li class="breadcrumb-item"><a href="#" class="text-dim text-decoration-none">Dashboard</a></li>
-                <li class="breadcrumb-item active text-pure" aria-current="page">Sales statistics</li>
-            </ol>
-        </nav>
-        <h2 class="fw-bold text-pure m-0" style="font-family: 'Playfair Display', serif !important;">Dashboard</h2>
+<div class="container-fluid py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="m-0 fw-bold">Dữ liệu</h2>
+            <p class="opacity-50 small m-0">@DateTime.Now.ToString("dd.MM.yyyy") - Thống kê tổng quan</p>
+        </div>
+        <div class="d-flex align-items-center gap-3">
+            <div style="width: 250px;">
+                <form action="/Admin/HoaDon" method="get" class="m-0 w-100">
+                    <input type="text"
+                           name="id"
+                           inputmode="numeric"
+                           pattern="[0-9]*"
+                           class="glass-input pill-style small w-100"
+                           placeholder="Tìm mã đơn hàng..."
+                           value="@Context.Request.Query["id"]">
+                </form>
+            </div>
+            
+            <a href="/" class="glass-circle" title="Xem trang chủ"><i class="bi bi-house"></i></a>
+        </div>
     </div>
 
-    <div class="d-flex align-items-center gap-3">
-        <ul class="nav nav-pills" style="font-size: 0.9rem;">
-            <li class="nav-item"><a class="nav-link text-dim px-2" href="#">Yesterday</a></li>
-            <li class="nav-item"><a class="nav-link text-gold fw-bold border-bottom border-warning px-2" href="#">Today</a></li>
-            <li class="nav-item"><a class="nav-link text-dim px-2" href="#">Week</a></li>
-            <li class="nav-item"><a class="nav-link text-dim px-2" href="#">Month</a></li>
-            <li class="nav-item"><a class="nav-link text-dim px-2" href="#">Year</a></li>
-        </ul>
-        <div class="luxury-input-group ms-3 d-flex align-items-center px-2 py-1 rounded-pill" style="background: rgba(255,255,255,0.1);">
-            <i class="bi bi-search text-dim ms-2"></i>
-            <input type="text" class="form-control bg-transparent border-0 text-pure shadow-none" placeholder="Search..." style="width: 150px;">
+    <div class="row g-4">
+        <div class="col-xl-7 col-lg-12 d-flex flex-column gap-4">
+            <div class="row g-4">
+                <div class="col-sm-6">
+                    <div class="glass-card p-4 h-100">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <div>
+                                <h6 class="opacity-50 small mb-2">Tổng đơn hàng</h6>
+                                <h2 class="fw-bold m-0">@Model.TongDonHang.ToString("N0")</h2>
+                            </div>
+                            <div class="glass-circle-ghost border border-white border-opacity-25" style="width: 35px; height: 35px;">
+                                <i class="bi bi-box-seam"></i>
+                            </div>
+                        </div>
+                        <div class="small mt-4 opacity-50"><i class="bi bi-arrow-up-short"></i> Hôm nay: @Model.DonHangHomNay</div>
+                    </div>
+                </div>
+
+                <div class="col-sm-6">
+                    <div class="glass-card p-4 h-100">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <div>
+                                <h6 class="opacity-50 small mb-2">Doanh thu tháng</h6>
+                                <h2 class="fw-bold m-0">@Model.DoanhThuThangNay.ToString("N0")</h2>
+                            </div>
+                            <div class="glass-circle-ghost border border-white border-opacity-25" style="width: 35px; height: 35px;">
+                                <i class="bi bi-currency-dollar"></i>
+                            </div>
+                        </div>
+                        <div class="small mt-4 opacity-50"><i class="bi bi-arrow-up-short"></i> Tổng: @Model.TongDoanhThu.ToString("N0")</div>
+                    </div>
+                </div>
+
+                <div class="col-sm-6">
+                    <div class="glass-card p-4 h-100">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <div>
+                                <h6 class="opacity-50 small mb-2">Khách hàng</h6>
+                                <h2 class="fw-bold m-0">@Model.TongKhachHang</h2>
+                            </div>
+                            <div class="glass-circle-ghost border border-white border-opacity-25" style="width: 35px; height: 35px;">
+                                <i class="bi bi-people"></i>
+                            </div>
+                        </div>
+                        <div class="small mt-4 opacity-50"><i class="bi bi-dash"></i> Tăng trưởng ổn định</div>
+                    </div>
+                </div>
+
+                <div class="col-sm-6">
+                    <div class="glass-card p-4 h-100">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <div>
+                                <h6 class="opacity-50 small mb-2">Sản phẩm</h6>
+                                <h2 class="fw-bold m-0">@Model.TongSanPham</h2>
+                            </div>
+                            <div class="glass-circle-ghost border border-white border-opacity-25" style="width: 35px; height: 35px;">
+                                <i class="bi bi-tags"></i>
+                            </div>
+                        </div>
+                        <div class="small mt-4 opacity-50"><i class="bi bi-exclamation-circle"></i> Sắp hết: @Model.SanPhamSapHetHang</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="glass-card p-4 flex-grow-1">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h5 class="m-0 fw-bold">Doanh thu</h5>
+                    <input type="month" id="monthFilter"
+                           class="glass-input small py-1 px-3 opacity-75"
+                           style="font-size: 0.85rem; border-radius: 8px; color: white;"
+                           value="@ViewBag.ThangDuocChon"
+                           onchange="locDoanhThu()">
+                </div>
+                <div style="height: 280px; width: 100%; position: relative;">
+                    <canvas id="revenueLineChart"></canvas>
+                </div>
+            </div>
         </div>
-        <a href="#" class="social-btn"><i class="bi bi-bell"></i></a>
-        <a href="#" class="social-btn"><i class="bi bi-clock"></i></a>
+
+        <div class="col-xl-5 col-lg-12 d-flex flex-column gap-4">
+
+            <div class="glass-card p-4">
+                <h5 class="mb-4 fw-bold">Trạng thái đơn hàng</h5>
+                @{
+                    int total = Model.DonChoXuLy + Model.DonDangGiao + Model.DonHoanThanh;
+                    int p1 = total == 0 ? 0 : (Model.DonChoXuLy * 100 / total);
+                    int p2 = total == 0 ? 0 : (Model.DonDangGiao * 100 / total);
+                    int p3 = total == 0 ? 0 : (Model.DonHoanThanh * 100 / total);
+                }
+                <div class="row g-4">
+                    <div class="col-6">
+                        <div class="d-flex flex-column gap-3">
+                            <div>
+                                <div class="d-flex justify-content-between mb-1 small opacity-75"><span>Chờ xử lý</span><span>@Model.DonChoXuLy</span></div>
+                                <div class="progress glass-effect" style="height: 6px; border: none !important;">
+                                    <div class="progress-bar bg-white opacity-75" style="width: @p1%;"></div>
+                                </div>
+                            </div>
+                            <div>
+                                <div class="d-flex justify-content-between mb-1 small opacity-75"><span>Đang giao</span><span>@Model.DonDangGiao</span></div>
+                                <div class="progress glass-effect" style="height: 6px; border: none !important;">
+                                    <div class="progress-bar bg-white opacity-50" style="width: @p2%;"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="d-flex flex-column h-100 justify-content-center">
+                            <div class="d-flex justify-content-between mb-1 small fw-bold"><span>Hoàn thành</span><span>@Model.DonHoanThanh</span></div>
+                            <div class="progress glass-effect" style="height: 6px; border: none !important;">
+                                <div class="progress-bar bg-white" style="width: @p3%;"></div>
+                            </div>
+                            <span class="small opacity-50 mt-2">Đã giao thành công</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row g-4">
+                <div class="col-sm-6">
+                    <div class="glass-card p-4 h-100 d-flex flex-column justify-content-center align-items-center text-center">
+                        <div class="glass-circle-ghost border border-white border-opacity-25 mb-3" style="width: 40px; height: 40px;">
+                            <i class="bi bi-lightning"></i>
+                        </div>
+                        <h6 class="fw-bold mb-2">Thao tác</h6>
+                        <a href="/Admin/SanPham/Create" class="glass-btn small py-1 px-3 w-100 mb-2" style="font-size: 0.75rem;">Thêm SP</a>
+                        <a href="/Admin/DonHang" class="glass-btn small py-1 px-3 w-100" style="font-size: 0.75rem;">Đơn hàng</a>
+                    </div>
+                </div>
+                <div class="col-sm-6">
+                    <div class="glass-card p-4 h-100 d-flex flex-column justify-content-center align-items-center text-center">
+                        <div class="glass-circle-ghost border border-white border-opacity-25 mb-3" style="width: 40px; height: 40px;">
+                            <i class="bi bi-journal-text"></i>
+                        </div>
+                        <h6 class="fw-bold mb-2">Ghi chú</h6>
+                        <textarea class="glass-input p-2 small text-center w-100" rows="2" style="font-size: 0.75rem; border-radius: 8px;" placeholder="Nhập nhắc nhở..."></textarea>
+                    </div>
+                </div>
+            </div>
+
+            <div class="glass-card p-4 flex-grow-1 overflow-auto" style="min-height: 300px;">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h5 class="m-0 fw-bold">Đơn hàng mới</h5>
+                    <i class="bi bi-arrow-clockwise opacity-50 cursor-pointer"
+                       title="Tải lại dữ liệu"
+                       style="transition: transform 0.4s ease, opacity 0.3s ease;"
+                       onclick="taiLaiDonHang(this)"></i>
+                </div>
+                <div class="table-responsive">
+                    <table class="glass-table align-middle" style="font-size: 0.85rem;">
+                        <thead class="opacity-50 border-bottom border-white border-opacity-10">
+                            <tr>
+                                <th class="pb-2">Khách hàng</th>
+                                <th class="pb-2">Trạng thái</th>
+                                <th class="pb-2 text-end">Tiền</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Model.DonHangGanDay)
+                            {
+                                <tr>
+                                    <td class="py-3">
+                                        <div class="d-flex align-items-center gap-2">
+                                            <div class="glass-circle" style="width: 28px; height: 28px; font-size: 0.65rem;">
+                                                @(string.IsNullOrEmpty(item.NguoiDung?.HoTen) ? "?" : item.NguoiDung.HoTen.Substring(0, 1).ToUpper())
+                                            </div>
+                                            <div>
+                                                <div class="fw-bold">@item.NguoiDung?.HoTen</div>
+                                                <div class="opacity-50" style="font-size: 0.7rem;">#@item.Id</div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="py-3">
+                                        <span class="badge rounded-pill fw-normal glass-effect px-2 py-1" style="font-size: 0.7rem;">
+                                            @item.TrangThai
+                                        </span>
+                                    </td>
+                                    <td class="py-3 text-end fw-bold">@item.TongTien.ToString("N0")đ</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+        </div>
     </div>
 </div>
 
-<div class="row g-4">
-    <div class="col-lg-5">
-        <div class="bento-card p-4 h-100" style="border-radius: 0 !important;">
-            <h5 class="fw-bold mb-4 text-pure">Daily sales</h5>
-            <div class="position-relative w-100" style="height: 200px; border-left: 1px solid var(--border-light); border-bottom: 1px solid var(--border-light);">
-                <div class="position-absolute bottom-0 start-0 w-100 h-100 d-flex flex-column justify-content-between pb-1">
-                    <hr class="m-0 border-light opacity-25">
-                    <hr class="m-0 border-light opacity-25">
-                    <hr class="m-0 border-light opacity-25">
-                    <hr class="m-0 border-light opacity-25">
-                    <hr class="m-0 border-light opacity-25">
-                </div>
-                <svg class="position-absolute w-100 h-100" viewBox="0 0 100 100" preserveAspectRatio="none">
-                    <polyline fill="none" stroke="#c5a059" stroke-width="2" points="0,80 20,60 40,30 60,70 80,40 100,60" />
-                    <polyline fill="none" stroke="#17a2b8" stroke-width="2" points="0,90 20,70 40,50 60,30 80,60 100,50" />
-                    <polyline fill="none" stroke="#dc3545" stroke-width="2" points="0,95 20,85 40,75 60,85 80,65 100,80" />
-                </svg>
-            </div>
-            <div class="d-flex justify-content-between mt-2 text-dim small">
-                <span>9 AM</span><span>12 PM</span><span>3 PM</span><span>6 PM</span><span>9 PM</span>
-            </div>
-        </div>
-    </div>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    // 1. Hàm lọc tháng doanh thu
+    function locDoanhThu() {
+        var selectedMonth = document.getElementById("monthFilter").value;
+        if (selectedMonth) {
+            window.location.href = '?thang=' + selectedMonth;
+        }
+    }
 
-    <div class="col-lg-4">
-        <div class="bento-card p-4 h-100 d-flex flex-column align-items-center position-relative" style="border-radius: 0 !important;">
-            <div class="w-100 d-flex justify-content-between align-items-center mb-3">
-                <h5 class="fw-bold text-pure m-0">Total Revenue</h5>
-                <select class="form-select form-select-sm bg-transparent border-light text-pure w-auto rounded-pill shadow-none">
-                    <option class="text-dark">Today</option>
-                </select>
-            </div>
+    // 2. Hàm xoay icon và tải lại trang
+    function taiLaiDonHang(iconElement) {
+        // Tạo hiệu ứng xoay 360 độ và sáng lên
+        iconElement.style.transform = "rotate(360deg)";
+        iconElement.classList.remove("opacity-50");
+        iconElement.classList.add("opacity-100", "text-white");
 
-            <div class="position-relative mt-2 d-flex align-items-center justify-content-center"
-                 style="width: 180px; height: 180px; border-radius: 50%; background: conic-gradient(#17a2b8 0% 40%, #dc3545 40% 70%, #c5a059 70% 100%);">
-                <div class="bg-dark position-absolute rounded-circle d-flex align-items-center justify-content-center"
-                     style="width: 140px; height: 140px; background: rgba(0,0,0,0.5) !important; backdrop-filter: blur(10px);">
-                    <h3 class="fw-bold text-pure m-0">$8,950</h3>
-                </div>
-            </div>
+        // Đợi 0.4s cho hiệu ứng xoay chạy xong rồi reload
+        setTimeout(function () {
+            window.location.reload();
+        }, 400);
+    }
 
-            <div class="d-flex gap-3 mt-4 small fw-medium">
-                <span class="text-pure"><i class="bi bi-circle-fill text-info me-1"></i> Dine-in</span>
-                <span class="text-pure"><i class="bi bi-circle-fill text-gold me-1"></i> Takeaway</span>
-                <span class="text-pure"><i class="bi bi-circle-fill text-danger me-1"></i> Delivery</span>
-            </div>
-        </div>
-    </div>
+    // 3. Khởi tạo Biểu đồ đường (Line Chart)
+    document.addEventListener("DOMContentLoaded", function () {
+        const labels = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.NhanBieuDo));
+        const dataValues = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.DoanhThuTheoNgay));
 
-    <div class="col-lg-3 d-flex flex-column gap-4">
-        <div class="bento-card p-4 flex-grow-1" style="border-radius: 0 !important;">
-            <div class="d-flex align-items-center gap-2 mb-2">
-                <div class="bg-danger rounded p-2" style="width: 15px; height: 15px;"></div>
-                <h6 class="m-0 fw-bold text-pure">Total Order</h6>
-            </div>
-            <small class="text-danger d-block mb-2">-2.34%</small>
-            <h2 class="fw-bold text-pure m-0">278</h2>
-            <div class="progress mt-3" style="height: 4px; background: var(--border-light);">
-                <div class="progress-bar bg-danger" style="width: 70%"></div>
-            </div>
-        </div>
+        const ctx = document.getElementById('revenueLineChart').getContext('2d');
 
-        <div class="bento-card p-4 flex-grow-1" style="border-radius: 0 !important;">
-            <div class="d-flex align-items-center gap-2 mb-2">
-                <div class="bg-gold rounded p-2" style="width: 15px; height: 15px;"></div>
-                <h6 class="m-0 fw-bold text-pure">New Customers</h6>
-            </div>
-            <small class="text-success d-block mb-2">23.65%</small>
-            <h2 class="fw-bold text-pure m-0">58</h2>
-            <div class="progress mt-3" style="height: 4px; background: var(--border-light);">
-                <div class="progress-bar bg-gold" style="width: 45%"></div>
-            </div>
-        </div>
-    </div>
-
-    <div class="col-lg-6">
-        <div class="bento-card p-4 h-100" style="border-radius: 0 !important;">
-            <div class="d-flex justify-content-between align-items-center mb-4">
-                <h5 class="fw-bold text-pure m-0">Best Employees</h5>
-                <select class="form-select form-select-sm bg-transparent border-light text-pure w-auto rounded-pill shadow-none">
-                    <option class="text-dark">Today</option>
-                </select>
-            </div>
-
-            <div class="d-flex justify-content-between text-dim small fw-bold mb-3 border-bottom border-light pb-2">
-                <span>Employees</span>
-                <span>Sales</span>
-            </div>
-
-            <div class="d-flex flex-column gap-3">
-                <div class="d-flex justify-content-between align-items-center">
-                    <div class="d-flex align-items-center gap-3">
-                        <img src="https://i.pravatar.cc/150?img=1" class="rounded-circle" width="40" height="40">
-                        <div>
-                            <h6 class="m-0 text-pure fw-bold">Maria Gonzalez</h6>
-                            <small class="text-dim">Floor Supervisor</small>
-                        </div>
-                    </div>
-                    <span class="fw-bold text-pure fs-5">$3,240</span>
-                </div>
-
-                <div class="d-flex justify-content-between align-items-center">
-                    <div class="d-flex align-items-center gap-3">
-                        <img src="https://i.pravatar.cc/150?img=11" class="rounded-circle" width="40" height="40">
-                        <div>
-                            <h6 class="m-0 text-pure fw-bold">Daniel Okafor</h6>
-                            <small class="text-dim">Waiter</small>
-                        </div>
-                    </div>
-                    <span class="fw-bold text-pure fs-5">$2,980</span>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div class="col-lg-6">
-        <div class="bento-card p-4 h-100" style="border-radius: 0 !important;">
-            <div class="d-flex justify-content-between align-items-center mb-4">
-                <h5 class="fw-bold text-pure m-0">Trending Dishes</h5>
-                <select class="form-select form-select-sm bg-transparent border-light text-pure w-auto rounded-pill shadow-none">
-                    <option class="text-dark">Today</option>
-                </select>
-            </div>
-
-            <div class="d-flex justify-content-between text-dim small fw-bold mb-3 border-bottom border-light pb-2">
-                <span>Item</span>
-                <span>Orders</span>
-            </div>
-
-            <div class="d-flex flex-column gap-3">
-                <div class="d-flex justify-content-between align-items-center">
-                    <div class="d-flex align-items-center gap-3">
-                        <div class="rounded-circle bg-light d-flex justify-content-center align-items-center" style="width: 40px; height: 40px;">
-                            <i class="bi bi-egg-fried text-dark fs-5"></i>
-                        </div>
-                        <div>
-                            <span class="badge bg-success bg-opacity-25 text-success rounded-pill mb-1">Food</span>
-                            <h6 class="m-0 text-pure fw-bold">Grilled Salmon</h6>
-                        </div>
-                    </div>
-                    <span class="fw-bold text-pure fs-5">64</span>
-                </div>
-
-                <div class="d-flex justify-content-between align-items-center">
-                    <div class="d-flex align-items-center gap-3">
-                        <div class="rounded-circle bg-light d-flex justify-content-center align-items-center" style="width: 40px; height: 40px;">
-                            <i class="bi bi-cup-hot text-dark fs-5"></i>
-                        </div>
-                        <div>
-                            <span class="badge bg-gold bg-opacity-25 text-warning rounded-pill mb-1">Drinks</span>
-                            <h6 class="m-0 text-pure fw-bold">Iced Latte</h6>
-                        </div>
-                    </div>
-                    <span class="fw-bold text-pure fs-5">74</span>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
+        new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: 'Doanh thu',
+                    data: dataValues,
+                    borderColor: 'rgba(255, 255, 255, 0.8)',
+                    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+                    borderWidth: 2,
+                    tension: 0.4,
+                    fill: true,
+                    pointBackgroundColor: '#ffffff',
+                    pointBorderColor: 'rgba(255, 255, 255, 0.5)',
+                    pointBorderWidth: 2,
+                    pointRadius: 3,
+                    pointHoverRadius: 6
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: false
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                let value = context.parsed.y;
+                                return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(value);
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    x: {
+                        grid: {
+                            display: false,
+                            drawBorder: false
+                        },
+                        ticks: {
+                            color: 'rgba(255, 255, 255, 0.6)',
+                            font: { size: 10 }
+                        }
+                    },
+                    y: {
+                        display: false,
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+    });
+</script>

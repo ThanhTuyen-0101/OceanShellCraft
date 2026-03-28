@@ -1,16 +1,21 @@
 ﻿@{
-    ViewData["Title"] = "Từ chối truy cập";
+    ViewData["Title"] = "từ chối truy cập";
 }
 
 <div class="container d-flex flex-column justify-content-center align-items-center min-vh-100 text-center py-5">
-    <div class="luxury-card shadow-lg p-5" style="max-width: 500px;">
-        <h1 class="display-1 text-danger mb-3"><i class="bi bi-shield-lock-fill"></i></h1>
-        <h2 class="luxury-title fs-3 mb-3">Truy Cập Bị Từ Chối</h2>
-        <p class="text-white-50 mb-4">
-            Rất tiếc, tài khoản của bạn không có đặc quyền để xem khu vực này của OceanShellCraft.
+    <div class="glass-card p-5" style="max-width: 500px;">
+        <h1 class="display-1 mb-3 opacity-75">
+            <i class="bi bi-shield-lock-fill"></i>
+        </h1>
+
+        <h2 class="fs-3 mb-3">truy cập bị từ chối</h2>
+
+        <p class="opacity-50 mb-4">
+            rất tiếc, tài khoản của bạn không có đặc quyền để xem khu vực này của oceanshellcraft.
         </p>
-        <a asp-controller="TrangChu" asp-action="TrangChu" class="btn-luxury-solid w-100 py-3 text-decoration-none fs-6">
-            <i class="bi bi-arrow-left me-2"></i> Trở về Trang Chủ
+
+        <a asp-controller="TrangChu" asp-action="TrangChu" class="glass-btn w-100 py-3 fs-6 d-flex align-items-center justify-content-center">
+            <i class="bi bi-arrow-left me-2"></i> trở về trang chủ
         </a>
     </div>
 </div>

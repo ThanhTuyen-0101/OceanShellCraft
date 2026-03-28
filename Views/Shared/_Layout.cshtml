@@ -1,58 +1,190 @@
-﻿<!DOCTYPE html>
+﻿@using System.Security.Claims
+@inject OceanShellCraft.Models.MyNgheDbContext _context
+
+@{
+    // 1. Kiểm tra đăng nhập và lấy lịch sử chat ngay tại Layout
+    var isAuthenticated = User.Identity.IsAuthenticated;
+    var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+    List<OceanShellCraft.Models.TinNhan> chatHistory = new List<OceanShellCraft.Models.TinNhan>();
+
+    if (isAuthenticated && int.TryParse(userId, out int uId))
+    {
+        chatHistory = _context.TinNhans
+                              .Where(t => t.NguoiDungId == uId)
+                              .OrderBy(t => t.ThoiGian)
+                              .ToList();
+    }
+}
+
+<!DOCTYPE html>
 <html lang="vi">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - OceanShellCraft</title>
+    <title>@ViewData["Title"] - oceanshellcraft</title>
 
     @* Bootstrap 5 CSS *@
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
-
-    @* 1. Bootstrap Icons *@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-
-    @* 2. Font Awesome *@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
 
-    @* 3. Font chữ Be Vietnam Pro *@
-    <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@300;400;600;700&display=swap" rel="stylesheet">
-
-    @* CSS Mặc định của Web *@
+    @* File CSS dùng chung đã tối ưu *@
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
-
-    @* CSS GIAO DIỆN BIỂN ĐẠI DƯƠNG *@
     <link rel="stylesheet" href="~/css/ocean-theme.css" asp-append-version="true" />
 </head>
 
-<body class="d-flex flex-column min-vh-100">
+<body class="d-flex flex-column m-0 p-0">
 
-    @* Kiểm tra nếu không yêu cầu ẩn thì mới gọi Header *@
     @if (ViewData["HideHeaderFooter"] == null)
     {
         <partial name="_Header" />
     }
 
-    @* Phần thân tràn viền full màn hình *@
     <div class="flex-grow-1">
         <main role="main">
             @RenderBody()
         </main>
     </div>
 
-    @* Kiểm tra nếu không yêu cầu ẩn thì mới gọi Footer và Chat Widget *@
     @if (ViewData["HideHeaderFooter"] == null)
     {
         <partial name="_Footer" />
 
-        <partial name="_ChatWidget" />
+        @* --- BẮT ĐẦU PHẦN CHAT WIDGET --- *@
+        <div class="position-fixed d-flex flex-column gap-3" style="bottom: 30px; right: 30px; z-index: 9999;">
+            <button id="liveChatToggleBtn" class="glass-circle shadow-lg position-relative" style="width: 60px; height: 60px;" title="chat với nhân viên">
+                <i class="bi bi-headset fs-3"></i>
+                @if (isAuthenticated)
+                {
+                    <span class="position-absolute top-0 start-100 translate-middle p-2 bg-success rounded-circle" style="border: 2px solid var(--border-light);"></span>
+                }
+            </button>
+        </div>
+
+        <div id="liveChatWindow" class="glass-card position-fixed d-none p-0 d-flex flex-column shadow-lg" style="bottom: 100px; right: 30px; width: 350px; height: 500px; z-index: 9999; overflow: hidden;">
+
+            <div class="px-3 py-3 d-flex justify-content-between align-items-center" style="border-bottom: 1px solid var(--border-light);">
+                <h6 class="mb-0">hỗ trợ trực tuyến</h6>
+                <button id="liveChatCloseBtn" class="glass-btn border-0 p-1" style="border-radius: 50%; width: 30px; height: 30px;">
+                    <i class="bi bi-x-lg"></i>
+                </button>
+            </div>
+
+            <div class="p-3 overflow-auto hide-scrollbar flex-grow-1" id="liveChatBody">
+                @foreach (var msg in chatHistory)
+                {
+                    bool isMe = !msg.IsAdmin;
+                    <div class="d-flex mb-3 @(isMe ? "justify-content-end" : "justify-content-start")">
+                        <div class="chat-bubble-sm @(isMe ? "sent-sm" : "received-sm")" style="max-width: 85%;">
+                            @msg.NoiDung
+                            <div class="mt-1 opacity-50 text-end" style="font-size: 0.6rem;">@msg.ThoiGian.ToString("HH:mm")</div>
+                        </div>
+                    </div>
+                }
+            </div>
+
+            <div class="px-3 py-3 d-flex gap-2" style="border-top: 1px solid var(--border-light);">
+                <input type="text" id="liveChatInput" class="glass-input pill-style flex-grow-1" placeholder="nhập tin nhắn...">
+                <button class="glass-circle" id="liveChatSendBtn" style="flex-shrink: 0;"><i class="bi bi-send"></i></button>
+            </div>
+        </div>
+        @* --- KẾT THÚC PHẦN CHAT WIDGET --- *@
     }
 
-    @* JavaScript cơ bản *@
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
 
-    @* 4. Nơi chứa Script của từng trang *@
+    @* SignalR và Script Xử lý Chat *@
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/7.0.5/signalr.min.js"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const authStatus = @isAuthenticated.ToString().ToLower();
+            const chatWin = document.getElementById('liveChatWindow');
+            const chatToggle = document.getElementById('liveChatToggleBtn');
+            const widgetBody = document.getElementById('liveChatBody');
+
+            // 1. Xử lý yêu cầu đăng nhập khi nhấn nút chat
+            if (chatToggle) {
+                chatToggle.onclick = function() {
+                    if (!authStatus) {
+                        window.location.href = '/TaiKhoan/DangNhap';
+                        return;
+                    }
+                    chatWin.classList.toggle('d-none');
+                    if (widgetBody) widgetBody.scrollTop = widgetBody.scrollHeight;
+                };
+            }
+
+            if (document.getElementById('liveChatCloseBtn')) {
+                document.getElementById('liveChatCloseBtn').onclick = () => chatWin.classList.add('d-none');
+            }
+
+            // 2. Logic SignalR đồng bộ
+            if (authStatus) {
+                const connection = new signalR.HubConnectionBuilder().withUrl("/chatHub").withAutomaticReconnect().build();
+                connection.start().catch(err => console.error(err));
+
+                connection.on("ReceiveMessage", function (userId, userName, message, role, time) {
+                    const isMe = (role === "KhachHang");
+
+                    // Cập nhật Widget nhỏ
+                    if (widgetBody) {
+                        const htmlWidget = `
+                            <div class="d-flex mb-3 ${isMe ? 'justify-content-end' : 'justify-content-start'}">
+                                <div class="chat-bubble-sm ${isMe ? 'sent-sm' : 'received-sm'}" style="max-width: 85%;">
+                                    ${message}
+                                    <div class="mt-1 opacity-50 text-end" style="font-size: 0.6rem;">${time}</div>
+                                </div>
+                            </div>`;
+                        widgetBody.insertAdjacentHTML('beforeend', htmlWidget);
+                        widgetBody.scrollTop = widgetBody.scrollHeight;
+                    }
+
+                    // Cập nhật Trang Chat lớn (nếu đang mở)
+                    const pageChatBody = document.getElementById('customer-chat-content');
+                    if (pageChatBody) {
+                        const avatar = isMe ? '' : `<div class="glass-circle flex-shrink-0" style="width: 35px; height: 35px;"><img src="/img/logo-small.jpg" class="rounded-circle" width="35" height="35" style="opacity: 0.8;"></div>`;
+                        const htmlPage = `
+                            <div class="d-flex gap-3 ${isMe ? 'justify-content-end' : ''}">
+                                ${avatar}
+                                <div style="max-width: 75%;">
+                                    <small class="opacity-50 mb-1 d-block ${isMe ? 'text-end' : ''}">${isMe ? 'bạn' : 'oceanshellcraft'}</small>
+                                    <div class="chat-bubble-sm ${isMe ? 'sent-sm' : 'received-sm'}">${message}</div>
+                                    <small class="opacity-50 mt-1 d-block ${isMe ? 'text-end' : ''}" style="font-size: 0.7rem;">${time}</small>
+                                </div>
+                            </div>`;
+                        pageChatBody.insertAdjacentHTML('beforeend', htmlPage);
+                        pageChatBody.scrollTop = pageChatBody.scrollHeight;
+                    }
+                });
+
+                async function sendMessageAction(inputId) {
+                    const input = document.getElementById(inputId);
+                    if (input && input.value.trim()) {
+                        await connection.invoke("CustomerSendMessage", input.value.trim());
+                        input.value = '';
+                    }
+                }
+
+                // Sự kiện cho Widget
+                document.getElementById('liveChatSendBtn').onclick = () => sendMessageAction('liveChatInput');
+                document.getElementById('liveChatInput').onkeypress = (e) => { if(e.key === 'Enter') sendMessageAction('liveChatInput'); };
+
+                // Sự kiện cho Trang Chat chính (tự động kết nối)
+                const checkPageChat = setInterval(() => {
+                    const pageSendBtn = document.getElementById('cust-page-send-btn');
+                    const pageInput = document.getElementById('cust-page-input');
+                    if (pageSendBtn && pageInput) {
+                        pageSendBtn.onclick = () => sendMessageAction('cust-page-input');
+                        pageInput.onkeypress = (e) => { if(e.key === 'Enter') sendMessageAction('cust-page-input'); };
+                        clearInterval(checkPageChat);
+                    }
+                }, 1000);
+            }
+        });
+    </script>
+
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>

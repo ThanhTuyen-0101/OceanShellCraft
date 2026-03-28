@@ -1,28 +1,61 @@
 ﻿@{
-    ViewData["Title"] = "Đặt hàng thành công";
+    ViewData["Title"] = "Đặt hàng thành công - OceanShellCraft";
 }
 
-<div class="container mt-5">
-    <div class="row justify-content-center">
-        <div class="col-md-7 text-center py-5 shadow-lg rounded-4 bg-white border border-info border-3">
-            <div class="mb-4">
-                <i class="bi bi-bag-check-fill display-1 text-success"></i>
-            </div>
-            <h2 class="fw-bold text-primary">Cảm ơn Như đã đặt hàng! 🐚</h2>
-            <p class="lead text-muted mt-3">Đơn hàng của bạn đã được hệ thống ghi nhận và đang chờ xử lý.</p>
+<div class="container py-5 d-flex justify-content-center align-items-center" style="min-height: 85vh;">
+    <div class="glass-card p-4 p-md-5 text-center position-relative overflow-hidden" style="max-width: 850px; width: 100%;">
 
-            <div class="alert alert-info d-inline-block px-4 mt-2">
-                <i class="bi bi-info-circle me-2"></i> Chúng mình sẽ liên hệ với bạn qua Email để xác nhận vận chuyển.
-            </div>
-
-            <div class="mt-5 d-flex justify-content-center gap-3">
-                <a asp-controller="TrangChu" asp-action="Index" class="btn btn-outline-primary btn-lg px-4">
-                    <i class="bi bi-house-door"></i> Về Trang Chủ
-                </a>
-                <a asp-controller="SanPham" asp-action="DanhSach" class="btn btn-primary btn-lg px-4 shadow">
-                    Tiếp tục mua sắm
-                </a>
-            </div>
+        <div class="mb-3 opacity-75">
+            <i class="bi bi-bag-heart display-3"></i>
         </div>
+
+        <h1 class="display-2 mb-2">Thank you</h1>
+
+        <p class="opacity-75 mb-5" style="letter-spacing: 4px; font-size: 0.9rem;">
+            <i class="bi bi-suit-heart-fill opacity-50 me-2"></i> For your order <i class="bi bi-suit-heart-fill opacity-50 ms-2"></i>
+        </p>
+
+        <p class="fs-5 opacity-85 mb-3" style="line-height: 1.8;">
+            Cảm ơn bạn đã chọn OceanShellCraft giữa muôn vàn lựa chọn ngoài kia.
+        </p>
+        <p class="fs-6 opacity-75 mb-5">
+            Nếu có điều khiến bạn chưa hài lòng, hãy cho OceanShellCraft một cơ hội được lắng nghe và khắc phục ạ <i class="bi bi-stars ms-1"></i>
+        </p>
+
+        <div class="row mt-4 pt-5" style="border-top: 1px solid var(--border-light);">
+
+            <div class="col-md-6 d-flex flex-column align-items-center justify-content-center mb-5 mb-md-0" style="border-right: 1px solid var(--border-light);">
+                <h4 class="mb-4 opacity-75">Liên hệ OceanShellCraft</h4>
+                <div class="d-flex align-items-center opacity-85 fs-5">
+                    <i class="bi bi-telephone-fill me-3 fs-3"></i>
+                    <span style="letter-spacing: 1px;">0931 970 900 (Zalo)</span>
+                </div>
+            </div>
+
+            <div class="col-md-6 d-flex flex-column align-items-center justify-content-center">
+                <div class="d-flex flex-column align-items-start gap-3">
+                    <a href="#" class="text-decoration-none opacity-85 d-flex align-items-center fs-5">
+                        <i class="bi bi-instagram me-3 fs-3"></i> OceanShellCraft
+                    </a>
+                    <a href="#" class="text-decoration-none opacity-85 d-flex align-items-center fs-5">
+                        <i class="bi bi-tiktok me-3 fs-3"></i> OceanShellCraft
+                    </a>
+                    <a href="#" class="text-decoration-none opacity-85 d-flex align-items-center fs-5">
+                        <i class="bi bi-facebook me-3 fs-3"></i> OceanShellCraft
+                    </a>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="mt-5 pt-4 d-flex justify-content-center gap-3 flex-wrap">
+            <a asp-controller="TrangChu" asp-action="Index" class="glass-btn px-5 py-3">
+                <i class="bi bi-house-door me-2"></i> Về trang chủ
+            </a>
+            <a asp-controller="SanPham" asp-action="DanhSach" class="glass-btn px-5 py-3">
+                Tiếp tục mua sắm <i class="bi bi-arrow-right ms-2"></i>
+            </a>
+        </div>
+
     </div>
 </div>

@@ -1,297 +1,229 @@
-﻿@{
-    ViewData["Title"] = "Bills";
+﻿@model IEnumerable<OceanShellCraft.Models.DonHang>
+@{
+    ViewData["Title"] = "Hóa đơn";
     Layout = "~/Views/Shared/_AdminLayout.cshtml";
+    var selectedOrder = ViewBag.SelectedOrder as OceanShellCraft.Models.DonHang;
 }
 
-<style>
-    /* Ẩn thanh cuộn cho mượt */
-    .hide-scrollbar::-webkit-scrollbar {
-        width: 4px;
-    }
+<div class="row g-4 vh-100 overflow-hidden p-3">
 
-    .hide-scrollbar::-webkit-scrollbar-thumb {
-        background: rgba(255,255,255,0.1);
-        border-radius: 10px;
-    }
+    @* --- DANH SÁCH HÓA ĐƠN (BÊN TRÁI) --- *@
+    <div class="col-lg-4 d-flex flex-column h-100 pe-lg-3">
 
-    .hide-scrollbar:hover::-webkit-scrollbar-thumb {
-        background: rgba(255,255,255,0.3);
-    }
+        @* Ô tìm kiếm *@
+        <form method="get" action="@Url.Action("HoaDon", "Admin")" class="mb-3">
+            <div class="d-flex align-items-center px-3 glass-input" style="height: 45px;">
+                <i class="bi bi-search opacity-50"></i>
+                @* Thay type="number" thành type="text" và thêm inputmode/pattern *@
+                <input type="text"
+                       inputmode="numeric"
+                       pattern="[0-9]*"
+                       name="id"
+                       class="bg-transparent border-0 shadow-none ms-2 small flex-grow-1 fw-normal"
+                       style="color: var(--text-main); outline: none;"
+                       placeholder="Nhập mã đơn hàng..."
+                       value="@Context.Request.Query["id"]">
 
-    /* Thẻ Đơn Hàng (Bill Card) */
-    .bill-card {
-        background: rgba(255, 255, 255, 0.05);
-        border: 1px solid rgba(255, 255, 255, 0.05);
-        border-radius: 20px;
-        transition: all 0.2s ease-in-out;
-        cursor: pointer;
-    }
-
-        .bill-card:hover {
-            background: rgba(255, 255, 255, 0.1);
-            transform: translateY(-2px);
-        }
-
-        .bill-card.active {
-            background: rgba(255, 255, 255, 0.15);
-            border-right: 4px solid var(--gt-gold); /* Vạch vàng bên phải giống ảnh */
-        }
-
-    /* Các chấm trạng thái */
-    .status-dot {
-        width: 8px;
-        height: 8px;
-        border-radius: 50%;
-        display: inline-block;
-        margin-right: 4px;
-    }
-
-    .dot-active {
-        background-color: #ffc107;
-    }
-    /* Vàng */
-    .dot-cancelled {
-        background-color: #dc3545;
-    }
-    /* Đỏ */
-    .dot-paid {
-        background-color: #198754;
-    }
-    /* Xanh lá */
-
-    /* Fix chiều cao container để không làm tràn trang web */
-    .bills-container-height {
-        height: calc(100vh - 120px);
-    }
-
-    /* Select box trong suốt */
-    .glass-select {
-        background-color: transparent;
-        color: var(--text-pure);
-        border: none;
-        cursor: pointer;
-        font-weight: 500;
-    }
-
-        .glass-select option {
-            color: #000;
-        }
-    /* Chữ đen khi xổ xuống để dễ đọc */
-</style>
-
-<div class="row g-4 bills-container-height">
-
-    <div class="col-lg-5 col-xl-4 d-flex flex-column h-100 pe-lg-3" style="border-right: 1px solid var(--border-light);">
-
-        <div class="d-flex align-items-center mb-3">
-            <a href="/Admin" class="text-dim text-decoration-none me-3"><i class="bi bi-arrow-left fs-5"></i></a>
-            <nav aria-label="breadcrumb">
-                <ol class="breadcrumb mb-0">
-                    <li class="breadcrumb-item"><a href="#" class="text-dim text-decoration-none small">Bills</a></li>
-                    <li class="breadcrumb-item active text-pure small fw-bold" aria-current="page">Payment history</li>
-                </ol>
-            </nav>
-        </div>
-
-        <div class="d-flex justify-content-between align-items-center mb-4">
-            <h2 class="fw-bold text-pure m-0" style="font-family: 'Playfair Display', serif !important;">Bills</h2>
-            <div class="bg-light bg-opacity-10 rounded-3 d-flex justify-content-center align-items-center hover-white transition cursor-pointer" style="width: 40px; height: 40px;">
-                <i class="bi bi-plus-lg text-pure fs-5"></i>
+                @if (Context.Request.Query.ContainsKey("id"))
+                {
+                    <a href="@Url.Action("HoaDon", "Admin")" class="opacity-50 ms-2"><i class="bi bi-x-lg"></i></a>
+                }
             </div>
-        </div>
+        </form>
 
-        <div class="d-flex justify-content-between align-items-center mb-3 border-bottom border-light pb-3 opacity-75">
-            <select class="glass-select shadow-none p-0 outline-none">
-                <option>All orders</option>
-                <option>Active</option>
-                <option>Paid</option>
-            </select>
-            <select class="glass-select shadow-none p-0 outline-none">
-                <option>March 23, 2026</option>
-                <option>March 22, 2026</option>
-            </select>
-        </div>
-
-        <div class="flex-grow-1 overflow-auto hide-scrollbar pe-2 pb-5 position-relative">
-
-            <div class="bill-card active p-3 mb-3 d-flex justify-content-between align-items-center">
-                <div>
-                    <h6 class="m-0 text-pure fw-bold mb-1">
-                        Order #48
-                        <span class="ms-2" style="font-size: 0.7rem;"><span class="status-dot dot-active"></span>Active</span>
-                    </h6>
-                    <small class="text-dim">Table 12 · 2 guests</small>
-                </div>
-                <div class="text-end">
-                    <h6 class="m-0 text-pure fw-bold mb-1">$28.40</h6>
-                    <small class="text-dim">18:22</small>
-                </div>
-            </div>
-
-            <div class="bill-card p-3 mb-3 d-flex justify-content-between align-items-center">
-                <div>
-                    <h6 class="m-0 text-pure fw-bold mb-1">
-                        Order #38
-                        <span class="ms-2" style="font-size: 0.7rem;"><span class="status-dot dot-cancelled"></span>Cancelled</span>
-                    </h6>
-                    <small class="text-dim">Table 7 · 4 guests</small>
-                </div>
-                <div class="text-end">
-                    <h6 class="m-0 text-pure fw-bold mb-1">$86.75</h6>
-                    <small class="text-dim">18:41</small>
-                </div>
-            </div>
-
-            <div class="bill-card p-3 mb-3 d-flex justify-content-between align-items-center">
-                <div>
-                    <h6 class="m-0 text-pure fw-bold mb-1">
-                        Order #125
-                        <span class="ms-2" style="font-size: 0.7rem;"><span class="status-dot dot-active"></span>Active</span>
-                    </h6>
-                    <small class="text-dim">Table 24 · 3 guest</small>
-                </div>
-                <div class="text-end">
-                    <h6 class="m-0 text-pure fw-bold mb-1">$42.30</h6>
-                    <small class="text-dim">18:54</small>
-                </div>
-            </div>
-
-            <div class="bill-card p-3 mb-3 d-flex justify-content-between align-items-center">
-                <div>
-                    <h6 class="m-0 text-pure fw-bold mb-1">
-                        Order #39
-                        <span class="ms-2" style="font-size: 0.7rem;"><span class="status-dot dot-paid"></span>Paid</span>
-                    </h6>
-                    <small class="text-dim">Table 3 · 2 guests</small>
-                </div>
-                <div class="text-end">
-                    <h6 class="m-0 text-pure fw-bold mb-1">$31.90</h6>
-                    <small class="text-dim">19:12</small>
-                </div>
-            </div>
-
-            <div class="bill-card p-3 mb-5 d-flex justify-content-between align-items-center">
-                <div>
-                    <h6 class="m-0 text-pure fw-bold mb-1">
-                        Order #123
-                        <span class="ms-2" style="font-size: 0.7rem;"><span class="status-dot dot-active"></span>Active</span>
-                    </h6>
-                    <small class="text-dim">Table 5 · 1 guest</small>
-                </div>
-                <div class="text-end">
-                    <h6 class="m-0 text-pure fw-bold mb-1">$14.80</h6>
-                    <small class="text-dim">19:30</small>
-                </div>
-            </div>
-
-            <div class="position-absolute bottom-0 start-0 w-100 pt-3" style="background: linear-gradient(to top, rgba(18, 43, 39, 1) 40%, transparent); padding-bottom: 2px;">
-                <div class="luxury-input-group d-flex align-items-center px-3 py-2 rounded-pill shadow" style="background: rgba(255,255,255,0.15); backdrop-filter: blur(10px);">
-                    <i class="bi bi-search text-pure"></i>
-                    <input type="text" class="form-control bg-transparent border-0 text-pure shadow-none ms-2" placeholder="Search for order ...">
-                </div>
-            </div>
+        @* Danh sách cuộn *@
+        <div class="flex-grow-1 overflow-auto hide-scrollbar">
+            @foreach (var item in Model)
+            {
+                <a href="?id=@item.Id" class="text-decoration-none">
+                    <div class="glass-card p-3 mb-2 fw-normal"
+                         style="@(selectedOrder?.Id == item.Id ? "background: rgba(255,255,255,0.15); border-color: var(--text-main);" : "border: 1px solid transparent;")">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <div class="small">#Inv-@item.Id</div>
+                                <div class="opacity-50 small">@item.NguoiDung?.HoTen</div>
+                            </div>
+                            <div class="text-end">
+                                <div class="small">@item.TongTien.ToString("N0")đ</div>
+                                <div class="opacity-30" style="font-size: 0.65rem;">@item.NgayDat.ToString("dd/MM/yy")</div>
+                            </div>
+                        </div>
+                    </div>
+                </a>
+            }
         </div>
     </div>
 
+    @* --- CHI TIẾT HÓA ĐƠN (BÊN PHẢI) --- *@
+    <div class="col-lg-8 d-flex flex-column h-100 ps-lg-3 overflow-auto hide-scrollbar">
 
-    <div class="col-lg-7 col-xl-8 d-flex flex-column h-100 ps-lg-4">
+        @if (selectedOrder != null)
+        {
+            <div id="invoice-content" class="p-5 d-flex flex-column mb-5 fw-normal" style="border-radius: 4px;">
 
-        <div class="d-flex justify-content-between align-items-center mb-4">
-            <div class="d-flex align-items-center gap-2 cursor-pointer opacity-75 hover-white transition">
-                <i class="bi bi-clock-history"></i>
-                <span class="fw-medium">Payment history</span>
-                <i class="bi bi-chevron-down small"></i>
-            </div>
-            <i class="bi bi-three-dots fs-5 cursor-pointer text-dim hover-white transition"></i>
-        </div>
-
-        <div class="bento-card p-4 p-xl-5 flex-grow-1 d-flex flex-column rounded-4" style="border-radius: 20px !important;">
-
-            <div class="d-flex justify-content-between align-items-center mb-4 pb-3 border-bottom border-light">
-                <h2 class="fw-bold text-pure m-0">Order #48</h2>
-                <span class="badge bg-gold text-dark px-3 py-2 rounded-pill fs-6 fw-bold">
-                    <span class="status-dot bg-dark opacity-50 me-2"></span>Active
-                </span>
-            </div>
-
-            <h6 class="text-pure fw-bold mb-3">Details</h6>
-            <div class="row text-center mb-4 pb-4 border-bottom border-light">
-                <div class="col-3">
-                    <small class="text-dim d-block mb-1">Table</small>
-                    <h5 class="text-pure fw-bold m-0">12</h5>
-                </div>
-                <div class="col-3">
-                    <small class="text-dim d-block mb-1">Guests</small>
-                    <h5 class="text-pure fw-bold m-0">2</h5>
-                </div>
-                <div class="col-3">
-                    <small class="text-dim d-block mb-1">Customers</small>
-                    <h5 class="text-pure fw-bold m-0">Jojo Kate</h5>
-                </div>
-                <div class="col-3">
-                    <small class="text-dim d-block mb-1">Payment</small>
-                    <h5 class="text-pure fw-bold m-0">Pending</h5>
-                </div>
-            </div>
-
-            <div class="d-flex justify-content-between align-items-center mb-3">
-                <h6 class="text-pure fw-bold m-0">Order info</h6>
-            </div>
-
-            <div class="d-flex justify-content-between text-dim small fw-medium mb-2 border-bottom border-light pb-2">
-                <span>Items</span>
-                <span>Price</span>
-            </div>
-
-            <div class="d-flex justify-content-between align-items-center py-2 border-bottom border-light border-opacity-25">
-                <div class="d-flex align-items-center gap-3">
-                    <div class="bg-light bg-opacity-10 rounded d-flex justify-content-center align-items-center" style="width: 40px; height: 40px;">
-                        <i class="bi bi-egg-fried fs-5 text-gold"></i>
+                @* Tiêu đề hóa đơn *@
+                <div class="d-flex justify-content-between align-items-start mb-5">
+                    <div>
+                        <h2 class="m-0 fw-normal" style="letter-spacing: 1px;">Hóa đơn chi tiết</h2>
+                        <p class="m-0 small opacity-70">Mã tham chiếu: #DH-@selectedOrder.Id</p>
                     </div>
-                    <span class="text-pure fw-medium">Classic Burger</span>
-                </div>
-                <span class="text-pure fw-bold">$8.90</span>
-            </div>
-
-            <div class="d-flex justify-content-between align-items-center py-2 border-bottom border-light border-opacity-25">
-                <div class="d-flex align-items-center gap-3">
-                    <div class="bg-light bg-opacity-10 rounded d-flex justify-content-center align-items-center" style="width: 40px; height: 40px;">
-                        <i class="bi bi-egg-fried fs-5 text-gold"></i>
+                    <div class="text-end" data-html2canvas-ignore="true">
+                        <span class="small opacity-70 me-2">Trạng thái:</span>
+                        <span class="small px-3 py-1 border border-dark rounded-pill">
+                            @selectedOrder.TrangThai
+                        </span>
                     </div>
-                    <span class="text-pure fw-medium">BBQ Bacon Burger</span>
                 </div>
-                <span class="text-pure fw-bold">$10.50</span>
-            </div>
 
-            <div class="d-flex justify-content-between align-items-center py-2 border-bottom border-light border-opacity-25">
-                <div class="d-flex align-items-center gap-3">
-                    <div class="bg-light bg-opacity-10 rounded d-flex justify-content-center align-items-center" style="width: 40px; height: 40px;">
-                        <i class="bi bi-basket fs-5 text-gold"></i>
+                @* Thông tin khách và Đơn hàng *@
+                <div class="row mb-5 g-4">
+                    <div class="col-md-6">
+                        <h6 class="small mb-3 opacity-70 fw-normal">Người nhận hàng</h6>
+                        <table class="w-100 m-0 fw-normal" style="font-size: 0.9rem; line-height: 1.8;">
+                            <tbody>
+                                <tr>
+                                    <td class="opacity-60" style="width: 35%;">Tên khách</td>
+                                    <td>@selectedOrder.NguoiDung?.HoTen</td>
+                                </tr>
+                                <tr>
+                                    <td class="opacity-60">Điện thoại</td>
+                                    <td>@selectedOrder.SoDienThoai</td>
+                                </tr>
+                                <tr>
+                                    <td class="opacity-60">Địa chỉ</td>
+                                    <td>@selectedOrder.DiaChi</td>
+                                </tr>
+                            </tbody>
+                        </table>
                     </div>
-                    <span class="text-pure fw-medium">Fries (2x)</span>
-                </div>
-                <span class="text-pure fw-bold">$7.00</span>
-            </div>
-
-            <div class="d-flex justify-content-between align-items-center py-2 border-bottom border-light">
-                <div class="d-flex align-items-center gap-3">
-                    <div class="bg-light bg-opacity-10 rounded d-flex justify-content-center align-items-center" style="width: 40px; height: 40px;">
-                        <i class="bi bi-cup-straw fs-5 text-gold"></i>
+                    <div class="col-md-6">
+                        <h6 class="small mb-3 opacity-70 fw-normal">Thông tin đơn hàng</h6>
+                        <table class="w-100 m-0 fw-normal" style="font-size: 0.9rem; line-height: 1.8;">
+                            <tbody>
+                                <tr>
+                                    <td class="opacity-60" style="width: 35%;">Ngày đặt</td>
+                                    <td>@selectedOrder.NgayDat.ToString("dd/MM/yyyy HH:mm")</td>
+                                </tr>
+                                <tr>
+                                    <td class="opacity-60">Phương thức</td>
+                                    <td class="text-uppercase">COD</td>
+                                </tr>
+                                <tr>
+                                    <td class="opacity-60">Vận chuyển</td>
+                                    <td>Tiêu chuẩn</td>
+                                </tr>
+                            </tbody>
+                        </table>
                     </div>
-                    <span class="text-pure fw-medium">Soda (2x)</span>
                 </div>
-                <span class="text-pure fw-bold">$5.00</span>
+
+                <h6 class="small mb-3 opacity-70 fw-normal">Danh mục vật phẩm</h6>
+
+                @* Bảng danh sách sản phẩm trong đơn *@
+                <div class="mb-4 border border-dark p-2">
+                    <table class="w-100 align-middle m-0 fw-normal" style="font-size: 0.9rem;">
+                        <thead>
+                            <tr class="small opacity-70 border-bottom border-dark">
+                                <th class="ps-2 py-2 fw-normal">Sản phẩm</th>
+                                <th class="text-center py-2 fw-normal">Số lượng</th>
+                                <th class="text-end py-2 fw-normal">Đơn giá</th>
+                                <th class="text-end pe-2 py-2 fw-normal">Thành tiền</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var detail in selectedOrder.ChiTietDonHangs)
+                            {
+                                <tr style="border-bottom: 1px solid #eee;">
+                                    <td class="ps-2 py-3">
+                                        <div class="d-flex align-items-center gap-3">
+                                            <div style="width: 40px; height: 40px; border: 1px solid #ddd; padding: 2px;">
+                                                <img src="@detail.SanPham?.HinhAnh" class="w-100 h-100 object-fit-cover" />
+                                            </div>
+                                            <span class="small">@detail.SanPham?.TenSanPham</span>
+                                        </div>
+                                    </td>
+                                    <td class="text-center small">@detail.SoLuong</td>
+                                    <td class="text-end opacity-70 small">@detail.GiaLucMua.ToString("N0")đ</td>
+                                    <td class="text-end pe-2 small">@((detail.SoLuong * detail.GiaLucMua).ToString("N0"))đ</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+
+                @* Tổng tiền *@
+                <div class="pt-4 text-end mt-auto">
+                    <div class="row justify-content-end">
+                        <div class="col-md-5">
+                            <div class="d-flex justify-content-between mb-2 small opacity-70">
+                                <span>Tạm tính</span>
+                                <span>@selectedOrder.TongTien.ToString("N0")đ</span>
+                            </div>
+                            <div class="d-flex justify-content-between mt-3 pt-3 border-top border-dark">
+                                <span class="fs-6">Tổng thanh toán</span>
+                                <span class="fs-5">@selectedOrder.TongTien.ToString("N0")đ</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    @* Các nút thao tác *@
+                    <div class="d-flex gap-3 mt-5 justify-content-end pb-2" data-html2canvas-ignore="true">
+                        <button type="button" onclick="xuatPDF()" class="glass-btn small px-4 py-2 fw-normal"
+                                style="border: 1px solid #000 !important; color: #000 !important; background: transparent !important;">
+                            <i class="bi bi-printer me-2"></i>In hóa đơn
+                        </button>
+
+                        @if (selectedOrder.TrangThai != "Đã thanh toán")
+                        {
+                            <form asp-action="CapNhatTrangThai" method="post" class="m-0">
+                                <input type="hidden" name="id" value="@selectedOrder.Id" />
+                                <button type="submit" class="glass-btn small px-4 py-2 fw-normal"
+                                        style="border: 1px solid #000 !important; color: #000 !important; background: transparent !important;">
+                                    Xác nhận đã thu tiền
+                                </button>
+                            </form>
+                        }
+                    </div>
+                </div>
             </div>
-
-            <div class="d-flex justify-content-between align-items-center mt-3 mb-auto">
-                <h5 class="text-pure fw-bold m-0">Total</h5>
-                <h4 class="text-pure fw-bold m-0">$31.40</h4>
+        }
+        else
+        {
+            <div class="glass-card h-100 d-flex flex-column align-items-center justify-content-center opacity-30 fw-normal">
+                <i class="bi bi-search display-1 mb-3"></i>
+                <h5>Không tìm thấy mã đơn hàng hoặc chưa chọn đơn hàng</h5>
             </div>
-
-            <button class="btn btn-gold w-100 rounded-3 py-3 mt-4 fw-bold fs-6 shadow-sm transition">
-                Charge customer $31.40
-            </button>
-        </div>
-
+        }
     </div>
 </div>
+
+<style>
+    /* Ép buộc màu sắc khi hiển thị khu vực hóa đơn chi tiết */
+    #invoice-content {
+        background-color: #ffffff !important;
+        color: #000000 !important;
+    }
+
+        #invoice-content * {
+            color: #000000 !important;
+            border-color: #000000 !important;
+            font-weight: normal !important;
+        }
+</style>
+
+@section Scripts {
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <script>
+        function xuatPDF() {
+            var element = document.getElementById('invoice-content');
+            var opt = {
+                margin: 0.4,
+                filename: 'HoaDon_OceanShellCraft_@selectedOrder?.Id' + '.pdf',
+                image: { type: 'jpeg', quality: 1 },
+                html2canvas: { scale: 2, useCORS: true, backgroundColor: '#ffffff' },
+                jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' }
+            };
+            html2pdf().set(opt).from(element).save();
+        }
+    </script>
+}

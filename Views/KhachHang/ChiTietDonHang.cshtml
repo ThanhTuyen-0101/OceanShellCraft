@@ -1,0 +1,163 @@
+﻿@model OceanShellCraft.Models.DonHang
+
+@{
+    ViewData["Title"] = "Chi tiết đơn hàng #" + Model.Id.ToString("D4");
+    Layout = "~/Views/Shared/_KhachHangLayout.cshtml";
+
+    // Logic tính toán phần trăm thanh tiến trình
+    int progressPercent = 0;
+    string dotXacNhan = "dot-pending", dotDongGoi = "dot-pending", dotGiaoHang = "dot-pending", dotThanhCong = "dot-pending";
+
+    if (Model.TrangThai == "Chờ xử lý") { progressPercent = 10; dotXacNhan = "dot-current"; }
+    else if (Model.TrangThai == "Đang đóng gói") { progressPercent = 40; dotXacNhan = "dot-done"; dotDongGoi = "dot-current"; }
+    else if (Model.TrangThai == "Đang giao hàng") { progressPercent = 70; dotXacNhan = "dot-done"; dotDongGoi = "dot-done"; dotGiaoHang = "dot-current"; }
+    else if (Model.TrangThai == "Đã hoàn thành") { progressPercent = 100; dotXacNhan = "dot-done"; dotDongGoi = "dot-done"; dotGiaoHang = "dot-done"; dotThanhCong = "dot-done"; }
+
+    var isCancelled = Model.TrangThai == "Đã hủy";
+}
+
+<div class="container-fluid py-4 min-vh-100 hide-scrollbar">
+    <div class="mb-4">
+        <a href="@Url.Action("Orders", "KhachHang")" class="glass-btn small px-4">
+            <i class="bi bi-arrow-left me-2"></i>Quay lại danh sách
+        </a>
+    </div>
+
+    <div class="glass-card p-4 mb-4">
+        <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4 pb-3" style="border-bottom: 1px solid var(--border-light);">
+            <div>
+                <h4 class="m-0" style="letter-spacing: 1px;">Đơn hàng: #ORD-@Model.Id.ToString("D4")</h4>
+                <small class="opacity-50"><i class="bi bi-calendar3 me-1"></i> Đặt lúc: @Model.NgayDat.ToString("dd/MM/yyyy HH:mm")</small>
+            </div>
+            <div class="mt-3 mt-md-0">
+                <span class="glass-effect px-4 py-2 rounded-pill small">
+                    @Model.TrangThai
+                </span>
+            </div>
+        </div>
+
+        @if (!isCancelled)
+        {
+            <div class="position-relative mt-4 mb-3 px-md-5 py-2">
+                <div class="tracking-line" style="background: var(--glass-bg); height: 4px; border-radius: 2px;">
+                    <div class="tracking-line-fill" style="width: @progressPercent%; background: var(--text-main); height: 100%; border-radius: 2px;"></div>
+                </div>
+                <div class="d-flex justify-content-between position-relative" style="margin-top: -12px;">
+                    <div class="text-center" style="width: 80px; margin-left: -30px;">
+                        <div class="tracking-dot @dotXacNhan mx-auto mb-2" style="width: 20px; height: 20px; border-radius: 50%; border: 2px solid var(--border-light); background: var(--glass-bg);"></div>
+                        <small class="@(dotXacNhan == "dot-pending" ? "opacity-25" : "opacity-100")">Đã duyệt</small>
+                    </div>
+                    <div class="text-center" style="width: 80px;">
+                        <div class="tracking-dot @dotDongGoi mx-auto mb-2" style="width: 20px; height: 20px; border-radius: 50%; border: 2px solid var(--border-light); background: var(--glass-bg);"></div>
+                        <small class="@(dotDongGoi == "dot-pending" ? "opacity-25" : "opacity-100")">Đóng gói</small>
+                    </div>
+                    <div class="text-center" style="width: 80px;">
+                        <div class="tracking-dot @dotGiaoHang mx-auto mb-2" style="width: 20px; height: 20px; border-radius: 50%; border: 2px solid var(--border-light); background: var(--glass-bg);"></div>
+                        <small class="@(dotGiaoHang == "dot-pending" ? "opacity-25" : "opacity-100")">Đang giao</small>
+                    </div>
+                    <div class="text-center" style="width: 80px; margin-right: -30px;">
+                        <div class="tracking-dot @dotThanhCong mx-auto mb-2" style="width: 20px; height: 20px; border-radius: 50%; border: 2px solid var(--border-light); background: var(--glass-bg);"></div>
+                        <small class="@(dotThanhCong == "dot-pending" ? "opacity-25" : "opacity-100")">Hoàn thành</small>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+
+    <div class="row g-4">
+        <div class="col-lg-8">
+            <div class="glass-card p-4 h-100">
+                <h5 class="mb-4 pb-3" style="border-bottom: 1px solid var(--border-light);">Sản phẩm đã đặt</h5>
+
+                <div class="d-flex flex-column gap-3">
+                    @foreach (var item in Model.ChiTietDonHangs)
+                    {
+                        <div class="glass-effect rounded-4 p-3 d-flex align-items-center gap-3" style="border: 1px solid var(--border-light);">
+                            <a href="@Url.Action("ChiTiet", "SanPham", new { id = item.SanPhamId })" class="text-decoration-none">
+                                <div class="glass-circle d-flex justify-content-center align-items-center rounded-3 overflow-hidden flex-shrink-0" style="width: 70px; height: 70px;">
+                                    @if (item.SanPham != null && !string.IsNullOrEmpty(item.SanPham.HinhAnh))
+                                    {
+                                        <img src="@item.SanPham.HinhAnh" class="w-100 h-100 object-fit-cover" alt="product" />
+                                    }
+                                    else
+                                    {
+                                        <i class="bi bi-gem fs-2 opacity-50"></i>
+                                    }
+                                </div>
+                            </a>
+
+                            <div class="flex-grow-1">
+                                <a href="@Url.Action("ChiTiet", "SanPham", new { id = item.SanPhamId })" class="text-decoration-none">
+                                    <h6 class="m-0 mb-1">@(item.SanPham?.TenSanPham ?? "Sản phẩm không xác định")</h6>
+                                </a>
+                                <small class="opacity-50 d-block">Đơn giá: @item.GiaLucMua.ToString("N0") đ</small>
+                            </div>
+
+                            <div class="text-end">
+                                <small class="opacity-50 d-block mb-1">Số lượng: x @item.SoLuong</small>
+                                <h6 class="m-0">@((item.GiaLucMua * item.SoLuong).ToString("N0")) đ</h6>
+
+                                @if (Model.TrangThai == "Đã hoàn thành")
+                                {
+                                    <a href="@Url.Action("ChiTiet", "SanPham", new { id = item.SanPhamId })#danh-gia" class="glass-btn py-1 px-3 mt-2" style="font-size: 0.75rem;">
+                                        <i class="bi bi-star me-1"></i>Đánh giá
+                                    </a>
+                                }
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-4">
+            <div class="d-flex flex-column gap-4 h-100">
+                <div class="glass-card p-4">
+                    <h5 class="mb-4 pb-3" style="border-bottom: 1px solid var(--border-light);">Thông tin giao hàng</h5>
+
+                    <div class="mb-3">
+                        <small class="opacity-50 d-block mb-1"><i class="bi bi-person me-1"></i> Người nhận</small>
+                        <span>@(Model.NguoiDung?.HoTen ?? "Khách hàng")</span>
+                    </div>
+                    <div class="mb-3">
+                        <small class="opacity-50 d-block mb-1"><i class="bi bi-telephone me-1"></i> Số điện thoại</small>
+                        <span>@(!string.IsNullOrEmpty(Model.SoDienThoai) ? Model.SoDienThoai : "Chưa cập nhật")</span>
+                    </div>
+                    <div>
+                        <small class="opacity-50 d-block mb-1"><i class="bi bi-geo-alt me-1"></i> Địa chỉ</small>
+                        <span class="small">@(!string.IsNullOrEmpty(Model.DiaChi) ? Model.DiaChi : "Chưa cập nhật")</span>
+                    </div>
+                </div>
+
+                <div class="glass-card p-4 flex-grow-1 d-flex flex-column justify-content-between">
+                    <div>
+                        <h5 class="mb-4 pb-3" style="border-bottom: 1px solid var(--border-light);">Thanh toán</h5>
+                        <div class="d-flex justify-content-between mb-2">
+                            <span class="opacity-75">Tạm tính:</span>
+                            <span>@Model.TongTien.ToString("N0") đ</span>
+                        </div>
+                        <div class="d-flex justify-content-between mb-3 pb-3" style="border-bottom: 1px solid var(--border-light);">
+                            <span class="opacity-75">Phí vận chuyển:</span>
+                            <span>Miễn phí</span>
+                        </div>
+                    </div>
+                    <div class="d-flex justify-content-between align-items-end mt-3">
+                        <span class="fs-5">Tổng cộng:</span>
+                        <h3 class="m-0" style="letter-spacing: 1px;">@Model.TongTien.ToString("N0") đ</h3>
+                    </div>
+
+                    @if (Model.TrangThai == "Chờ xử lý")
+                    {
+                        <form asp-action="HuyDonHang" asp-route-id="@Model.Id" method="post" class="mt-4"
+                              onsubmit="return confirm('Bạn có chắc chắn muốn hủy đơn hàng này không?');">
+                            @Html.AntiForgeryToken()
+                            <button type="submit" class="glass-btn w-100 opacity-75">
+                                Hủy đơn hàng
+                            </button>
+                        </form>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

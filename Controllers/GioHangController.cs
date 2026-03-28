@@ -1,4 +1,10 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Security.Claims;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using OceanShellCraft.Models;
@@ -7,6 +13,7 @@ using OceanShellCraft.Models.ViewModels;
 public class GioHangController : Controller
 {
     private readonly MyNgheDbContext _context;
+
     public GioHangController(MyNgheDbContext context) => _context = context;
 
     // Lấy hoặc tạo Mã phiên từ Cookie để định danh giỏ hàng
@@ -56,6 +63,7 @@ public class GioHangController : Controller
         await _context.SaveChangesAsync();
         return RedirectToAction("DanhSach");
     }
+
     // Thêm hàm này vào GioHangController hiện tại của Như
     public async Task<IActionResult> CapNhatSoLuong(int id, int soLuong)
     {
@@ -68,6 +76,7 @@ public class GioHangController : Controller
         // Vì mình dùng AJAX gọi hàm này, nên trả về OK là được
         return Ok();
     }
+
     [Authorize]
     public IActionResult DatHang()
     {
@@ -85,7 +94,17 @@ public class GioHangController : Controller
     [Authorize]
     public async Task<IActionResult> XacNhanDatHang(string SoDienThoai, string DiaChi, List<int> ListSanPhamId, List<int> ListSoLuong)
     {
-        var userId = int.Parse(User.FindFirst("UserId").Value);
+        // SỬA LỖI Ở ĐÂY: Kiểm tra an toàn Claim trước khi Parse
+        var userIdClaim = User.FindFirst("UserId") ?? User.FindFirst(ClaimTypes.NameIdentifier);
+
+        if (userIdClaim == null)
+        {
+            // Nếu không lấy được ID (phiên đăng nhập lỗi hoặc bị mất Claim), yêu cầu đăng nhập lại
+            // Đảm bảo tên "NguoiDung" là Controller xử lý đăng nhập của bạn (thay đổi nếu cần)
+            return RedirectToAction("Login", "NguoiDung");
+        }
+
+        var userId = int.Parse(userIdClaim.Value);
 
         // 1. Tạo đơn hàng mới
         var donHang = new DonHang
@@ -133,6 +152,7 @@ public class GioHangController : Controller
         _context.GioHangs.RemoveRange(cartItems);
 
         await _context.SaveChangesAsync();
+
         return View("CamOn");
     }
 }

@@ -38,5 +38,8 @@ namespace OceanShellCraft.Models
 
         public string VaiTro { get; set; } = "KhachHang";
         public virtual ICollection<DanhGia> DanhGias { get; set; } = new List<DanhGia>();
+        public int DiemTichLuy { get; set; } = 0;
+        public virtual ICollection<TinNhan> TinNhans { get; set; } = new List<TinNhan>();
     }
 }
+

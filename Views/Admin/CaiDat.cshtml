@@ -1,0 +1,326 @@
+﻿@{
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+    ViewData["Title"] = "Cài đặt hệ thống";
+}
+
+<div class="container-fluid py-4 min-vh-100 d-flex gap-4">
+
+    <div class="flex-grow-1 d-flex flex-column">
+
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <div>
+                <p class="small opacity-75 mb-0">Primary Dashboard</p>
+                <h3 class="m-0 fw-bold">@ViewData["Title"]</h3>
+            </div>
+            <div class="d-flex align-items-center gap-3">
+                <div style="width: 250px;">
+                    <input type="text" class="glass-input pill-style py-2" placeholder="🔍 Search...">
+                </div>
+                <div class="glass-circle"><i class="bi bi-person-fill"></i></div>
+            </div>
+        </div>
+
+        <div class="row g-4 flex-grow-1">
+            <div class="col-xl-9 d-flex flex-column gap-4">
+
+                <div class="row g-4">
+                    <div class="col-md-8">
+                        <div class="glass-card h-100 p-4 d-flex flex-column position-relative overflow-hidden shadow-lg rounded-4">
+
+                            <div id="panel-danhmuc" class="setting-panel d-flex flex-column h-100 fade-in">
+                                <div class="d-flex justify-content-between align-items-center mb-4">
+                                    <h5 class="fw-bold m-0"><i class="bi bi-gear me-2"></i>Quản lý danh mục</h5>
+                                </div>
+
+                                <div class="row g-3 mb-4">
+                                    <div class="col-md-5">
+                                        <label class="small fw-bold opacity-75 mb-2 ms-2">Tên danh mục</label>
+                                        <input type="text" class="glass-input pill-style" placeholder="Nhập tên...">
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label class="small fw-bold opacity-75 mb-2 ms-2">Danh mục cha</label>
+                                        <select class="glass-input pill-style">
+                                            <option value="" style="color: black;">-- Trống --</option>
+                                            <option value="1" style="color: black;">Quần áo thể thao</option>
+                                            <option value="2" style="color: black;">Giày dép</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-3 d-flex align-items-end">
+                                        <button class="glass-btn w-100 py-2 fw-bold text-center">Lưu lại</button>
+                                    </div>
+                                </div>
+
+                                <div class="glass-effect flex-grow-1 rounded-4 p-3 overflow-auto hide-scrollbar">
+                                    <table class="glass-table table-hover mb-0 w-100">
+                                        <thead>
+                                            <tr>
+                                                <th class="small opacity-75 border-0 pb-2">Tên danh mục</th>
+                                                <th class="small opacity-75 border-0 pb-2">Danh mục cha</th>
+                                                <th class="small opacity-75 text-center border-0 pb-2">Trạng thái</th>
+                                                <th class="small opacity-75 text-end border-0 pb-2">Thao tác</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td class="border-0 pt-3">Quần áo thể thao</td>
+                                                <td class="border-0 pt-3 opacity-50">--</td>
+                                                <td class="text-center border-0 pt-3"><i class="bi bi-toggle-on fs-4 text-success"></i></td>
+                                                <td class="text-end border-0 pt-3">
+                                                    <a href="#" class="glass-circle-ghost border" style="width: 32px; height: 32px;"><i class="bi bi-pencil small"></i></a>
+                                                    <a href="#" class="glass-circle-ghost border text-danger ms-1" style="width: 32px; height: 32px;"><i class="bi bi-trash small"></i></a>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td class="border-0 pt-3">Giày chạy bộ</td>
+                                                <td class="border-0 pt-3 opacity-50">Giày dép</td>
+                                                <td class="text-center border-0 pt-3"><i class="bi bi-toggle-on fs-4 text-success"></i></td>
+                                                <td class="text-end border-0 pt-3">
+                                                    <a href="#" class="glass-circle-ghost border" style="width: 32px; height: 32px;"><i class="bi bi-pencil small"></i></a>
+                                                    <a href="#" class="glass-circle-ghost border text-danger ms-1" style="width: 32px; height: 32px;"><i class="bi bi-trash small"></i></a>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td class="border-0 pt-3">Phụ kiện Yoga</td>
+                                                <td class="border-0 pt-3 opacity-50">--</td>
+                                                <td class="text-center border-0 pt-3"><i class="bi bi-toggle-off fs-4 opacity-50"></i></td>
+                                                <td class="text-end border-0 pt-3">
+                                                    <a href="#" class="glass-circle-ghost border" style="width: 32px; height: 32px;"><i class="bi bi-pencil small"></i></a>
+                                                    <a href="#" class="glass-circle-ghost border text-danger ms-1" style="width: 32px; height: 32px;"><i class="bi bi-trash small"></i></a>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+
+                            <div id="panel-vanchuyen" class="setting-panel d-none flex-column h-100 fade-in">
+                                <div class="d-flex justify-content-between align-items-start mb-4">
+                                    <h5 class="fw-bold m-0"><i class="bi bi-truck me-2"></i>Cài đặt vận chuyển</h5>
+                                    <button class="glass-btn small py-1 btn-back-home" style="font-size: 0.8rem;"><i class="bi bi-arrow-left me-1"></i> Đóng</button>
+                                </div>
+                                <div class="flex-grow-1">
+                                    <label class="small fw-bold opacity-75 mb-2 ms-2">Phí vận chuyển mặc định (VNĐ)</label>
+                                    <input type="text" class="glass-input pill-style mb-4" value="30,000">
+
+                                    <label class="small fw-bold opacity-75 mb-2 ms-2">Định mức Miễn phí vận chuyển (Freeship)</label>
+                                    <input type="text" class="glass-input pill-style mb-4" value="500,000">
+                                </div>
+                                <button class="glass-btn w-100 py-2 mt-auto fw-bold">Lưu cấu hình</button>
+                            </div>
+
+                            <div id="panel-thanhtoan" class="setting-panel d-none flex-column h-100 fade-in">
+                                <div class="d-flex justify-content-between align-items-start mb-4">
+                                    <h5 class="fw-bold m-0"><i class="bi bi-credit-card me-2"></i>Cổng thanh toán</h5>
+                                    <button class="glass-btn small py-1 btn-back-home" style="font-size: 0.8rem;"><i class="bi bi-arrow-left me-1"></i> Đóng</button>
+                                </div>
+                                <div class="flex-grow-1 d-flex flex-column gap-3">
+                                    <div class="glass-effect p-3 rounded-4 d-flex justify-content-between align-items-center shadow-sm">
+                                        <span class="fw-bold">Thanh toán khi nhận hàng (COD)</span>
+                                        <i class="bi bi-toggle-on fs-3 text-white"></i>
+                                    </div>
+                                    <div class="glass-effect p-3 rounded-4 d-flex justify-content-between align-items-center shadow-sm">
+                                        <span class="fw-bold">Chuyển khoản ngân hàng</span>
+                                        <i class="bi bi-toggle-on fs-3 text-white"></i>
+                                    </div>
+                                    <div class="glass-effect p-3 rounded-4 d-flex justify-content-between align-items-center opacity-50 shadow-sm">
+                                        <span class="fw-bold">Ví điện tử Momo / ZaloPay</span>
+                                        <i class="bi bi-toggle-off fs-3"></i>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div id="panel-thuoctinh" class="setting-panel d-none flex-column h-100 fade-in">
+                                <div class="d-flex justify-content-between align-items-start mb-4">
+                                    <h5 class="fw-bold m-0"><i class="bi bi-puzzle me-2"></i>Thuộc tính sản phẩm</h5>
+                                    <button class="glass-btn small py-1 btn-back-home" style="font-size: 0.8rem;"><i class="bi bi-arrow-left me-1"></i> Đóng</button>
+                                </div>
+                                <div class="flex-grow-1 d-flex flex-column align-items-center justify-content-center opacity-50 text-center">
+                                    <i class="bi bi-boxes fs-1 mb-2"></i>
+                                    <p class="mb-0">Khu vực cấu hình Size, Màu sắc, Chất liệu...</p>
+                                </div>
+                            </div>
+
+                            <div id="panel-vaitro" class="setting-panel d-none flex-column h-100 fade-in">
+                                <div class="d-flex justify-content-between align-items-start mb-4">
+                                    <h5 class="fw-bold m-0"><i class="bi bi-people me-2"></i>Phân quyền hệ thống</h5>
+                                    <button class="glass-btn small py-1 btn-back-home" style="font-size: 0.8rem;"><i class="bi bi-arrow-left me-1"></i> Đóng</button>
+                                </div>
+                                <div class="flex-grow-1 d-flex flex-column align-items-center justify-content-center opacity-50 text-center">
+                                    <i class="bi bi-shield-lock fs-1 mb-2"></i>
+                                    <p class="mb-0">Thiết lập quyền hạn cho Admin, Staff, Editor...</p>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+
+                    <div class="col-md-4 d-flex flex-column gap-4">
+
+                        <div class="glass-card trigger-card flex-grow-1 p-3 d-flex align-items-center gap-3 rounded-4 shadow-sm" data-target="panel-vanchuyen">
+                            <div class="glass-rect rounded-4" style="width: 50px; height: 50px;"><i class="bi bi-truck fs-4"></i></div>
+                            <div>
+                                <h6 class="fw-bold m-0">Vận chuyển</h6>
+                                <p class="small opacity-75 m-0" style="font-size: 0.8rem;">Cấu hình giao hàng</p>
+                            </div>
+                        </div>
+
+                        <div class="glass-card trigger-card flex-grow-1 p-4 d-flex flex-column rounded-4 shadow-sm" data-target="panel-thanhtoan">
+                            <div class="d-flex align-items-center gap-3 mb-auto">
+                                <div class="glass-circle-ghost border" style="width: 40px; height: 40px;"><i class="bi bi-credit-card fs-5"></i></div>
+                                <h6 class="fw-bold m-0">Thanh toán</h6>
+                            </div>
+                            <div class="mt-4">
+                                <p class="small opacity-50 mb-1">Phương thức</p>
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <h4 class="fw-bold m-0">3 Cổng</h4>
+                                    <div class="glass-circle-ghost border"><i class="bi bi-chevron-right"></i></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row g-4 mt-0">
+                    <div class="col-md-4">
+                        <div class="glass-card trigger-card active-card h-100 p-4 d-flex flex-column align-items-center text-center rounded-4 shadow-sm" data-target="panel-danhmuc">
+                            <div class="glass-circle fs-4 mb-3" style="width: 50px; height: 50px;">⚙️</div>
+                            <h6 class="fw-bold mb-1">Danh mục</h6>
+                            <p class="small opacity-50 mb-4" style="font-size: 0.8rem;">Quản lý hệ thống gốc</p>
+                            <div class="w-100 mt-auto">
+                                <div class="d-flex justify-content-between small mb-2 opacity-75"><span>Hoàn thiện</span><span>100%</span></div>
+                                <div class="progress" style="height: 6px; background: rgba(0,0,0,0.2);"><div class="progress-bar bg-light" style="width: 100%; border-radius: 10px;"></div></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-4">
+                        <div class="glass-card trigger-card h-100 p-4 d-flex flex-column align-items-center text-center rounded-4 shadow-sm" data-target="panel-thuoctinh">
+                            <div class="glass-circle fs-4 mb-3" style="width: 50px; height: 50px;">🧩</div>
+                            <h6 class="fw-bold mb-1">Thuộc tính</h6>
+                            <p class="small opacity-50 mb-4" style="font-size: 0.8rem;">Size, Màu sắc,...</p>
+                            <div class="w-100 mt-auto">
+                                <div class="d-flex justify-content-between small mb-2 opacity-75"><span>Hoàn thiện</span><span>13%</span></div>
+                                <div class="progress" style="height: 6px; background: rgba(0,0,0,0.2);"><div class="progress-bar bg-light" style="width: 13%; border-radius: 10px;"></div></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-4">
+                        <div class="glass-card trigger-card h-100 p-4 d-flex flex-column align-items-center text-center rounded-4 shadow-sm" data-target="panel-vaitro">
+                            <div class="glass-circle fs-4 mb-3" style="width: 50px; height: 50px;">👥</div>
+                            <h6 class="fw-bold mb-1">Vai trò</h6>
+                            <p class="small opacity-50 mb-4" style="font-size: 0.8rem;">Thiết lập phân quyền</p>
+                            <div class="w-100 mt-auto">
+                                <div class="d-flex justify-content-between small mb-2 opacity-75"><span>Hoàn thiện</span><span>90%</span></div>
+                                <div class="progress" style="height: 6px; background: rgba(0,0,0,0.2);"><div class="progress-bar bg-light" style="width: 90%; border-radius: 10px;"></div></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+           
+
+        </div>
+    </div>
+</div>
+
+<style>
+    /* Chuyển trỏ chuột thành hình bàn tay để user biết có thể bấm */
+    .trigger-card {
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+        /* Hiệu ứng nhấc nổi lên khi di chuột vào */
+        .trigger-card:hover {
+            background: rgba(255, 255, 255, 0.25) !important;
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2) !important;
+        }
+
+        /* Đổi màu viền sáng lên khi ô đó đang được click chọn */
+        .trigger-card.active-card {
+            background: rgba(255, 255, 255, 0.3) !important;
+            border: 1px solid rgba(255, 255, 255, 0.8) !important;
+            box-shadow: 0 0 20px rgba(255, 255, 255, 0.4) !important;
+        }
+
+    /* Hiệu ứng mờ dần khi chuyển Tab */
+    .fade-in {
+        animation: fadeInPanel 0.4s ease-in-out forwards;
+    }
+
+    @@keyframes fadeInPanel {
+        0% {
+            opacity: 0;
+            transform: scale(0.98);
+        }
+
+        100% {
+            opacity: 1;
+            transform: scale(1);
+        }
+    }
+</style>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const triggers = document.querySelectorAll('.trigger-card');
+        const panels = document.querySelectorAll('.setting-panel');
+        const backBtns = document.querySelectorAll('.btn-back-home');
+
+        // Hàm ẩn tất cả Panel
+        function hideAllPanels() {
+            panels.forEach(panel => {
+                panel.classList.remove('d-flex');
+                panel.classList.add('d-none');
+            });
+        }
+
+        // Bắt sự kiện Click vào ô nhỏ
+        triggers.forEach(trigger => {
+            trigger.addEventListener('click', function () {
+                // Xóa trạng thái active của tất cả các ô
+                triggers.forEach(t => t.classList.remove('active-card'));
+
+                // Thêm trạng thái active cho ô hiện tại
+                this.classList.add('active-card');
+
+                // Lấy ID của panel cần hiển thị từ data-target
+                const targetId = this.getAttribute('data-target');
+
+                hideAllPanels();
+
+                // Hiển thị Panel mong muốn
+                const targetPanel = document.getElementById(targetId);
+                if (targetPanel) {
+                    targetPanel.classList.remove('d-none');
+                    targetPanel.classList.add('d-flex');
+                }
+            });
+        });
+
+        // Bắt sự kiện Click vào nút "Đóng" bên trong từng Panel (Giờ sẽ quay về panel Danh mục mặc định)
+        backBtns.forEach(btn => {
+            btn.addEventListener('click', function(e) {
+                e.stopPropagation(); // Ngăn sự kiện click lan truyền
+
+                // Bỏ đánh dấu các ô nhỏ
+                triggers.forEach(t => t.classList.remove('active-card'));
+
+                // Đánh dấu lại ô Danh mục là ô đang mở (ô số 3)
+                const categoryTrigger = document.querySelector('[data-target="panel-danhmuc"]');
+                if(categoryTrigger) categoryTrigger.classList.add('active-card');
+
+                hideAllPanels();
+
+                // Hiển thị lại Panel Danh mục làm mặc định
+                const homePanel = document.getElementById('panel-danhmuc');
+                homePanel.classList.remove('d-none');
+                homePanel.classList.add('d-flex');
+            });
+        });
+    });
+</script>

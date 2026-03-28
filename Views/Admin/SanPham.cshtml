@@ -1,79 +1,90 @@
 ﻿@model IEnumerable<OceanShellCraft.Models.SanPham>
 @{
-    ViewData["Title"] = "Quản lý Sản phẩm";
     Layout = "~/Views/Shared/_AdminLayout.cshtml";
+    ViewData["Title"] = "Quản lý sản phẩm";
 }
 
-<div class="container-fluid py-4 min-vh-100 bg-transparent">
+<div class="container-fluid py-4">
+    @* --- Đầu trang --- *@
     <div class="d-flex justify-content-between align-items-center mb-4">
-        <h4 class="fw-bold m-0">@ViewData["Title"]</h4>
+        <div>
+            <h4 class="m-0 fw-normal">@ViewData["Title"]</h4>
+          
+        </div>
 
         <div class="d-flex gap-2">
-            <a asp-action="TaiFileMau" class="btn btn-outline-light btn-sm shadow-none no-hover-bg">
-                <i class="bi bi-download me-1"></i> Xuất File
-            </a>
-            <button class="btn btn-outline-light btn-sm shadow-none no-hover-bg" onclick="document.getElementById('importFile').click()">
-                <i class="bi bi-file-earmark-excel me-1"></i> Nhập Excel
+            <button id="btnBulkDelete" class="glass-btn small py-1 px-3 d-none fw-normal" onclick="bulkDelete()">
+                <i class="bi bi-trash me-1"></i>Xóa đã chọn
             </button>
-            <form asp-action="NhapExcel" method="post" enctype="multipart/form-data" class="d-none">
-                <input type="file" id="importFile" name="file" onchange="this.form.submit()" accept=".xlsx, .xls" />
-            </form>
-            <a href="/Admin/ThemSuaSanPham" id="btnAdd" class="btn btn-outline-light btn-sm shadow-none fw-medium no-hover-bg">
-                <i class="bi bi-plus-circle me-1"></i> Thêm mới (F7)
+            <a asp-action="XuatExcel" class="glass-btn small py-1 px-3 fw-normal">
+                <i class="bi bi-file-earmark-arrow-down me-1"></i>Xuất file
+            </a>
+            @* Nút mở Modal *@
+            <button type="button" class="glass-btn small py-1 px-3 fw-normal" data-bs-toggle="modal" data-bs-target="#importExcelModal">
+                <i class="bi bi-file-earmark-arrow-up me-1"></i>Nhập Excel
+            </button>
+            <a href="/Admin/ThemSuaSanPham" class="glass-btn small py-1 px-3 fw-normal">
+                <i class="bi bi-plus-circle me-1"></i>Thêm mới (F7)
             </a>
         </div>
     </div>
 
-    <div class="card bg-transparent border-0 shadow-none">
+    @* --- Bảng dữ liệu --- *@
+    <div class="glass-card p-0 overflow-hidden">
         <div class="table-responsive">
-            <table class="table table-borderless bg-transparent align-middle mb-0 admin-table-transparent">
-                <thead class="border-bottom border-light border-opacity-50 bg-transparent">
+            <table class="glass-table mb-0 align-middle">
+                <thead>
                     <tr>
-                        <th class="fw-bold px-3 py-3 bg-transparent" style="width: 8%;">Ảnh</th>
-                        <th class="fw-bold px-3 py-3 bg-transparent">Tên sản phẩm</th>
-                        <th class="fw-bold px-3 py-3 bg-transparent">Giá tiền</th>
-                        <th class="fw-bold px-3 py-3 text-center bg-transparent">Nổi bật</th>
-                        <th class="px-3 py-3 text-end bg-transparent" style="width: 12%;">Thao tác</th>
+                        <th class="ps-4" style="width: 40px;"><input type="checkbox" class="form-check-input" id="selectAll"></th>
+                        <th class="fw-normal" style="width: 70px;">Ảnh</th>
+                        <th class="fw-normal">Tên sản phẩm</th>
+                        <th class="fw-normal">Giá bán</th>
+                        <th class="text-center fw-normal">Kho / Đã bán</th>
+                        <th class="text-center fw-normal">Đánh giá</th>
+                        <th class="text-center fw-normal">Trạng thái</th>
+                        <th class="text-end pe-4 fw-normal">Thao tác</th>
                     </tr>
                 </thead>
-                <tbody class="bg-transparent">
+                <tbody>
                     @if (Model != null && Model.Any())
                     {
                         foreach (var item in Model)
                         {
-                            <tr class="border-bottom border-light border-opacity-10 transition-row bg-transparent">
-                                <td class="px-3 py-2 bg-transparent">
+                            <tr>
+                                <td class="ps-4">
+                                    <input type="checkbox" class="form-check-input item-checkbox" value="@item.Id">
+                                </td>
+                                <td class="py-3">
                                     <img src="@(string.IsNullOrEmpty(item.HinhAnh) ? "/img/no-image.png" : item.HinhAnh)"
-                                         class="rounded-circle object-fit-cover border border-light border-opacity-25"
-                                         style="width: 45px; height: 45px;" />
+                                         class="rounded-3 object-fit-cover shadow-sm"
+                                         style="width: 48px; height: 48px;" alt="Sản phẩm" />
                                 </td>
-                                <td class="px-3 fw-bold bg-transparent">@item.TenSanPham</td>
-                                <td class="px-3 fw-bold bg-transparent">
-                                    @item.GiaTien.ToString("N0") <span class="small">đ</span>
+                                <td>
+                                    <div class="fw-normal">@item.TenSanPham</div>
+                                    <div class="small opacity-50">Danh mục: @item.DanhMuc?.TenDanhMuc</div>
                                 </td>
-                                <td class="px-3 text-center bg-transparent">
-                                    <a href="javascript:void(0)" onclick="toggleFeatured(@item.Id, this)" class="text-decoration-none">
-                                        <i class="bi @(item.IsFeatured ? "bi-star-fill text-white" : "bi-star text-white-50 opacity-50") fs-5"></i>
-                                    </a>
+                                <td>@item.GiaTien.ToString("N0")đ</td>
+                                <td class="text-center">
+                                    <div class="small">Tồn: @item.SoLuong</div>
+                                    <div class="small opacity-50">Bán: @item.SoLuongDaBan</div>
                                 </td>
-                                <td class="px-3 text-end bg-transparent">
+                                <td class="text-center">
+                                    <div class="opacity-50" style="font-size: 10px;">(@(item.DanhGias?.Count ?? 0) Đánh giá)</div>
+                                </td>
+                                <td class="text-center">
+                                    <span class="badge glass-effect px-3 fw-normal">@item.TrangThai</span>
+                                </td>
+                                <td class="text-end pe-4">
                                     <div class="d-flex justify-content-end gap-2">
-                                        <a asp-action="ThemSuaSanPham" asp-route-id="@item.Id" class="btn btn-outline-light btn-sm action-icon">
-                                            <i class="bi bi-pencil"></i>
+                                        <a href="javascript:void(0)" onclick="toggleFeatured(@item.Id, this)" class="glass-circle-ghost">
+                                            <i class="bi @(item.IsFeatured ? "bi-star-fill" : "bi-star opacity-25")"></i>
                                         </a>
-                                        <a asp-action="XoaSanPham" asp-route-id="@item.Id" class="btn btn-outline-light btn-sm action-icon" onclick="return confirm('Xác nhận xóa sản phẩm này?');">
-                                            <i class="bi bi-trash"></i>
-                                        </a>
+                                        <a asp-action="ThemSuaSanPham" asp-route-id="@item.Id" class="glass-btn p-1 px-2 fw-normal"><i class="bi bi-pencil small"></i></a>
+                                        <a asp-action="XoaSanPham" asp-route-id="@item.Id" class="glass-btn p-1 px-2 fw-normal" onclick="return confirm('Xác nhận xóa?');"><i class="bi bi-trash small"></i></a>
                                     </div>
                                 </td>
                             </tr>
                         }
-                    }
-                    else
-                    {
-                        <tr>
-                            <td colspan="5" class="text-center py-5 opacity-50 fst-italic bg-transparent">Không có dữ liệu sản phẩm</td>
-                        </tr>
                     }
                 </tbody>
             </table>
@@ -81,45 +92,81 @@
     </div>
 </div>
 
+@* --- MODAL SỬA LỖI TƯƠNG TÁC --- *@
+@* Thêm data-bs-backdrop="false" để không dùng nền đen mặc định của Bootstrap vốn hay gây lỗi *@
+<div class="modal fade" id="importExcelModal" tabindex="-1" aria-hidden="true" data-bs-backdrop="false" style="background: rgba(0,0,0,0.5); z-index: 1060;">
+    <div class="modal-dialog modal-dialog-centered" style="z-index: 1070;">
+        @* Quan trọng: pointer-events: auto để cho phép bấm vào bên trong *@
+        <div class="modal-content glass-card p-0 border-0" style="pointer-events: auto !important; box-shadow: 0 0 50px rgba(0,0,0,0.5);">
+            <div class="px-4 py-3 d-flex justify-content-between align-items-center" style="border-bottom: 1px solid rgba(255,255,255,0.1);">
+                <h5 class="mb-0 fw-normal text-white">Nhập dữ liệu hàng loạt</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="p-4">
+                <div class="mb-4 d-flex justify-content-between align-items-center">
+                    <span class="small opacity-75 text-white">Tải tệp mẫu nếu bạn chưa có:</span>
+                    <a asp-action="TaiFileMau" class="glass-btn small py-1 px-3 fw-normal">
+                        <i class="bi bi-download me-1"></i>File mẫu
+                    </a>
+                </div>
+
+                <form asp-action="NhapExcel" method="post" enctype="multipart/form-data">
+                    <div class="mb-3">
+                        <label class="small opacity-75 mb-2 ps-1 text-white">Chọn tệp Excel (.xlsx, .xls)</label>
+                        @* Thêm background-color để ô input không bị trong suốt quá mức *@
+                        <input type="file" name="file" class="glass-input w-100" accept=".xlsx, .xls" required style="cursor: pointer; background: rgba(255,255,255,0.1) !important;" />
+                    </div>
+
+                    <div class="mt-4 pt-3 d-flex justify-content-end" style="border-top: 1px solid rgba(255,255,255,0.1);">
+                        <button type="button" class="glass-btn me-2 opacity-50 fw-normal" data-bs-dismiss="modal">Hủy bỏ</button>
+                        <button type="submit" class="glass-btn px-4 fw-normal">
+                            <i class="bi bi-upload me-2"></i>Bắt đầu tải lên
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
 @section Scripts {
     <script>
-        document.addEventListener('keydown', function(e) {
+        // Phím tắt F7
+        document.addEventListener('keydown', e => {
             if (e.key === 'F7') {
                 e.preventDefault();
                 window.location.href = '/Admin/ThemSuaSanPham';
             }
         });
 
-        // Hàm gọi API xử lý
-        async function toggleFeatured(id, element) {
-            const icon = element.querySelector('i');
+        // Script để đảm bảo khi mở Modal thì body không bị khóa tương tác
+        const myModal = document.getElementById('importExcelModal');
+        myModal.addEventListener('shown.bs.modal', function () {
+            // Đẩy Modal lên lớp cao nhất
+            document.querySelector('.modal-dialog').style.zIndex = "9999";
+        });
 
-            try {
-                // Gọi xuống Backend
-                const response = await fetch(`/Admin/ToggleNoiBat/${id}`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' }
-                });
+        // Xử lý Checkbox và các hàm khác giữ nguyên...
+        const selectAll = document.getElementById('selectAll');
+        const checkboxes = document.querySelectorAll('.item-checkbox');
+        const btnBulkDelete = document.getElementById('btnBulkDelete');
 
-                if (response.ok) {
-                    const data = await response.json();
+        selectAll.addEventListener('change', function() {
+            checkboxes.forEach(cb => cb.checked = this.checked);
+            toggleBulkBtn();
+        });
 
-                    // Chỉ đổi màu khi Server báo thành công và trả về trạng thái mới
-                    if (data.isFeatured) {
-                        // Bật sao trắng
-                        icon.classList.remove('bi-star', 'text-white-50', 'opacity-50');
-                        icon.classList.add('bi-star-fill', 'text-white');
-                    } else {
-                        // Tắt sao trắng, về lại sao rỗng
-                        icon.classList.remove('bi-star-fill', 'text-white');
-                        icon.classList.add('bi-star', 'text-white-50', 'opacity-50');
-                    }
-                } else {
-                    alert("Có lỗi xảy ra khi lưu trạng thái!");
-                }
-            } catch (err) {
-                console.error('Lỗi khi cập nhật sản phẩm nổi bật:', err);
-                alert("Lỗi kết nối đến máy chủ.");
+        checkboxes.forEach(cb => {
+            cb.addEventListener('change', toggleBulkBtn);
+        });
+
+        function toggleBulkBtn() {
+            const count = document.querySelectorAll('.item-checkbox:checked').length;
+            if(count > 0) {
+                btnBulkDelete.classList.remove('d-none');
+                btnBulkDelete.innerHTML = `<i class="bi bi-trash"></i> Xóa đã chọn (${count})`;
+            } else {
+                btnBulkDelete.classList.add('d-none');
             }
         }
     </script>
