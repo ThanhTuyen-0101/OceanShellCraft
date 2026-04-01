@@ -7,7 +7,6 @@
 
 <header class="glass-effect w-100 position-relative p-0" style="z-index: 2000; border-top: none; border-left: none; border-right: none; border-radius: 0;">
     <div class="container-fluid px-lg-5">
-
         <div class="d-flex justify-content-between align-items-center py-2 small" style="border-bottom: 1px solid var(--border-light);">
             <div class="d-none d-md-block" style="letter-spacing: 1px;">
                 <i class="bi bi-stars me-2"></i>Tinh hoa từ biển cả
@@ -19,25 +18,37 @@
         </div>
 
         <div class="row align-items-center py-3">
-
             <div class="col-6 col-lg-3">
-                <a asp-controller="TrangChu" asp-action="TrangChu" class="d-inline-block text-decoration-none">
-                    <img src="/img/logo.png" alt="logo" class="img-fluid" style="height: 55px; filter: drop-shadow(0 0 10px rgba(255,255,255,0.1));">
+                <a href="/" class="d-inline-block text-decoration-none">
+                    <img src="/img/logo.png" alt="Logo" class="img-fluid" style="height: 55px; filter: drop-shadow(0 0 10px rgba(255,255,255,0.1));">
                 </a>
             </div>
 
             <div class="col-lg-5 d-none d-lg-block">
-                <form action="/Search" method="get" class="d-flex mx-auto w-100" style="max-width: 450px;">
-                    <input type="search" name="query" class="glass-input m-0" style="border-radius: 50px 0 0 50px; border: 1px solid var(--border-light) !important; border-right: none !important; padding: 8px 20px;" placeholder="Tìm sản phẩm...">
-                    <button class="glass-btn m-0" style="border-radius: 0 50px 50px 0; padding: 8px 20px;" type="submit">
-                        <i class="bi bi-search"></i>
-                    </button>
+                <form action="/Search" method="get" class="mx-auto w-100" style="max-width: 450px;">
+
+                    <div class="d-flex align-items-center p-1"
+                         style="background: var(--glass-bg); backdrop-filter: var(--glass-blur); border-radius: 50px; box-shadow: 0 4px 15px var(--shadow-light); border: 1px solid rgba(255,255,255,0.1);">
+
+                        <input type="search" name="query"
+                               class="border-0 bg-transparent shadow-none w-100 px-3"
+                               style="outline: none; color: var(--text-main);"
+                               placeholder="Tìm sản phẩm...">
+
+                        <button type="submit" class="border-0 d-flex align-items-center justify-content-center flex-shrink-0"
+                                style="width: 38px; height: 38px; border-radius: 50%; background: transparent; color: var(--text-main); transition: background 0.3s ease;"
+                                onmouseover="this.style.background='rgba(255,255,255,0.15)'"
+                                onmouseout="this.style.background='transparent'">
+                            <i class="bi bi-search"></i>
+                        </button>
+
+                    </div>
+
                 </form>
             </div>
 
             <div class="col-6 col-lg-4 d-flex justify-content-end align-items-center gap-4">
-
-                <a asp-controller="KhachHang" asp-action="SanPhamYeuThich" class="fs-5 d-none d-sm-inline-block text-decoration-none">
+                <a href="/khach-hang/san-pham-yeu-thich" class="fs-5 d-none d-sm-inline-block text-decoration-none">
                     <i class="bi bi-heart"></i>
                 </a>
 
@@ -46,25 +57,25 @@
                         <i class="bi bi-person-circle fs-4"></i>
                         @if (User.Identity.IsAuthenticated)
                         {
-                            <span class="ms-2 d-none d-xl-inline small">@User.Identity.Name.ToLower()</span>
+                            <span class="ms-2 d-none d-xl-inline small">@(System.Globalization.CultureInfo.CurrentCulture.TextInfo.ToTitleCase(User.Identity.Name.ToLower()))</span>
                         }
                     </a>
                     <ul class="dropdown-menu dropdown-menu-end glass-dropdown mt-2 p-2">
                         @if (User.Identity.IsAuthenticated)
                         {
-                            <li><a class="dropdown-item glass-dropdown-item" asp-controller="KhachHang" asp-action="TongQuan">Cài đặt</a></li>
+                            <li><a class="dropdown-item glass-dropdown-item" href="/khach-hang/tong-quan">Cài đặt</a></li>
                             <li><hr class="dropdown-divider" style="border-color: var(--border-light);"></li>
-                            <li><a class="dropdown-item glass-dropdown-item" asp-controller="TaiKhoan" asp-action="DangXuat">Đăng xuất</a></li>
+                            <li><a class="dropdown-item glass-dropdown-item" href="/dang-xuat">Đăng xuất</a></li>
                         }
                         else
                         {
-                            <li><a class="dropdown-item glass-dropdown-item" asp-controller="TaiKhoan" asp-action="DangNhap">Đăng nhập</a></li>
-                            <li><a class="dropdown-item glass-dropdown-item" asp-controller="TaiKhoan" asp-action="DangKy">Đăng ký</a></li>
+                            <li><a class="dropdown-item glass-dropdown-item" href="/dang-nhap">Đăng nhập</a></li>
+                            <li><a class="dropdown-item glass-dropdown-item" href="/dang-ky">Đăng ký</a></li>
                         }
                     </ul>
                 </div>
 
-                <a asp-controller="GioHang" asp-action="DanhSach" class="position-relative fs-4 text-decoration-none">
+                <a href="/gio-hang" class="position-relative fs-4 text-decoration-none">
                     <i class="bi bi-cart3"></i>
                     @if (User.Identity.IsAuthenticated)
                     {
@@ -84,16 +95,16 @@
             <div class="collapse navbar-collapse justify-content-center">
                 <ul class="navbar-nav flex-row gap-lg-4 py-2">
                     <li class="nav-item">
-                        <a class="nav-link px-4" asp-controller="TrangChu" asp-action="TrangChu" style="border: none !important;">TRANG CHỦ</a>
+                        <a class="nav-link px-4" href="/" style="border: none !important;">TRANG CHỦ</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link px-4" asp-controller="SanPham" asp-action="DanhSach" style="border: none !important;">SẢN PHẨM</a>
+                        <a class="nav-link px-4" href="/san-pham" style="border: none !important;">SẢN PHẨM</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link px-4" asp-controller="TrangChu" asp-action="GioiThieu" style="border: none !important;">GIỚI THIỆU</a>
+                        <a class="nav-link px-4" href="/trang-chu/gioi-thieu" style="border: none !important;">GIỚI THIỆU</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link px-4" asp-controller="BaiViet" asp-action="DanhSach" style="border: none !important;">BÀI VIẾT</a>
+                        <a class="nav-link px-4" href="/bai-viet" style="border: none !important;">BÀI VIẾT</a>
                     </li>
                 </ul>
             </div>

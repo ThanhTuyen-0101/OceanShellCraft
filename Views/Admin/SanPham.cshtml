@@ -2,47 +2,112 @@
 @{
     Layout = "~/Views/Shared/_AdminLayout.cshtml";
     ViewData["Title"] = "Quản lý sản phẩm";
+
+    // --- Tính toán thống kê từ Model ---
+    var totalProducts = Model?.Count() ?? 0;
+    var totalStock = Model?.Sum(x => x.SoLuong) ?? 0;
+    var totalSold = Model?.Sum(x => x.SoLuongDaBan) ?? 0;
+    var totalOutOfStock = Model?.Count(x => x.TrangThai.ToString() == "HetHang" || x.SoLuong <= 0) ?? 0;
 }
 
 <div class="container-fluid py-4">
-    @* --- Đầu trang --- *@
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <div>
-            <h4 class="m-0 fw-normal">@ViewData["Title"]</h4>
-          
+
+    <div class="row g-4 mb-4">
+        <div class="col-12 col-sm-6 col-xl-3">
+            <div class="glass-card d-flex justify-content-between align-items-center">
+                <div>
+                    <p class="mb-0 opacity-50 small">Tổng sản phẩm</p>
+                    <h4 class="mb-0">@totalProducts.ToString("N0")</h4>
+                </div>
+                <div class="d-flex align-items-center justify-content-center">
+                    <i class="bi bi-box-seam fs-2 opacity-25"></i>
+                </div>
+            </div>
         </div>
 
-        <div class="d-flex gap-2">
-            <button id="btnBulkDelete" class="glass-btn small py-1 px-3 d-none fw-normal" onclick="bulkDelete()">
-                <i class="bi bi-trash me-1"></i>Xóa đã chọn
-            </button>
-            <a asp-action="XuatExcel" class="glass-btn small py-1 px-3 fw-normal">
-                <i class="bi bi-file-earmark-arrow-down me-1"></i>Xuất file
-            </a>
-            @* Nút mở Modal *@
-            <button type="button" class="glass-btn small py-1 px-3 fw-normal" data-bs-toggle="modal" data-bs-target="#importExcelModal">
-                <i class="bi bi-file-earmark-arrow-up me-1"></i>Nhập Excel
-            </button>
-            <a href="/Admin/ThemSuaSanPham" class="glass-btn small py-1 px-3 fw-normal">
-                <i class="bi bi-plus-circle me-1"></i>Thêm mới (F7)
-            </a>
+        <div class="col-12 col-sm-6 col-xl-3">
+            <div class="glass-card d-flex justify-content-between align-items-center">
+                <div>
+                    <p class="mb-0 opacity-50 small">Tổng tồn kho</p>
+                    <h4 class="mb-0">@totalStock.ToString("N0")</h4>
+                </div>
+                <div class="d-flex align-items-center justify-content-center">
+                    <i class="bi bi-boxes fs-2 opacity-25"></i>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-12 col-sm-6 col-xl-3">
+            <div class="glass-card d-flex justify-content-between align-items-center">
+                <div>
+                    <p class="mb-0 opacity-50 small">Tổng đã bán</p>
+                    <h4 class="mb-0">@totalSold.ToString("N0")</h4>
+                </div>
+                <div class="d-flex align-items-center justify-content-center">
+                    <i class="bi bi-cart-check fs-2 opacity-25"></i>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-12 col-sm-6 col-xl-3">
+            <div class="glass-card d-flex justify-content-between align-items-center">
+                <div>
+                    <p class="mb-0 opacity-50 small">Hết hàng / Sắp hết</p>
+                    <h4 class="mb-0">@totalOutOfStock.ToString("N0")</h4>
+                </div>
+                <div class="d-flex align-items-center justify-content-center">
+                    <i class="bi bi-exclamation-triangle fs-2 opacity-25"></i>
+                </div>
+            </div>
         </div>
     </div>
 
-    @* --- Bảng dữ liệu --- *@
-    <div class="glass-card p-0 overflow-hidden">
-        <div class="table-responsive">
-            <table class="glass-table mb-0 align-middle">
+    <div class="glass-card">
+
+        <div class="d-flex flex-wrap justify-content-between align-items-center mb-4 pb-3" style="border-bottom: 1px solid rgba(255, 255, 255, 0.05);">
+            <div class="d-flex align-items-center gap-2">
+                <div class="glass-circle-ghost" style="width: 32px; height: 32px; background: rgba(255,255,255,0.05) !important;">
+                    <i class="bi bi-box-seam opacity-75"></i>
+                </div>
+                <h5 class="m-0 opacity-75">Quản lý sản phẩm</h5>
+            </div>
+
+            <div class="d-flex gap-2 align-items-stretch">
+                <button id="btnBulkDelete" class="glass-btn gap-2 px-3 py-2 d-none" onclick="bulkDelete()">
+                    <i class="bi bi-trash opacity-75"></i> Xóa đã chọn
+                </button>
+
+                <button type="button" class="glass-btn gap-2 px-3 py-2" data-bs-toggle="modal" data-bs-target="#importExcelModal"
+                        style="background: transparent !important; backdrop-filter: none !important;">
+                    <i class="bi bi-file-earmark-arrow-up opacity-75"></i> Nhập Excel
+                </button>
+
+                <a href="/admin/xuat-excel" class="glass-btn gap-2 px-3 py-2 text-decoration-none"
+                   style="background: transparent !important; backdrop-filter: none !important;">
+                    <i class="bi bi-file-earmark-arrow-down opacity-75"></i> Xuất file
+                </a>
+
+                <a href="/admin/them-sua-san-pham" id="btnAdd" class="glass-btn text-decoration-none gap-2 px-3 py-2"
+                   style="background: transparent !important; backdrop-filter: none !important;">
+                    <i class="bi bi-plus-lg opacity-75"></i> Thêm mới (f7)
+                </a>
+            </div>
+        </div>
+
+        <div class="table-responsive hide-scrollbar">
+            <table class="glass-table align-middle w-100">
                 <thead>
-                    <tr>
-                        <th class="ps-4" style="width: 40px;"><input type="checkbox" class="form-check-input" id="selectAll"></th>
-                        <th class="fw-normal" style="width: 70px;">Ảnh</th>
-                        <th class="fw-normal">Tên sản phẩm</th>
-                        <th class="fw-normal">Giá bán</th>
-                        <th class="text-center fw-normal">Kho / Đã bán</th>
-                        <th class="text-center fw-normal">Đánh giá</th>
-                        <th class="text-center fw-normal">Trạng thái</th>
-                        <th class="text-end pe-4 fw-normal">Thao tác</th>
+                    <tr style="border-bottom: 1px solid rgba(255, 255, 255, 0.1);">
+                        <th class="ps-3 py-3" style="width: 40px;">
+                            <input type="checkbox" class="form-check-input bg-transparent shadow-none m-0" id="selectAll" style="border-color: rgba(255,255,255,0.3);">
+                        </th>
+                        <th class="opacity-50 small py-3 fw-normal" style="width: 70px;">Ảnh</th>
+                        <th class="opacity-50 small py-3 fw-normal">Sản phẩm</th>
+                        <th class="opacity-50 small py-3 fw-normal">Giá bán</th>
+                        <th class="text-center opacity-50 small py-3 fw-normal">Kho / Đã bán</th>
+                        <th class="text-center opacity-50 small py-3 fw-normal">Đánh giá</th>
+                        <th class="text-center opacity-50 small py-3 fw-normal">Trạng thái</th>
+                        <th class="text-end pe-4 opacity-50 small py-3 fw-normal">Thao tác</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -50,77 +115,125 @@
                     {
                         foreach (var item in Model)
                         {
-                            <tr>
-                                <td class="ps-4">
-                                    <input type="checkbox" class="form-check-input item-checkbox" value="@item.Id">
+                            <tr style="border-bottom: 1px solid rgba(255, 255, 255, 0.05); transition: background 0.2s ease;"
+                                onmouseover="this.style.background='rgba(255, 255, 255, 0.04)'"
+                                onmouseout="this.style.background='transparent'">
+
+                                <td class="ps-3 py-3">
+                                    <input type="checkbox" class="form-check-input bg-transparent shadow-none m-0 item-checkbox" style="border-color: rgba(255,255,255,0.3);" value="@item.Id">
                                 </td>
+
                                 <td class="py-3">
                                     <img src="@(string.IsNullOrEmpty(item.HinhAnh) ? "/img/no-image.png" : item.HinhAnh)"
                                          class="rounded-3 object-fit-cover shadow-sm"
-                                         style="width: 48px; height: 48px;" alt="Sản phẩm" />
+                                         style="width: 48px; height: 48px; border: 1px solid rgba(255,255,255,0.1);" alt="Sản phẩm" />
                                 </td>
-                                <td>
-                                    <div class="fw-normal">@item.TenSanPham</div>
-                                    <div class="small opacity-50">Danh mục: @item.DanhMuc?.TenDanhMuc</div>
-                                </td>
-                                <td>@item.GiaTien.ToString("N0")đ</td>
-                                <td class="text-center">
-                                    <div class="small">Tồn: @item.SoLuong</div>
-                                    <div class="small opacity-50">Bán: @item.SoLuongDaBan</div>
-                                </td>
-                                <td class="text-center">
-                                    <div class="opacity-50" style="font-size: 10px;">(@(item.DanhGias?.Count ?? 0) Đánh giá)</div>
-                                </td>
-                                <td class="text-center">
-                                    <span class="badge glass-effect px-3 fw-normal">@item.TrangThai</span>
-                                </td>
-                                <td class="text-end pe-4">
-                                    <div class="d-flex justify-content-end gap-2">
-                                        <a href="javascript:void(0)" onclick="toggleFeatured(@item.Id, this)" class="glass-circle-ghost">
-                                            <i class="bi @(item.IsFeatured ? "bi-star-fill" : "bi-star opacity-25")"></i>
-                                        </a>
-                                        <a asp-action="ThemSuaSanPham" asp-route-id="@item.Id" class="glass-btn p-1 px-2 fw-normal"><i class="bi bi-pencil small"></i></a>
-                                        <a asp-action="XoaSanPham" asp-route-id="@item.Id" class="glass-btn p-1 px-2 fw-normal" onclick="return confirm('Xác nhận xóa?');"><i class="bi bi-trash small"></i></a>
+
+                                <td class="py-3" style="max-width: 250px;">
+                                    <div class="text-truncate mb-1" style="font-size: 1.05rem;" title="@item.TenSanPham">
+                                        @item.TenSanPham
+                                    </div>
+                                    <div class="small opacity-50">
+                                        <i class="bi bi-tag opacity-50 me-1"></i> @item.DanhMuc?.TenDanhMuc
                                     </div>
                                 </td>
+
+                                <td class="py-3">
+                                    <span>@item.GiaTien.ToString("N0")đ</span>
+                                </td>
+
+                                <td class="text-center py-3">
+                                    <div class="d-flex flex-column gap-1 align-items-center">
+                                        <span class="small opacity-75">Tồn: @item.SoLuong</span>
+                                        <span class="opacity-50" style="font-size: 0.75rem;">Bán: @item.SoLuongDaBan</span>
+                                    </div>
+                                </td>
+
+                                <td class="text-center py-3">
+                                    <div class="opacity-75 small d-flex justify-content-center align-items-center gap-1">
+                                        <i class="bi bi-star-fill opacity-50"></i>
+                                        <span>(@(item.DanhGias?.Count ?? 0))</span>
+                                    </div>
+                                </td>
+
+                                <td class="text-center py-3">
+                                    <span class="small opacity-75">@item.TrangThai</span>
+                                </td>
+
+                                <td class="text-end pe-4 py-3">
+                                    <div class="d-flex justify-content-end gap-1">
+                                        <a href="javascript:void(0)" onclick="toggleFeatured(@item.Id, this)" class="glass-circle-ghost p-2 text-decoration-none" title="Nổi bật">
+                                            <i class="bi @(item.IsFeatured ? "bi-star-fill opacity-100" : "bi-star opacity-50")"></i>
+                                        </a>
+                                        <a href="/admin/them-sua-san-pham/@item.Id" class="glass-circle-ghost p-2 text-decoration-none" title="Sửa sản phẩm">
+                                            <i class="bi bi-pencil opacity-75"></i>
+                                        </a>
+                                        <form action="/admin/xoa-san-pham/@item.Id" method="post" class="d-inline" onsubmit="return confirm('Bạn có chắc chắn muốn xóa sản phẩm này?');">
+                                            <button type="submit" class="glass-circle-ghost border-0 p-2" title="Xóa sản phẩm">
+                                                <i class="bi bi-trash3 opacity-75"></i>
+                                            </button>
+                                        </form>
+                                    </div>
+                                </td>
+
                             </tr>
                         }
+                    }
+                    else
+                    {
+                        <tr>
+                            <td colspan="8" class="text-center py-5">
+                                <div class="d-flex flex-column align-items-center justify-content-center opacity-50">
+                                    <i class="bi bi-inbox fs-1 mb-2"></i>
+                                    <span>Chưa có dữ liệu sản phẩm</span>
+                                </div>
+                            </td>
+                        </tr>
                     }
                 </tbody>
             </table>
         </div>
+
+        <div class="d-flex flex-wrap justify-content-between align-items-center mt-3 pt-3" style="border-top: 1px solid rgba(255, 255, 255, 0.05);">
+            <span class="small opacity-50">Đang hiển thị <b style="color: white !important;">@totalProducts</b> sản phẩm</span>
+            <div class="d-flex gap-2">
+                <button class="glass-circle-ghost" disabled style="opacity: 0.3;">
+                    <i class="bi bi-chevron-left small"></i>
+                </button>
+                <button class="glass-circle-ghost">
+                    <i class="bi bi-chevron-right small"></i>
+                </button>
+            </div>
+        </div>
+
     </div>
 </div>
 
-@* --- MODAL SỬA LỖI TƯƠNG TÁC --- *@
-@* Thêm data-bs-backdrop="false" để không dùng nền đen mặc định của Bootstrap vốn hay gây lỗi *@
 <div class="modal fade" id="importExcelModal" tabindex="-1" aria-hidden="true" data-bs-backdrop="false" style="background: rgba(0,0,0,0.5); z-index: 1060;">
     <div class="modal-dialog modal-dialog-centered" style="z-index: 1070;">
-        @* Quan trọng: pointer-events: auto để cho phép bấm vào bên trong *@
         <div class="modal-content glass-card p-0 border-0" style="pointer-events: auto !important; box-shadow: 0 0 50px rgba(0,0,0,0.5);">
-            <div class="px-4 py-3 d-flex justify-content-between align-items-center" style="border-bottom: 1px solid rgba(255,255,255,0.1);">
-                <h5 class="mb-0 fw-normal text-white">Nhập dữ liệu hàng loạt</h5>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            <div class="px-4 py-3 d-flex justify-content-between align-items-center" style="border-bottom: 1px solid rgba(255,255,255,0.05);">
+                <h5 class="mb-0 text-white">Nhập dữ liệu hàng loạt</h5>
+                <button type="button" class="btn-close btn-close-white opacity-50" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="p-4">
                 <div class="mb-4 d-flex justify-content-between align-items-center">
                     <span class="small opacity-75 text-white">Tải tệp mẫu nếu bạn chưa có:</span>
-                    <a asp-action="TaiFileMau" class="glass-btn small py-1 px-3 fw-normal">
+                    <a href="/admin/tai-file-mau" class="glass-btn small py-1 px-3">
                         <i class="bi bi-download me-1"></i>File mẫu
                     </a>
                 </div>
 
-                <form asp-action="NhapExcel" method="post" enctype="multipart/form-data">
+                <form action="/admin/nhap-excel" method="post" enctype="multipart/form-data">
                     <div class="mb-3">
                         <label class="small opacity-75 mb-2 ps-1 text-white">Chọn tệp Excel (.xlsx, .xls)</label>
-                        @* Thêm background-color để ô input không bị trong suốt quá mức *@
-                        <input type="file" name="file" class="glass-input w-100" accept=".xlsx, .xls" required style="cursor: pointer; background: rgba(255,255,255,0.1) !important;" />
+                        <input type="file" name="file" class="glass-input w-100" accept=".xlsx, .xls" required style="cursor: pointer; background: rgba(255,255,255,0.05) !important;" />
                     </div>
 
-                    <div class="mt-4 pt-3 d-flex justify-content-end" style="border-top: 1px solid rgba(255,255,255,0.1);">
-                        <button type="button" class="glass-btn me-2 opacity-50 fw-normal" data-bs-dismiss="modal">Hủy bỏ</button>
-                        <button type="submit" class="glass-btn px-4 fw-normal">
-                            <i class="bi bi-upload me-2"></i>Bắt đầu tải lên
+                    <div class="mt-4 pt-3 d-flex justify-content-end" style="border-top: 1px solid rgba(255,255,255,0.05);">
+                        <button type="button" class="glass-btn me-2 opacity-50" data-bs-dismiss="modal">Hủy bỏ</button>
+                        <button type="submit" class="glass-btn px-4">
+                            <i class="bi bi-upload me-2"></i>Tải lên
                         </button>
                     </div>
                 </form>
@@ -131,30 +244,33 @@
 
 @section Scripts {
     <script>
-        // Phím tắt F7
+        // 1. Phím tắt F7 để thêm mới
         document.addEventListener('keydown', e => {
             if (e.key === 'F7') {
                 e.preventDefault();
-                window.location.href = '/Admin/ThemSuaSanPham';
+                window.location.href = '/admin/them-sua-san-pham';
             }
         });
 
-        // Script để đảm bảo khi mở Modal thì body không bị khóa tương tác
+        // 2. Xử lý Modal z-index (Giữ nguyên logic của bạn)
         const myModal = document.getElementById('importExcelModal');
-        myModal.addEventListener('shown.bs.modal', function () {
-            // Đẩy Modal lên lớp cao nhất
-            document.querySelector('.modal-dialog').style.zIndex = "9999";
-        });
+        if (myModal) {
+            myModal.addEventListener('shown.bs.modal', function () {
+                document.querySelector('.modal-dialog').style.zIndex = "9999";
+            });
+        }
 
-        // Xử lý Checkbox và các hàm khác giữ nguyên...
+        // 3. Xử lý chọn nhiều (Checkbox)
         const selectAll = document.getElementById('selectAll');
         const checkboxes = document.querySelectorAll('.item-checkbox');
         const btnBulkDelete = document.getElementById('btnBulkDelete');
 
-        selectAll.addEventListener('change', function() {
-            checkboxes.forEach(cb => cb.checked = this.checked);
-            toggleBulkBtn();
-        });
+        if (selectAll) {
+            selectAll.addEventListener('change', function() {
+                checkboxes.forEach(cb => cb.checked = this.checked);
+                toggleBulkBtn();
+            });
+        }
 
         checkboxes.forEach(cb => {
             cb.addEventListener('change', toggleBulkBtn);
@@ -164,9 +280,53 @@
             const count = document.querySelectorAll('.item-checkbox:checked').length;
             if(count > 0) {
                 btnBulkDelete.classList.remove('d-none');
-                btnBulkDelete.innerHTML = `<i class="bi bi-trash"></i> Xóa đã chọn (${count})`;
+                btnBulkDelete.innerHTML = `<i class="bi bi-trash opacity-75"></i> Xóa đã chọn (${count})`;
             } else {
                 btnBulkDelete.classList.add('d-none');
+            }
+        }
+
+        // 4. Hàm xóa hàng loạt (Sửa lỗi bảo mật & Hiệu ứng)
+        async function bulkDelete() {
+            const selectedCheckboxes = document.querySelectorAll('.item-checkbox:checked');
+            const ids = Array.from(selectedCheckboxes).map(cb => parseInt(cb.value));
+
+            if (ids.length === 0) return;
+
+            if (!confirm(`Bạn có chắc chắn muốn xóa ${ids.length} sản phẩm? Thao tác này không thể hoàn tác!`)) {
+                return;
+            }
+
+            // Vô hiệu hóa nút để tránh bấm nhiều lần
+            btnBulkDelete.disabled = true;
+            btnBulkDelete.innerHTML = `<span class="spinner-border spinner-border-sm"></span> Đang xóa...`;
+
+            try {
+                const response = await fetch('/admin/xoa-nhieu-san-pham', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        // QUAN TRỌNG: Thêm RequestVerificationToken nếu site bạn dùng bảo mật mặc định của ASP.NET
+                        'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]')?.value
+                    },
+                    body: JSON.stringify(ids)
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    // Thay vì alert, reload ngay để người dùng thấy kết quả
+                    location.reload();
+                } else {
+                    alert("Lỗi: " + result.message);
+                    btnBulkDelete.disabled = false;
+                    toggleBulkBtn();
+                }
+            } catch (error) {
+                console.error("Error:", error);
+                alert("Không thể kết nối với máy chủ.");
+                btnBulkDelete.disabled = false;
+                toggleBulkBtn();
             }
         }
     </script>

@@ -1,151 +1,154 @@
 ﻿@model OceanShellCraft.Models.SanPham
+@using OceanShellCraft.Models
+@using Microsoft.AspNetCore.Mvc.Rendering
 @{
-    ViewData["Title"] = (Model?.Id > 0 ? "chỉnh sửa sản phẩm" : "thêm sản phẩm mới").ToLower();
     Layout = "~/Views/Shared/_AdminLayout.cshtml";
+    ViewData["Title"] = Model.Id == 0 ? "Thêm mới sản phẩm" : "Cập nhật sản phẩm";
+
+    // Lấy tên Danh mục đang được chọn (để truyền vào Menu Thả Xuống)
+    string currentDanhMucText = "-- Chọn --";
+    if (Model.DanhMucId > 0 && ViewBag.DanhMucList != null)
+    {
+        var selectedItem = ((IEnumerable<SelectListItem>)ViewBag.DanhMucList).FirstOrDefault(x => x.Value == Model.DanhMucId.ToString());
+        if (selectedItem != null) currentDanhMucText = selectedItem.Text;
+    }
 }
 
 <div class="container-fluid py-4">
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h4 class="m-0"><i class="bi bi-box-seam me-2"></i>@ViewData["Title"]</h4>
+    <div class="d-flex align-items-center mb-4">
+        <a href="/admin/san-pham" class="text-decoration-none text-white opacity-75 d-inline-flex align-items-center me-2" style="transition: opacity 0.2s;" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.75'">
+            <i class="bi bi-chevron-left fs-5"></i>
+        </a>
+        <h5 class="m-0 fw-normal opacity-75">Quản lý sản phẩm</h5>
     </div>
 
-    <div class="glass-card p-4 p-md-5">
-        <form id="formSanPham" asp-action="ThemSuaSanPham" method="post" enctype="multipart/form-data">
-            <input type="hidden" asp-for="Id" />
-            <input type="hidden" asp-for="HinhAnh" />
+    <form action="/admin/them-sua-san-pham" method="post" enctype="multipart/form-data">
+        @Html.AntiForgeryToken()
+        <input type="hidden" asp-for="Id" />
+        <input type="hidden" asp-for="HinhAnh" />
+        <input type="hidden" asp-for="TrangThai" value="@((int)TrangThaiSanPham.DangBan)" />
 
-            <input type="hidden" asp-for="GiaTien" id="GiaTienReal" />
-            <input type="hidden" asp-for="GiaKhuyenMai" id="GiaKhuyenMaiReal" />
+        @if (!ViewData.ModelState.IsValid)
+        {
+            <div class="alert glass-effect mb-4 border-0 border-start border-light border-4">
+                <div asp-validation-summary="All" class="small opacity-75 m-0 fw-normal"></div>
+            </div>
+        }
 
-            <div class="row g-4">
-                <div class="col-md-8">
+        <div class="glass-card p-5 position-relative" style="min-height: 70vh;">
+            <div class="row g-5">
+
+                <div class="col-lg-8">
+                    <div class="mb-5">
+                        <label asp-for="TenSanPham" class="form-label small opacity-50 mb-1">Tên sản phẩm <span class="opacity-50">*</span></label>
+                        <input asp-for="TenSanPham" class="glass-input form-control bg-transparent border-0 border-bottom rounded-0 ps-2 fw-normal fs-6 shadow-none text-white" placeholder="Nhập tên sản phẩm..." style="border-bottom-color: rgba(255,255,255,0.2) !important;" required />
+                        <span asp-validation-for="TenSanPham" class="small fw-normal opacity-75 mt-1 d-block"></span>
+                    </div>
+
+                    <div class="row g-4 mb-5 align-items-end">
+                        <div class="col-md-3">
+                            <label asp-for="GiaTien" class="form-label small opacity-50 mb-2">Giá gốc (vnđ)</label>
+                            <input asp-for="GiaTien" type="number" step="0.01" class="glass-input form-control bg-transparent border-0 ps-2 shadow-none fw-normal text-white small" placeholder="0" required />
+                        </div>
+                        <div class="col-md-3">
+                            <label asp-for="GiaKhuyenMai" class="form-label small opacity-50 mb-2">Giá giảm (vnđ)</label>
+                            <input asp-for="GiaKhuyenMai" type="number" step="0.01" class="glass-input form-control bg-transparent border-0 ps-2 shadow-none fw-normal text-white small" placeholder="0" />
+                        </div>
+                        <div class="col-md-3">
+                            <label asp-for="SoLuong" class="form-label small opacity-50 mb-2">Số lượng kho</label>
+                            <input asp-for="SoLuong" type="number" class="glass-input form-control fw-normal text-white small ps-2" value="@(Model.Id == 0 ? 30 : Model.SoLuong)" style="background-color: rgba(255,255,255,0.05) !important; border: 1px solid rgba(255,255,255,0.1) !important;" />
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label small opacity-50 mb-2">Danh mục</label>
+                            @await Html.PartialAsync("_MenuThaXuong", new {
+                            PropName = "DanhMucId",
+                                                        DefaultText = "-- Chọn --",
+                                                        DefaultValue = "0",
+                                                        SelectedValue = Model.DanhMucId.ToString(),
+                                                        SelectedText = currentDanhMucText,
+                                                        Items = ViewBag.DanhMucList as IEnumerable<SelectListItem>,
+                                                        OnChange = ""
+                                                        })
+                            <span asp-validation-for="DanhMucId" class="small fw-normal opacity-75 mt-1 d-block"></span>
+                        </div>
+                    </div>
+
                     <div class="mb-4">
-                        <label class="small opacity-50 mb-1 ps-2">tên sản phẩm *</label>
-                        <input asp-for="TenSanPham" type="text" class="glass-input" placeholder="vd: đèn ngủ vỏ ốc xà cừ..." required>
-                    </div>
-
-                    <div class="row mb-4">
-                        <div class="col-md-3">
-                            <label class="small opacity-50 mb-1 ps-2">giá gốc (vnđ)</label>
-                            <input type="text" id="displayGiaTien" class="glass-input"
-                                   value="@(Model?.GiaTien > 0 ? Model.GiaTien.ToString("N0", new System.Globalization.CultureInfo("vi-VN")) : "")"
-                                   oninput="formatCurrency(this, 'GiaTienReal')">
-                        </div>
-                        <div class="col-md-3">
-                            <label class="small opacity-50 mb-1 ps-2">giá giảm (vnđ)</label>
-                            <input type="text" id="displayGiaKhuyenMai" class="glass-input"
-                                   value="@(Model?.GiaKhuyenMai > 0 ? Model.GiaKhuyenMai.Value.ToString("N0", new System.Globalization.CultureInfo("vi-VN")) : "")"
-                                   oninput="formatCurrency(this, 'GiaKhuyenMaiReal')" placeholder="bỏ trống nếu không giảm">
-                        </div>
-                        <div class="col-md-3">
-                            <label class="small opacity-50 mb-1 ps-2">số lượng</label>
-                            <input asp-for="SoLuong" type="number" class="glass-input no-spinners">
-                        </div>
-                        <div class="col-md-3">
-                            <label class="small opacity-50 mb-1 ps-2">danh mục</label>
-                            <select asp-for="DanhMucId" class="glass-input" asp-items="ViewBag.DanhMucList" style="background-color: transparent;">
-                                <option value="" style="background: #222;">-- chọn danh mục --</option>
-                            </select>
-                        </div>
-                    </div>
-
-                    <div class="row mb-4">
-                        <div class="col-md-6">
-                            <label class="small opacity-50 mb-1 ps-2">chất liệu</label>
-                            <input asp-for="ChatLieu" type="text" class="glass-input" placeholder="vd: vỏ ốc xà cừ">
-                        </div>
-                        <div class="col-md-6">
-                            <label class="small opacity-50 mb-1 ps-2">kích thước</label>
-                            <input asp-for="KichThuoc" type="text" class="glass-input" placeholder="vd: 15cm x 20cm">
-                        </div>
-                    </div>
-
-                    <div class="mb-4">
-                        <label class="small opacity-50 mb-1 ps-2">mô tả sản phẩm</label>
-                        <textarea asp-for="MoTa" class="glass-input" rows="5" placeholder="nhập mô tả chi tiết về sản phẩm..."></textarea>
+                        <label asp-for="MoTa" class="form-label small opacity-50 mb-2">Mô tả</label>
+                        <textarea asp-for="MoTa" class="glass-input form-control fw-normal p-3 text-white small" rows="6" placeholder="Mô tả sản phẩm..." style="background-color: rgba(255,255,255,0.05) !important; border: 1px solid rgba(255,255,255,0.1) !important;"></textarea>
                     </div>
                 </div>
 
-                <div class="col-md-4">
-                    <div class="p-4 rounded-4" style="border: 1px solid var(--border-light); background: rgba(255,255,255,0.02);">
-                        <label class="small opacity-50 d-block mb-3 ps-2">hình ảnh sản phẩm</label>
-                        <div class="text-center mb-3">
-                            <img id="imgPreview" src="@(string.IsNullOrEmpty(Model?.HinhAnh) ? "/img/no-image.png" : Model.HinhAnh)"
-                                 class="img-fluid rounded-3"
-                                 style="max-height: 250px; object-fit: cover; border: 1px solid var(--border-light); padding: 5px; background: var(--glass-bg);">
-                        </div>
-                        <input type="file" name="fileHinhAnh" class="glass-input small" accept="image/*" onchange="previewImage(event)">
+                <div class="col-lg-4">
+                    <div class="glass-effect p-4 rounded-4 h-100 border border-secondary border-opacity-25">
 
-                        <hr class="my-4 opacity-25" style="border-color: var(--border-light);">
+                        <label class="form-label small opacity-50 mb-4">Hình ảnh</label>
 
-                        <label class="small opacity-50 d-block mb-2 ps-2">tùy chọn hiển thị</label>
-                        <div class="form-check mb-2">
-                            <input class="form-check-input" type="checkbox" asp-for="IsFeatured" id="checkFeatured" style="cursor: pointer;">
-                            <label class="form-check-label small opacity-75" for="checkFeatured" style="cursor: pointer;">sản phẩm nổi bật</label>
+                        <div class="text-center mb-4">
+                            <img id="imgPreview" src="@(!string.IsNullOrEmpty(Model.HinhAnh) ? Model.HinhAnh : "/img/default-image.png")" alt="Preview" class="img-fluid rounded" style="max-height: 60px; object-fit: contain;" />
                         </div>
+
+                        <label for="fileUpload" class="glass-input d-flex align-items-center w-100 p-2 mb-5"
+                               style="cursor: pointer; background-color: rgba(255,255,255,0.05) !important; border: 1px solid rgba(255,255,255,0.1) !important; transition: background 0.2s;"
+                               onmouseover="this.style.backgroundColor='rgba(255, 255, 255, 0.1)'"
+                               onmouseout="this.style.backgroundColor='rgba(255, 255, 255, 0.05)'">
+                            <input type="file" name="fileHinhAnh" id="fileUpload" class="d-none" accept="image/*" onchange="previewImage(event)" />
+                            <div class="bg-white text-dark rounded px-3 py-1 small me-2" style="font-size: 0.85rem;">Chọn tệp</div>
+                            <span id="fileNameDisplay" class="small opacity-50 text-truncate" style="font-size: 0.85rem;">Không có tệp nào được chọn</span>
+                        </label>
+
+                        <label class="form-label small opacity-50 mb-3">Hiển thị</label>
+
+                        <div class="form-check d-flex align-items-center gap-2 mb-2">
+                            <input asp-for="IsFeatured" class="form-check-input bg-transparent border-secondary shadow-none m-0" type="checkbox" id="chkFeatured" style="width: 1.2rem; height: 1.2rem; cursor: pointer;">
+                            <label class="form-check-label small opacity-75 m-0" for="chkFeatured" style="cursor: pointer;">Sản phẩm nổi bật</label>
+                        </div>
+
+                        <div class="form-check d-flex align-items-center gap-2 d-none">
+                            <input asp-for="IsFavorite" class="form-check-input bg-transparent border-secondary shadow-none m-0" type="checkbox">
+                        </div>
+
                     </div>
                 </div>
             </div>
 
-            <div class="d-flex justify-content-end gap-3 mt-5 pt-3" style="border-top: 1px solid var(--border-light);">
-                <a href="/Admin/SanPham" id="btnCancel" class="glass-btn px-4 opacity-75">
-                    <i class="bi bi-arrow-left me-2"></i>quay lại
-                    <kbd class="ms-2 opacity-50" style="background: transparent; border: 1px solid var(--border-light); font-size: 0.7rem;">f6</kbd>
-                </a>
-                <button type="submit" id="btnSave" class="glass-btn px-5">
-                    <i class="bi bi-save me-2"></i>lưu thông tin
-                    <kbd class="ms-2 opacity-50" style="background: transparent; border: 1px solid var(--border-light); font-size: 0.7rem;">f8</kbd>
+            <div class="mt-5 pt-3 border-top border-secondary border-opacity-25 d-flex justify-content-end">
+                <button type="submit" class="glass-btn px-4 py-2 fw-normal opacity-75 d-inline-flex align-items-center gap-2 small" style="background-color: rgba(255,255,255,0.05) !important; border: 1px solid rgba(255,255,255,0.1) !important;">
+                    <i class="bi bi-box-arrow-down"></i>
+                    Lưu thông tin
+                    <span class="opacity-50 ms-1 border border-secondary rounded px-1" style="font-size: 0.7rem;">F8</span>
                 </button>
             </div>
-        </form>
-    </div>
+
+        </div>
+    </form>
 </div>
 
 @section Scripts {
-    <style>
-        /* ẩn thanh tăng giảm của input number */
-        .no-spinners::-webkit-outer-spin-button,
-        .no-spinners::-webkit-inner-spin-button {
-            -webkit-appearance: none;
-            margin: 0;
-        }
-
-        .no-spinners {
-            -moz-appearance: textfield;
-        }
-    </style>
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
 
     <script>
-        // hàm định dạng tiền tệ việt nam
-        function formatCurrency(input, hiddenId) {
-            let value = input.value.replace(/\D/g, '');
-            document.getElementById(hiddenId).value = value;
-            if (value) {
-                input.value = parseInt(value).toLocaleString('vi-VN');
-            } else {
-                input.value = '';
-            }
-        }
-
-        // hàm xem trước ảnh khi chọn file
+        // Cập nhật ảnh Preview và hiển thị tên tệp
         function previewImage(event) {
-            const reader = new FileReader();
-            const output = document.getElementById('imgPreview');
-            reader.onload = function() {
-                output.src = reader.result;
-            };
-            if (event.target.files[0]) reader.readAsDataURL(event.target.files[0]);
+            var input = event.target;
+            if (input.files && input.files[0]) {
+                var reader = new FileReader();
+                reader.onload = function(e) {
+                    document.getElementById('imgPreview').src = e.target.result;
+                };
+                reader.readAsDataURL(input.files[0]);
+
+                document.getElementById('fileNameDisplay').innerText = input.files[0].name;
+            }
         }
 
-        // bắt sự kiện phím tắt hệ thống
+        // Bắt phím F8 để Submit Form
         document.addEventListener('keydown', function(e) {
-            if (e.key === 'F6') {
-                e.preventDefault();
-                document.getElementById('btnCancel').click();
-            }
             if (e.key === 'F8') {
                 e.preventDefault();
-                document.getElementById('formSanPham').submit();
+                document.querySelector('form').submit();
             }
         });
     </script>

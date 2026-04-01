@@ -17,7 +17,7 @@
             <div class="mt-auto animate__animated animate__fadeInUp">
                 <div class="glass-card p-3 px-4 d-inline-block">
                     <p class="mb-1 small opacity-75">Đã có tài khoản?</p>
-                    <a asp-controller="TaiKhoan" asp-action="DangNhap" class="text-decoration-none fs-5">
+                    <a href="/dang-nhap" class="text-decoration-none fs-5">
                         Đăng nhập <i class="bi bi-chevron-right small"></i>
                     </a>
                 </div>
@@ -29,7 +29,7 @@
 
                 <h2 class="mb-4 fs-1">Đăng ký</h2>
 
-                <form asp-action="DangKy" method="post" autocomplete="off">
+                <form action="/dang-ky" method="post" autocomplete="off">
                     @Html.AntiForgeryToken()
 
                     <div class="mb-3">
@@ -73,9 +73,7 @@
                     <p class="text-center opacity-50 small mb-4">Hoặc đăng ký với</p>
 
                     <div class="d-flex justify-content-center gap-3">
-                        <a href="#" class="glass-circle"><i class="bi bi-twitter-x"></i></a>
-                        <a href="#" class="glass-circle"><i class="bi bi-facebook"></i></a>
-                        <a href="#" class="glass-circle"><i class="bi bi-google"></i></a>
+                        <a href="/login-google" class="glass-circle"><i class="bi bi-google"></i></a>
                     </div>
 
                     <div class="text-center mt-4">

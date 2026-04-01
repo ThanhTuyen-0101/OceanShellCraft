@@ -1,63 +1,75 @@
-﻿<div class="position-fixed d-flex flex-column gap-3" style="bottom: 30px; right: 30px; z-index: 9999;">
+﻿<div class="position-fixed d-flex flex-row-reverse gap-3 align-items-end" style="bottom: 30px; right: 30px; z-index: 10000;">
     <button id="liveChatToggleBtn" class="glass-circle position-relative shadow-lg" style="width: 60px; height: 60px;" title="Chat với nhân viên">
         <i class="bi bi-headset fs-3"></i>
-        <span class="position-absolute top-0 start-100 translate-middle p-2 bg-success rounded-circle" style="border: 2px solid var(--border-light);"></span>
+        <span class="position-absolute top-0 start-100 translate-middle p-2 bg-success rounded-circle" style="border: 2px solid white;"></span>
+    </button>
+
+    <button id="aiChatToggleBtn" class="glass-circle position-relative shadow-lg bg-primary text-white border-0" style="width: 60px; height: 60px;" title="Hỏi Trợ lý AI">
+        <i class="bi bi-robot fs-3"></i>
     </button>
 </div>
 
-<div id="liveChatWindow" class="glass-card position-fixed d-none p-0 d-flex flex-column" style="bottom: 30px; right: 110px; width: 350px; height: 500px; z-index: 9999; overflow: hidden;">
-
-    <div class="px-3 py-3 d-flex justify-content-between align-items-center" style="border-bottom: 1px solid var(--border-light);">
+<div id="liveChatWindow" class="glass-card position-fixed d-none p-0 flex-column shadow-lg" style="bottom: 110px; right: 30px; width: 350px; height: 500px; z-index: 10000; overflow: hidden; display: flex;">
+    <div class="px-3 py-3 d-flex justify-content-between align-items-center" style="border-bottom: 1px solid rgba(255,255,255,0.1);">
         <div class="d-flex align-items-center gap-2">
             <i class="bi bi-headset fs-5 text-success"></i>
-            <h6 class="mb-0">Hỗ trợ viên trực tuyến</h6>
+            <h6 class="mb-0">Hỗ trợ trực tuyến</h6>
         </div>
-        <button id="liveChatCloseBtn" class="glass-btn border-0 p-1" style="border-radius: 50%; width: 30px; height: 30px;">
-            <i class="bi bi-x-lg"></i>
-        </button>
+        <button id="liveChatCloseBtn" class="btn p-0 border-0 text-white"><i class="bi bi-x-lg"></i></button>
     </div>
-
     <div class="p-3 overflow-auto hide-scrollbar" id="liveChatBody" style="flex: 1;">
         <div class="d-flex mb-3 justify-content-start">
             <div class="chat-bubble-sm received-sm" style="max-width: 85%;">
-                Chào bạn, mình là nhân viên hỗ trợ của OceanShellCraft. Bạn cần tư vấn về sản phẩm nào ạ?
+                Chào Anh/Chị, em có thể giúp gì cho mình về sản phẩm mỹ nghệ của OceanShell không ạ?
             </div>
         </div>
     </div>
+    <div class="px-3 py-3 d-flex gap-2" style="border-top: 1px solid rgba(255,255,255,0.1);">
+        <input type="text" id="liveChatInput" class="glass-input pill-style flex-grow-1" placeholder="Gửi tin nhắn...">
+        <button class="glass-circle border-0" type="button" id="liveChatSendBtn"><i class="bi bi-send"></i></button>
+    </div>
+</div>
 
-    <div class="px-3 py-3 d-flex gap-2" style="border-top: 1px solid var(--border-light);">
-        <input type="text" id="liveChatInput" class="glass-input pill-style flex-grow-1" placeholder="Nhập tin nhắn...">
-        <button class="glass-circle" type="button" id="liveChatSendBtn" style="flex-shrink: 0;">
-            <i class="bi bi-send"></i>
-        </button>
+<div id="aiChatWindow" class="glass-card position-fixed d-none p-0 flex-column shadow-lg" style="bottom: 110px; right: 30px; width: 350px; height: 500px; z-index: 10000; overflow: hidden; display: flex;">
+    <div class="px-3 py-3 d-flex justify-content-between align-items-center" style="border-bottom: 1px solid rgba(255,255,255,0.1);">
+        <div class="d-flex align-items-center gap-2">
+            <i class="bi bi-robot fs-5 text-primary"></i>
+            <h6 class="mb-0">Trợ lý AI OceanShell</h6>
+        </div>
+        <button id="aiChatCloseBtn" class="btn p-0 border-0 text-white"><i class="bi bi-x-lg"></i></button>
+    </div>
+    <div class="p-3 overflow-auto hide-scrollbar" id="aiChatBody" style="flex: 1;">
+        <div class="d-flex mb-3 justify-content-start">
+            <div class="chat-bubble-sm received-sm" style="max-width: 85%;">
+                Dạ chào Anh/Chị! 🐚 Em là trợ lý ảo, sẵn sàng giải đáp mọi thắc mắc của mình về cửa hàng ạ.
+            </div>
+        </div>
+    </div>
+    <div class="px-3 py-3 d-flex gap-2" style="border-top: 1px solid rgba(255,255,255,0.1);">
+        <input type="text" id="aiChatInput" class="glass-input pill-style flex-grow-1" placeholder="Nhập câu hỏi...">
+        <button class="glass-circle text-primary border-0" type="button" id="aiChatSendBtn"><i class="bi bi-send-fill"></i></button>
     </div>
 </div>
 
 <script>
     document.addEventListener("DOMContentLoaded", function() {
-        const liveToggleBtn = document.getElementById('liveChatToggleBtn');
+        // Khai báo các phần tử
+        const liveToggle = document.getElementById('liveChatToggleBtn');
         const liveWindow = document.getElementById('liveChatWindow');
-        const liveCloseBtn = document.getElementById('liveChatCloseBtn');
         const liveInput = document.getElementById('liveChatInput');
-        const liveSendBtn = document.getElementById('liveChatSendBtn');
         const liveBody = document.getElementById('liveChatBody');
 
-        // Bật/Tắt Cửa Sổ
-        liveToggleBtn.addEventListener('click', () => {
-            liveWindow.classList.toggle('d-none');
-        });
+        const aiToggle = document.getElementById('aiChatToggleBtn');
+        const aiWindow = document.getElementById('aiChatWindow');
+        const aiInput = document.getElementById('aiChatInput');
+        const aiBody = document.getElementById('aiChatBody');
 
-        liveCloseBtn.addEventListener('click', () => {
-            liveWindow.classList.add('d-none');
-        });
-
-        // Hàm in tin nhắn (Đã cập nhật class theo file CSS chuẩn)
+        // Hàm in tin nhắn
         function appendMessage(chatBody, text, isUser) {
             const align = isUser ? 'justify-content-end' : 'justify-content-start';
             const bubbleClass = isUser ? 'sent-sm' : 'received-sm';
-
             const msgHTML = `
-                <div class="d-flex mb-3 ${align}">
+                <div class="d-flex mb-3 ${align} animate__animated animate__fadeInUp animate__faster">
                     <div class="chat-bubble-sm ${bubbleClass}" style="max-width: 85%;">
                         ${text}
                     </div>
@@ -67,24 +79,68 @@
             chatBody.scrollTop = chatBody.scrollHeight;
         }
 
-        // Gửi tin nhắn
-        function sendLiveMessage() {
-            const text = liveInput.value.trim();
-            if (text !== '') {
-                appendMessage(liveBody, text, true); // True = User gửi
-                liveInput.value = '';
-                // Logic giả lập nhân viên trả lời sau 1 giây
-                /*
-                setTimeout(() => {
-                    appendMessage(liveBody, "Mình đang kiểm tra thông tin, bạn đợi chút nhé.", false);
-                }, 1000);
-                */
+        // Toggle cửa sổ (Mở cái này, đóng cái kia)
+        liveToggle.onclick = () => {
+            liveWindow.classList.toggle('d-none');
+            aiWindow.classList.add('d-none');
+        };
+        aiToggle.onclick = () => {
+            aiWindow.classList.toggle('d-none');
+            liveWindow.classList.add('d-none');
+        };
+
+        document.getElementById('liveChatCloseBtn').onclick = () => liveWindow.classList.add('d-none');
+        document.getElementById('aiChatCloseBtn').onclick = () => aiWindow.classList.add('d-none');
+
+        // Hàm gửi tin cho AI
+        async function sendAiMessage() {
+            const text = aiInput.value.trim();
+            if (!text) return;
+
+            appendMessage(aiBody, text, true);
+            aiInput.value = '';
+
+            const typingId = "typing-" + Date.now();
+            aiBody.insertAdjacentHTML('beforeend', `<div id="${typingId}" class="d-flex mb-3 justify-content-start"><div class="chat-bubble-sm received-sm opacity-50"><em>Đang suy nghĩ...</em></div></div>`);
+            aiBody.scrollTop = aiBody.scrollHeight;
+
+            try {
+                const response = await fetch('/api/chat/ask-ai', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ NoiDung: text })
+                });
+
+                document.getElementById(typingId).remove();
+
+                if (response.ok) {
+                    const data = await response.json();
+                    appendMessage(aiBody, data.reply, false);
+                } else {
+                    appendMessage(aiBody, "Dạ, em đang bận một chút. Anh/Chị vui lòng đợi em xíu nhé!", false);
+                }
+            } catch (error) {
+                document.getElementById(typingId)?.remove();
+                appendMessage(aiBody, "Lỗi kết nối. Anh/Chị vui lòng thử lại sau ạ.", false);
             }
         }
 
-        liveSendBtn.addEventListener('click', sendLiveMessage);
-        liveInput.addEventListener('keypress', e => {
-            if (e.key === 'Enter') sendLiveMessage();
-        });
+        // Gán sự kiện cho nút AI
+        document.getElementById('aiChatSendBtn').onclick = sendAiMessage;
+        aiInput.onkeypress = (e) => { if(e.key === 'Enter') sendAiMessage(); };
+
+        // Gán sự kiện cho nút Live (Mô phỏng)
+        document.getElementById('liveChatSendBtn').onclick = () => {
+            if(liveInput.value.trim()){
+                appendMessage(liveBody, liveInput.value, true);
+                liveInput.value = '';
+            }
+        };
+        liveInput.onkeypress = (e) => {
+            if(e.key === 'Enter' && liveInput.value.trim()){
+                appendMessage(liveBody, liveInput.value, true);
+                liveInput.value = '';
+            }
+        };
     });
 </script>

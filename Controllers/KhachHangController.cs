@@ -7,6 +7,7 @@ using OceanShellCraft.Models;
 namespace OceanShellCraft.Controllers
 {
     [Authorize]
+    [Route("khach-hang")]
     public class KhachHangController : Controller
     {
         private readonly MyNgheDbContext _context;
@@ -16,7 +17,6 @@ namespace OceanShellCraft.Controllers
             _context = context;
         }
 
-        // Helper để lấy ID người dùng hiện tại nhanh hơn
         private int? GetCurrentUserId()
         {
             var userIdClaim = User.FindFirstValue(ClaimTypes.NameIdentifier);
@@ -24,53 +24,19 @@ namespace OceanShellCraft.Controllers
             return null;
         }
 
-        public async Task<IActionResult> TongQuan()
-        {
-            int? userId = GetCurrentUserId();
-            if (userId == null) return RedirectToAction("DangNhap", "TaiKhoan");
+        
 
-            var nguoiDung = await _context.NguoiDungs.FindAsync(userId);
-            if (nguoiDung == null) return NotFound();
-
-            // 1. Lấy danh sách đơn hàng của User này
-            var danhSachDonHang = await _context.DonHangs
-                .Where(d => d.NguoiDungId == userId)
-                .OrderByDescending(d => d.NgayDat)
-                .ToListAsync();
-
-            // 2. Thống kê
-            ViewBag.DonDaMua = danhSachDonHang.Count(d => d.TrangThai == "Đã hoàn thành");
-            ViewBag.DonDangGiao = danhSachDonHang.Count(d => d.TrangThai == "Đang giao hàng" || d.TrangThai == "Chờ xử lý" || d.TrangThai == "Đang đóng gói");
-
-            // Tự động tính điểm tích lũy (Cứ 100k = 10 điểm)
-            var tongTien = danhSachDonHang.Where(d => d.TrangThai == "Đã hoàn thành").Sum(d => d.TongTien);
-            ViewBag.DiemTichLuy = (int)(tongTien / 100000) * 10;
-
-            // 3. Lấy 3 đơn hàng gần nhất
-            ViewBag.DonHangGanDay = danhSachDonHang.Take(3).ToList();
-
-            // 4. Lấy danh sách Voucher còn hạn
-            var now = DateTime.Now;
-            ViewBag.GiamGia = await _context.GiamGias
-                .Where(v => v.NguoiDungId == userId && v.HanSuDung >= now)
-                .ToListAsync();
-
-            return View(nguoiDung);
-        }
-
-        // Gộp logic Index (Lọc) vào Orders để khớp với View và Layout
+        [Route("don-hang")]
         public async Task<IActionResult> Orders(string trangThai)
         {
             int? userId = GetCurrentUserId();
             if (userId == null) return RedirectToAction("DangNhap", "TaiKhoan");
 
-            // Bắt đầu truy vấn đơn hàng của User này
             var query = _context.DonHangs
                 .Include(d => d.ChiTietDonHangs)
                     .ThenInclude(c => c.SanPham)
                 .Where(d => d.NguoiDungId == userId);
 
-            // Thực hiện lọc theo trạng thái nếu có
             if (!string.IsNullOrEmpty(trangThai))
             {
                 query = query.Where(d => d.TrangThai == trangThai);
@@ -81,6 +47,7 @@ namespace OceanShellCraft.Controllers
             return View(dsDonHang);
         }
 
+        [Route("ho-tro")]
         public async Task<IActionResult> Chat()
         {
             int? userId = GetCurrentUserId();
@@ -94,14 +61,13 @@ namespace OceanShellCraft.Controllers
             return View(chatHistory);
         }
 
-        [HttpPost]
+        [HttpPost("cap-nhat-ho-so")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> CapNhatHoSo(NguoiDung model)
         {
             var userInDb = await _context.NguoiDungs.FindAsync(model.Id);
             if (userInDb == null) return NotFound();
 
-            // Cập nhật các trường cho phép
             userInDb.HoTen = model.HoTen;
             userInDb.NgaySinh = model.NgaySinh;
             userInDb.GioiTinh = model.GioiTinh;
@@ -122,18 +88,19 @@ namespace OceanShellCraft.Controllers
             return RedirectToAction("TongQuan");
         }
 
+        [Route("ho-so")]
         public IActionResult HoSo()
         {
             return RedirectToAction("TongQuan");
         }
-        [HttpPost]
+
+        [HttpPost("huy-don-hang/{id}")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> HuyDonHang(int id)
         {
             int? userId = GetCurrentUserId();
             if (userId == null) return RedirectToAction("DangNhap", "TaiKhoan");
 
-            // Tìm đơn hàng: Phải đúng ID và đúng chủ sở hữu, chỉ cho phép xóa khi đang "Chờ xử lý"
             var donHang = await _context.DonHangs
                 .FirstOrDefaultAsync(d => d.Id == id && d.NguoiDungId == userId);
 
@@ -153,19 +120,19 @@ namespace OceanShellCraft.Controllers
 
             return RedirectToAction("Orders");
         }
+
+        [Route("chi-tiet-don-hang/{id}")]
         public async Task<IActionResult> ChiTietDonHang(int id)
         {
-            // Lấy ID người dùng đang đăng nhập (Giả sử bạn đang dùng ClaimTypes.NameIdentifier)
             var userIdClaim = User.FindFirstValue(ClaimTypes.NameIdentifier);
             if (string.IsNullOrEmpty(userIdClaim) || !int.TryParse(userIdClaim, out int uId))
             {
                 return RedirectToAction("DangNhap", "TaiKhoan");
             }
 
-            // Truy vấn đơn hàng kèm theo chi tiết và thông tin sản phẩm
             var donHang = await _context.DonHangs
                 .Include(d => d.ChiTietDonHangs)
-                    .ThenInclude(c => c.SanPham) // Join bảng SanPham để lấy Tên, Hình ảnh...
+                    .ThenInclude(c => c.SanPham)
                 .FirstOrDefaultAsync(d => d.Id == id && d.NguoiDungId == uId);
 
             if (donHang == null)
@@ -176,7 +143,8 @@ namespace OceanShellCraft.Controllers
 
             return View(donHang);
         }
-        [HttpGet]
+
+        [HttpGet("san-pham-yeu-thich")]
         public async Task<IActionResult> SanPhamYeuThich()
         {
             var userIdClaim = User.FindFirstValue(ClaimTypes.NameIdentifier);
@@ -185,16 +153,16 @@ namespace OceanShellCraft.Controllers
                 return RedirectToAction("DangNhap", "TaiKhoan");
             }
 
-            // Lấy danh sách sản phẩm yêu thích của User hiện tại
             var danhSachYeuThich = await _context.SanPhamYeuThiches
                 .Include(yt => yt.SanPham)
                 .Where(yt => yt.NguoiDungId == uId)
-                .OrderByDescending(yt => yt.NgayThem) // Mới thích hiện lên đầu
+                .OrderByDescending(yt => yt.NgayThem)
                 .ToListAsync();
 
             return View(danhSachYeuThich);
         }
-        [HttpPost]
+
+        [HttpPost("xoa-yeu-thich")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> XoaYeuThich(int sanPhamId)
         {
@@ -211,6 +179,40 @@ namespace OceanShellCraft.Controllers
                 }
             }
             return RedirectToAction(nameof(SanPhamYeuThich));
+        }
+        [Route("tong-quan")]
+        public async Task<IActionResult> TongQuan()
+        {
+            int? userId = GetCurrentUserId();
+            if (userId == null) return RedirectToAction("DangNhap", "TaiKhoan");
+
+            var nguoiDung = await _context.NguoiDungs.FindAsync(userId);
+            if (nguoiDung == null) return NotFound();
+
+            var danhSachDonHang = await _context.DonHangs
+                .Where(d => d.NguoiDungId == userId)
+                .OrderByDescending(d => d.NgayDat)
+                .ToListAsync();
+
+            ViewBag.DonDaMua = danhSachDonHang.Count(d => d.TrangThai == "Đã hoàn thành");
+            ViewBag.DonDangGiao = danhSachDonHang.Count(d => d.TrangThai == "Đang giao hàng" || d.TrangThai == "Chờ xử lý" || d.TrangThai == "Đang đóng gói");
+
+            var tongTien = danhSachDonHang.Where(d => d.TrangThai == "Đã hoàn thành").Sum(d => d.TongTien);
+            ViewBag.DiemTichLuy = (int)(tongTien / 100000) * 10;
+
+            ViewBag.DonHangGanDay = danhSachDonHang.Take(3).ToList();
+
+            // --- CẬP NHẬT PHẦN NÀY ---
+            var now = DateTime.Now;
+            ViewBag.GiamGia = await _context.GiamGias
+                .Where(v => v.IsKichHoat
+                         && v.HanSuDung >= now
+                         && v.NgayBatDau <= now
+                         && (v.NguoiDungId == userId || v.NguoiDungId == null)) // Lấy cả mã riêng và mã chung
+                .OrderByDescending(v => v.NgayBatDau)
+                .ToListAsync();
+
+            return View(nguoiDung);
         }
     }
 }

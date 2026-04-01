@@ -10,6 +10,7 @@ using MiniExcelLibs;
 
 namespace OceanShellCraft.Controllers
 {
+    [Route("admin")]
     public class AdminController : Controller
     {
         private readonly MyNgheDbContext _context;
@@ -19,18 +20,121 @@ namespace OceanShellCraft.Controllers
             _context = context;
         }
 
-
-
-        public async Task<IActionResult> BaiViet()
+        [HttpGet("")]
+        public IActionResult Index(string thang)
         {
-            var danhSach = await _context.BaiViets
-                .OrderByDescending(b => b.NgayTao)
-                .ToListAsync();
+            DateTime now = DateTime.Now;
+            DateTime filterDate = now;
+
+            if (!string.IsNullOrEmpty(thang) && DateTime.TryParseExact(thang, "yyyy-MM", null, System.Globalization.DateTimeStyles.None, out DateTime parsedDate))
+            {
+                filterDate = parsedDate;
+            }
+
+            var startOfMonth = new DateTime(filterDate.Year, filterDate.Month, 1);
+            var endOfMonth = startOfMonth.AddMonths(1).AddDays(-1);
+
+            var viewModel = new AdminDashboardVM
+            {
+                TongDonHang = _context.DonHangs.Count(),
+                TongKhachHang = _context.NguoiDungs.Count(n => n.VaiTro == "KhachHang"),
+                TongSanPham = _context.SanPhams.Count(),
+                SanPhamSapHetHang = _context.SanPhams.Count(s => s.SoLuong < 10),
+                TongDoanhThu = _context.DonHangs.Where(d => d.TrangThai == "Hoàn thành").Sum(d => d.TongTien),
+
+                DonHangHomNay = _context.DonHangs.Count(d => d.NgayDat.Date == now.Date),
+                DoanhThuHomNay = _context.DonHangs.Where(d => d.TrangThai == "Hoàn thành" && d.NgayDat.Date == now.Date).Sum(d => d.TongTien),
+
+                DonHangThangNay = _context.DonHangs.Count(d => d.NgayDat >= startOfMonth && d.NgayDat <= endOfMonth),
+                DoanhThuThangNay = _context.DonHangs.Where(d => d.TrangThai == "Hoàn thành" && d.NgayDat >= startOfMonth && d.NgayDat <= endOfMonth).Sum(d => d.TongTien),
+
+                DonChoXuLy = _context.DonHangs.Count(d => d.TrangThai == "Chờ xử lý"),
+                DonDangGiao = _context.DonHangs.Count(d => d.TrangThai == "Đang giao"),
+                DonHoanThanh = _context.DonHangs.Count(d => d.TrangThai == "Hoàn thành"),
+
+                DonHangGanDay = _context.DonHangs.Include(d => d.NguoiDung).OrderByDescending(d => d.NgayDat).Take(5).ToList(),
+
+                DoanhThuTheoNgay = new List<double>(),
+                NhanBieuDo = new List<string>()
+            };
+
+            var donHangTrongThang = _context.DonHangs
+                .Where(d => d.TrangThai == "Hoàn thành" && d.NgayDat >= startOfMonth && d.NgayDat <= endOfMonth)
+                .Select(d => new { d.NgayDat.Day, d.TongTien })
+                .ToList();
+
+            var doanhThuGroup = donHangTrongThang
+                .GroupBy(d => d.Day)
+                .ToDictionary(g => g.Key, g => (double)g.Sum(d => d.TongTien));
+            int daysInMonth = DateTime.DaysInMonth(filterDate.Year, filterDate.Month);
+            double maxDoanhThu = 0;
+
+            for (int i = 1; i <= daysInMonth; i++)
+            {
+                double doanhThuNgay = doanhThuGroup.ContainsKey(i) ? doanhThuGroup[i] : 0;
+
+                viewModel.DoanhThuTheoNgay.Add(doanhThuNgay);
+                viewModel.NhanBieuDo.Add(i.ToString());
+
+                if (doanhThuNgay > maxDoanhThu) maxDoanhThu = doanhThuNgay;
+            }
+
+            viewModel.DoanhThuCaoNhat = maxDoanhThu == 0 ? 1 : maxDoanhThu;
+
+            ViewBag.ThangDuocChon = filterDate.ToString("yyyy-MM");
+
+            return View(viewModel);
+        }
+
+        [HttpGet("bai-viet")]
+        public async Task<IActionResult> BaiViet(string search)
+        {
+            var query = _context.BaiViets.AsQueryable();
+
+            if (!string.IsNullOrEmpty(search))
+            {
+                query = query.Where(b => b.TieuDe.Contains(search) || b.TacGia.Contains(search));
+            }
+
+            var danhSach = await query.OrderByDescending(b => b.NgayTao).ToListAsync();
+
+            ViewBag.Search = search;
 
             return View(danhSach);
         }
 
-        [HttpGet]
+        [HttpPost("xoa-nhieu-bai-viet")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> XoaNhieuBaiViet([FromBody] List<int> ids)
+        {
+            if (ids == null || !ids.Any())
+                return Json(new { success = false, message = "Không có bài viết nào được chọn." });
+
+            try
+            {
+                var listXoa = await _context.BaiViets.Where(b => ids.Contains(b.Id)).ToListAsync();
+
+                foreach (var item in listXoa)
+                {
+                    if (!string.IsNullOrEmpty(item.AnhNen))
+                    {
+                        var filePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", item.AnhNen.TrimStart('/'));
+                        if (System.IO.File.Exists(filePath)) System.IO.File.Delete(filePath);
+                    }
+                }
+
+                _context.BaiViets.RemoveRange(listXoa);
+                await _context.SaveChangesAsync();
+
+                return Json(new { success = true, message = $"Đã xóa thành công {listXoa.Count} bài viết." });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, message = "Lỗi hệ thống: " + ex.Message });
+            }
+        }
+
+        [HttpGet("them-sua-bai-viet/{id?}")]
         public async Task<IActionResult> ThemSuaBaiViet(int? id)
         {
             if (id.HasValue)
@@ -46,7 +150,7 @@ namespace OceanShellCraft.Controllers
             return View(new BaiViet());
         }
 
-        [HttpPost]
+        [HttpPost("them-sua-bai-viet/{id?}")]
         public async Task<IActionResult> ThemSuaBaiViet(BaiViet model, IFormFile? fileAnhNen)
         {
             if (fileAnhNen != null && fileAnhNen.Length > 0)
@@ -87,6 +191,7 @@ namespace OceanShellCraft.Controllers
             return RedirectToAction("BaiViet");
         }
 
+        [HttpPost("xoa-bai-viet/{id}")]
         public async Task<IActionResult> XoaBaiViet(int id)
         {
             var baiViet = await _context.BaiViets.FindAsync(id);
@@ -112,6 +217,7 @@ namespace OceanShellCraft.Controllers
             return RedirectToAction("BaiViet");
         }
 
+        [HttpGet("san-pham")]
         public async Task<IActionResult> SanPham()
         {
             var danhSach = await _context.SanPhams
@@ -121,71 +227,80 @@ namespace OceanShellCraft.Controllers
             return View(danhSach);
         }
 
-        [HttpGet]
+        [HttpGet("them-sua-san-pham/{id?}")]
         public async Task<IActionResult> ThemSuaSanPham(int? id)
         {
             var danhMucs = await _context.DanhMucs.ToListAsync();
             ViewBag.DanhMucList = new SelectList(danhMucs, "Id", "TenDanhMuc");
 
-            if (id.HasValue)
+            if (id.HasValue && id > 0)
             {
-                ViewData["Title"] = "Sửa sản phẩm";
-                var sanPham = await _context.SanPhams.FindAsync(id);
+                var sanPham = await _context.SanPhams.Include(s => s.DanhMuc).FirstOrDefaultAsync(s => s.Id == id);
                 if (sanPham == null) return NotFound();
-
+                ViewBag.CurrentDanhMucName = sanPham.DanhMuc?.TenDanhMuc;
                 return View(sanPham);
             }
 
-            ViewData["Title"] = "Thêm mới sản phẩm";
             return View(new SanPham());
         }
 
-        [HttpPost]
+        [HttpPost("them-sua-san-pham/{id?}")]
         public async Task<IActionResult> ThemSuaSanPham(SanPham model, IFormFile? fileHinhAnh)
         {
+            if (model.DanhMucId <= 0)
+            {
+                ModelState.AddModelError("DanhMucId", "Vui lòng chọn danh mục sản phẩm.");
+
+                var danhMucs = await _context.DanhMucs.ToListAsync();
+                ViewBag.DanhMucList = new SelectList(danhMucs, "Id", "TenDanhMuc");
+                return View(model);
+            }
+
             if (fileHinhAnh != null && fileHinhAnh.Length > 0)
             {
-                var uploadsFolder = Path.Combine(
-                    Directory.GetCurrentDirectory(),
-                    "wwwroot",
-                    "images",
-                    "sanpham"
-                );
+                var uploadsFolder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "images", "sanpham");
+                if (!Directory.Exists(uploadsFolder)) Directory.CreateDirectory(uploadsFolder);
 
-                Directory.CreateDirectory(uploadsFolder);
-
-                var fileName = Guid.NewGuid() + Path.GetExtension(fileHinhAnh.FileName);
+                var fileName = Guid.NewGuid().ToString() + Path.GetExtension(fileHinhAnh.FileName);
                 var filePath = Path.Combine(uploadsFolder, fileName);
 
-                using var fileStream = new FileStream(filePath, FileMode.Create);
-                await fileHinhAnh.CopyToAsync(fileStream);
+                using (var fileStream = new FileStream(filePath, FileMode.Create))
+                {
+                    await fileHinhAnh.CopyToAsync(fileStream);
+                }
 
                 model.HinhAnh = "/images/sanpham/" + fileName;
             }
 
-            if (model.Id == 0)
+            try
             {
-                _context.SanPhams.Add(model);
-            }
-            else
-            {
-                if (string.IsNullOrEmpty(model.HinhAnh))
+                if (model.Id == 0)
                 {
-                    var spCu = await _context.SanPhams
-                        .AsNoTracking()
-                        .FirstOrDefaultAsync(s => s.Id == model.Id);
-
-                    if (spCu != null)
-                        model.HinhAnh = spCu.HinhAnh;
+                    _context.SanPhams.Add(model);
+                }
+                else
+                {
+                    if (string.IsNullOrEmpty(model.HinhAnh))
+                    {
+                        var currentSp = await _context.SanPhams.AsNoTracking().FirstOrDefaultAsync(p => p.Id == model.Id);
+                        if (currentSp != null) model.HinhAnh = currentSp.HinhAnh;
+                    }
+                    _context.SanPhams.Update(model);
                 }
 
-                _context.SanPhams.Update(model);
+                await _context.SaveChangesAsync();
+                return RedirectToAction("SanPham");
             }
-
-            await _context.SaveChangesAsync();
-            return RedirectToAction("SanPham");
+            catch (Exception ex)
+            {
+                ModelState.AddModelError("", "Không thể lưu dữ liệu: " + ex.Message);
+                var danhMucs = await _context.DanhMucs.ToListAsync();
+                ViewBag.DanhMucList = new SelectList(danhMucs, "Id", "TenDanhMuc");
+                return View(model);
+            }
         }
 
+        [HttpPost("xoa-san-pham/{id}")]
         public async Task<IActionResult> XoaSanPham(int id)
         {
             var sanPham = await _context.SanPhams.FindAsync(id);
@@ -211,8 +326,7 @@ namespace OceanShellCraft.Controllers
             return RedirectToAction("SanPham");
         }
 
-        [HttpPost]
-        [Route("Admin/ToggleNoiBat/{id}")]
+        [HttpPost("toggle-noi-bat/{id}")]
         public async Task<IActionResult> ToggleNoiBat(int id)
         {
             var sanPham = await _context.SanPhams.FindAsync(id);
@@ -227,62 +341,91 @@ namespace OceanShellCraft.Controllers
             return Ok(new { success = true, isFeatured = sanPham.IsFeatured });
         }
 
-        // 1. Hiển thị danh sách mã giảm giá
-        public async Task<IActionResult> GiamGia()
+        [HttpGet("giam-gia")]
+        public async Task<IActionResult> GiamGia(string search, string trangThai)
         {
-            var danhSach = await _context.GiamGias
-                .Include(g => g.NguoiDung)
-                .OrderByDescending(g => g.Id)
-                .ToListAsync();
+            var query = _context.GiamGias.Include(g => g.NguoiDung).AsQueryable();
 
-            return View(danhSach);
+            ViewBag.TongLuotDung = await query.SumAsync(g => g.SoLuongDaDung);
+            ViewBag.TongTienGiam = 0;
+            ViewBag.MaHieuQua = await query.OrderByDescending(g => g.SoLuongDaDung).Select(g => g.MaVoucher).FirstOrDefaultAsync() ?? "N/A";
+
+            if (!string.IsNullOrEmpty(search))
+                query = query.Where(g => g.MaVoucher.Contains(search) || g.TenVoucher.Contains(search));
+
+            if (trangThai == "active")
+                query = query.Where(g => g.IsKichHoat && g.HanSuDung >= DateTime.Now);
+            else if (trangThai == "expired")
+                query = query.Where(g => g.HanSuDung < DateTime.Now);
+
+            return View(await query.OrderByDescending(g => g.Id).ToListAsync());
         }
 
-        // 2. Mở form Thêm hoặc Sửa
-        [HttpGet]
+        [HttpGet("them-sua-giam-gia/{id?}")]
         public async Task<IActionResult> ThemSuaGiamGia(int? id)
         {
-            // Cần có ViewBag này để đổ dữ liệu vào thẻ <select> Khách hàng trong View, nếu không sẽ bị lỗi tiếp
-            var khachHangs = await _context.NguoiDungs
-                .Where(n => n.VaiTro == "KhachHang")
-                .ToListAsync();
+            var khachHangs = await _context.NguoiDungs.Where(n => n.VaiTro == "KhachHang").ToListAsync();
             ViewBag.KhachHangList = new SelectList(khachHangs, "Id", "Email");
 
-            if (id.HasValue)
+            if (id.HasValue && id > 0)
             {
-                // Nếu là sửa: Tìm model trong database và truyền sang View
-                var giamGia = await _context.GiamGias.FindAsync(id);
-                if (giamGia == null) return NotFound();
-                return View(giamGia);
+                var item = await _context.GiamGias.FindAsync(id);
+                if (item == null) return NotFound();
+                return View(item);
             }
-
-            // NẾU LÀ THÊM MỚI: Truyền một đối tượng mới tinh sang View để tránh lỗi "Model is null"
-            return View(new GiamGia { HanSuDung = DateTime.Now.AddDays(7) });
+            return View(new GiamGia { NgayBatDau = DateTime.Now, HanSuDung = DateTime.Now.AddDays(7) });
         }
 
-        // 3. Xử lý lưu dữ liệu khi bấm nút "Lưu thông tin"
-        [HttpPost]
+        [HttpPost("them-sua-giam-gia/{id?}")]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> ThemSuaGiamGia(GiamGia model)
         {
-            if (!string.IsNullOrEmpty(model.MaVoucher))
+            if (!ModelState.IsValid)
             {
-                model.MaVoucher = model.MaVoucher.ToUpper().Trim();
+                var khachHangs = await _context.NguoiDungs.Where(n => n.VaiTro == "KhachHang").ToListAsync();
+                ViewBag.KhachHangList = new SelectList(khachHangs, "Id", "Email", model.NguoiDungId);
+                return View(model);
             }
 
-            if (model.Id == 0)
+            try
             {
-                _context.GiamGias.Add(model); // Thêm mới
-            }
-            else
-            {
-                _context.GiamGias.Update(model); // Cập nhật
-            }
+                model.MaVoucher = model.MaVoucher?.ToUpper().Trim();
 
-            await _context.SaveChangesAsync();
+                var isExist = await _context.GiamGias.AnyAsync(g => g.MaVoucher == model.MaVoucher && g.Id != model.Id);
+                if (isExist)
+                {
+                    ModelState.AddModelError("MaVoucher", "Mã này đã tồn tại trên hệ thống!");
+                    var khachHangs = await _context.NguoiDungs.Where(n => n.VaiTro == "KhachHang").ToListAsync();
+                    ViewBag.KhachHangList = new SelectList(khachHangs, "Id", "Email");
+                    return View(model);
+                }
+
+                if (model.Id == 0) _context.GiamGias.Add(model);
+                else _context.Update(model);
+
+                await _context.SaveChangesAsync();
+                return RedirectToAction("GiamGia");
+            }
+            catch (Exception ex)
+            {
+                ModelState.AddModelError("", "Lỗi lưu dữ liệu: " + ex.Message);
+                return View(model);
+            }
+        }
+
+        [HttpPost("xoa-giam-gia/{id}")]
+        public async Task<IActionResult> XoaGiamGia(int id)
+        {
+            var item = await _context.GiamGias.FindAsync(id);
+            if (item != null)
+            {
+                _context.GiamGias.Remove(item);
+                await _context.SaveChangesAsync();
+            }
             return RedirectToAction("GiamGia");
         }
-        // Thêm API lấy lịch sử chat
-        [HttpGet]
+
+        [HttpGet("get-chat-history")]
         public async Task<IActionResult> GetChatHistory(int userId)
         {
             var history = await _context.TinNhans
@@ -299,10 +442,9 @@ namespace OceanShellCraft.Controllers
             return Json(history);
         }
 
-        // Cập nhật trang Messages để load danh sách khách hàng đã từng chat
+        [HttpGet("chat")]
         public async Task<IActionResult> Chat()
         {
-            // Lấy danh sách những người dùng đã từng gửi tin nhắn (Unique)
             var uniqueUsers = await _context.TinNhans
                 .Include(t => t.KhachHang)
                 .GroupBy(t => t.NguoiDungId)
@@ -319,21 +461,19 @@ namespace OceanShellCraft.Controllers
             ViewBag.CustomerList = uniqueUsers;
             return View();
         }
+
+        [HttpGet("hoa-don/{id?}")]
         public async Task<IActionResult> HoaDon(int? id)
         {
-            // Lấy toàn bộ danh sách hoặc lọc theo ID nếu có tìm kiếm
             var query = _context.DonHangs.Include(d => d.NguoiDung).AsQueryable();
 
             if (id.HasValue)
             {
-                // Nếu tìm kiếm theo mã ID cụ thể
                 query = query.Where(d => d.Id == id.Value);
             }
 
             var orders = await query.OrderByDescending(d => d.NgayDat).ToListAsync();
 
-            // Chọn đơn hàng hiển thị chi tiết: 
-            // Nếu có ID tìm kiếm thì chọn đơn đó, nếu không chọn đơn mới nhất
             var selectedOrder = id.HasValue
                 ? orders.FirstOrDefault(o => o.Id == id)
                 : orders.FirstOrDefault();
@@ -350,7 +490,8 @@ namespace OceanShellCraft.Controllers
             ViewBag.SelectedOrder = selectedOrder;
             return View(orders);
         }
-        [HttpPost]
+
+        [HttpPost("cap-nhat-trang-thai/{id}")]
         public async Task<IActionResult> CapNhatTrangThai(int id)
         {
             var donHang = await _context.DonHangs
@@ -447,87 +588,40 @@ namespace OceanShellCraft.Controllers
                 Console.WriteLine("Lỗi khi gửi email: " + ex.Message);
             }
         }
-        public IActionResult Index(string thang)
+
+        [HttpPost("xoa-nhieu-san-pham")]
+        public async Task<IActionResult> XoaNhieuSanPham([FromBody] List<int> ids)
         {
-            // 1. Xác định thời gian cần lọc
-            DateTime now = DateTime.Now;
-            DateTime filterDate = now;
+            if (ids == null || !ids.Any())
+                return Json(new { success = false, message = "Không có sản phẩm nào được chọn." });
 
-            // Nếu người dùng có chọn tháng, parse giá trị đó
-            if (!string.IsNullOrEmpty(thang) && DateTime.TryParseExact(thang, "yyyy-MM", null, System.Globalization.DateTimeStyles.None, out DateTime parsedDate))
+            try
             {
-                filterDate = parsedDate;
+                var danhSachXoa = await _context.SanPhams
+                    .Where(s => ids.Contains(s.Id))
+                    .ToListAsync();
+
+                foreach (var sanPham in danhSachXoa)
+                {
+                    if (!string.IsNullOrEmpty(sanPham.HinhAnh))
+                    {
+                        var filePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", sanPham.HinhAnh.TrimStart('/'));
+                        if (System.IO.File.Exists(filePath)) System.IO.File.Delete(filePath);
+                    }
+                }
+
+                _context.SanPhams.RemoveRange(danhSachXoa);
+                await _context.SaveChangesAsync();
+
+                return Json(new { success = true, message = $"Đã xóa thành công {danhSachXoa.Count} sản phẩm." });
             }
-
-            // Ngày đầu tháng và ngày cuối tháng của tháng được chọn
-            var startOfMonth = new DateTime(filterDate.Year, filterDate.Month, 1);
-            var endOfMonth = startOfMonth.AddMonths(1).AddDays(-1);
-
-            // 2. Lấy dữ liệu thống kê tổng quan
-            var viewModel = new AdminDashboardVM
+            catch (Exception ex)
             {
-                // Thống kê tổng (toàn thời gian)
-                TongDonHang = _context.DonHangs.Count(),
-                TongKhachHang = _context.NguoiDungs.Count(n => n.VaiTro == "KhachHang"),
-                TongSanPham = _context.SanPhams.Count(),
-                SanPhamSapHetHang = _context.SanPhams.Count(s => s.SoLuong < 10),
-                TongDoanhThu = _context.DonHangs.Where(d => d.TrangThai == "Hoàn thành").Sum(d => d.TongTien),
-
-                // Thống kê theo "Hôm nay" (luôn là ngày hiện tại)
-                DonHangHomNay = _context.DonHangs.Count(d => d.NgayDat.Date == now.Date),
-                DoanhThuHomNay = _context.DonHangs.Where(d => d.TrangThai == "Hoàn thành" && d.NgayDat.Date == now.Date).Sum(d => d.TongTien),
-
-                // Thống kê theo "Tháng" (Dựa vào tháng đang được filter)
-                DonHangThangNay = _context.DonHangs.Count(d => d.NgayDat >= startOfMonth && d.NgayDat <= endOfMonth),
-                DoanhThuThangNay = _context.DonHangs.Where(d => d.TrangThai == "Hoàn thành" && d.NgayDat >= startOfMonth && d.NgayDat <= endOfMonth).Sum(d => d.TongTien),
-
-                // Phân loại trạng thái đơn (toàn thời gian)
-                DonChoXuLy = _context.DonHangs.Count(d => d.TrangThai == "Chờ xử lý"),
-                DonDangGiao = _context.DonHangs.Count(d => d.TrangThai == "Đang giao"),
-                DonHoanThanh = _context.DonHangs.Count(d => d.TrangThai == "Hoàn thành"),
-
-                // Danh sách đơn gần đây
-                DonHangGanDay = _context.DonHangs.Include(d => d.NguoiDung).OrderByDescending(d => d.NgayDat).Take(5).ToList(),
-
-                // Khởi tạo list cho biểu đồ
-                DoanhThuTheoNgay = new List<double>(),
-                NhanBieuDo = new List<string>()
-            };
-
-            // 3. Xử lý dữ liệu thực tế cho Biểu đồ
-            // Lấy tất cả các đơn hoàn thành trong tháng được chọn (chỉ lấy Ngày và Tổng Tiền để tối ưu)
-            var donHangTrongThang = _context.DonHangs
-                .Where(d => d.TrangThai == "Hoàn thành" && d.NgayDat >= startOfMonth && d.NgayDat <= endOfMonth)
-                .Select(d => new { d.NgayDat.Day, d.TongTien })
-                .ToList();
-
-            // Gom nhóm doanh thu theo từng ngày
-            // Gom nhóm doanh thu theo từng ngày
-            var doanhThuGroup = donHangTrongThang
-                .GroupBy(d => d.Day)
-                .ToDictionary(g => g.Key, g => (double)g.Sum(d => d.TongTien));
-            int daysInMonth = DateTime.DaysInMonth(filterDate.Year, filterDate.Month);
-            double maxDoanhThu = 0;
-
-            for (int i = 1; i <= daysInMonth; i++)
-            {
-                // Nếu ngày đó có doanh thu thì lấy, không thì gán bằng 0
-                double doanhThuNgay = doanhThuGroup.ContainsKey(i) ? doanhThuGroup[i] : 0;
-
-                viewModel.DoanhThuTheoNgay.Add(doanhThuNgay);
-                viewModel.NhanBieuDo.Add(i.ToString());
-
-                if (doanhThuNgay > maxDoanhThu) maxDoanhThu = doanhThuNgay;
+                return Json(new { success = false, message = "Lỗi hệ thống: " + ex.Message });
             }
-
-            viewModel.DoanhThuCaoNhat = maxDoanhThu == 0 ? 1 : maxDoanhThu;
-
-            // Truyền tháng đang chọn ra View để gán vào input <input type="month">
-            ViewBag.ThangDuocChon = filterDate.ToString("yyyy-MM");
-
-            return View(viewModel);
         }
-        [HttpPost]
+
+        [HttpPost("nhap-excel")]
         public async Task<IActionResult> NhapExcel(IFormFile file)
         {
             if (file == null || file.Length == 0) return RedirectToAction(nameof(SanPham));
@@ -536,23 +630,43 @@ namespace OceanShellCraft.Controllers
             {
                 using (var stream = file.OpenReadStream())
                 {
-                    // Đọc dữ liệu từ Excel (bỏ qua dòng tiêu đề nếu cần)
-                    var rows = stream.Query().ToList();
+                    var rows = stream.Query<SanPhamExcelDto>().ToList();
                     var dsSanPham = new List<SanPham>();
 
-                    foreach (var row in rows.Skip(1))
+                    foreach (var row in rows)
                     {
-                        dsSanPham.Add(new SanPham
+                        if (string.IsNullOrWhiteSpace(row.TenSanPham)) continue;
+
+                        var sanPhamMoi = new SanPham
                         {
-                            TenSanPham = row.A?.ToString(),
-                            MoTa = row.B?.ToString() ?? "",
-                            GiaTien = decimal.TryParse(row.C?.ToString(), out decimal gia) ? gia : 0,
-                            HinhAnh = row.D?.ToString() ?? "",
-                            ChatLieu = row.E?.ToString() ?? "",
-                            KichThuoc = row.F?.ToString() ?? "",
-                            DanhMucId = int.TryParse(row.G?.ToString(), out int id) ? id : 1,
-                            TrangThai = TrangThaiSanPham.DangBan // Mặc định khi nhập mới
-                        });
+                            TenSanPham = row.TenSanPham,
+                            MoTa = row.MoTa,
+                            GiaTien = row.GiaTien,
+                            HinhAnh = row.HinhAnh,
+                            DanhMucId = row.DanhMucId > 0 ? row.DanhMucId : 1,
+                            TrangThai = TrangThaiSanPham.DangBan,
+                            SoLuong = 10
+                        };
+
+                        if (!string.IsNullOrWhiteSpace(row.ChatLieu) || !string.IsNullOrWhiteSpace(row.KichThuoc))
+                        {
+                            var bienThe = new BienTheSanPham
+                            {
+                                TenBienThe = "Bản tiêu chuẩn",
+                                SoLuongRieng = 10,
+                                ChiTietBienThes = new List<ChiTietBienThe>()
+                            };
+
+                            if (!string.IsNullOrWhiteSpace(row.ChatLieu))
+                                bienThe.ChiTietBienThes.Add(new ChiTietBienThe { TenThuocTinh = "Chất liệu", GiaTri = row.ChatLieu });
+
+                            if (!string.IsNullOrWhiteSpace(row.KichThuoc))
+                                bienThe.ChiTietBienThes.Add(new ChiTietBienThe { TenThuocTinh = "Kích thước", GiaTri = row.KichThuoc });
+
+                            sanPhamMoi.BienThes = new List<BienTheSanPham> { bienThe };
+                        }
+
+                        dsSanPham.Add(sanPhamMoi);
                     }
 
                     _context.SanPhams.AddRange(dsSanPham);
@@ -560,104 +674,56 @@ namespace OceanShellCraft.Controllers
                 }
                 TempData["Success"] = "Nhập dữ liệu thành công!";
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                TempData["Error"] = "Có lỗi xảy ra khi đọc file Excel.";
+                TempData["Error"] = "Lỗi: " + ex.Message;
             }
 
             return RedirectToAction(nameof(SanPham));
         }
 
+        [HttpGet("tai-file-mau")]
         public IActionResult TaiFileMau()
         {
             var dataMau = new[] {
-        new { TenSanPham = "Tên SP", MoTa = "Mô tả", GiaTien = 100000, HinhAnh = "/img/sp.jpg", ChatLieu = "Vỏ ốc", KichThuoc = "10cm", DanhMucId = 1 }
-    };
+                new { TenSanPham = "Tên SP", MoTa = "Mô tả", GiaTien = 100000, HinhAnh = "/img/sp.jpg", ChatLieu = "Vỏ ốc", KichThuoc = "10cm", DanhMucId = 1 }
+            };
             var stream = new MemoryStream();
             stream.SaveAs(dataMau);
             stream.Position = 0;
             return File(stream.ToArray(), "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "Mau_Nhap_San_Pham.xlsx");
         }
-        [HttpGet]
+
+        [HttpGet("xuat-excel")]
         public async Task<IActionResult> XuatExcel()
         {
-            // 1. Lấy dữ liệu sản phẩm kèm theo tên danh mục
             var data = await _context.SanPhams
-                .Include(s => s.DanhMuc)
-                .OrderByDescending(s => s.Id)
-                .Select(s => new
+                .Select(s => new SanPhamExcelDto
                 {
-                    MaSanPham = s.Id,
                     TenSanPham = s.TenSanPham,
-                    DanhMuc = s.DanhMuc != null ? s.DanhMuc.TenDanhMuc : "N/A",
-                    GiaBan = s.GiaTien,
-                    GiaKhuyenMai = s.GiaKhuyenMai ?? 0,
-                    TonKho = s.SoLuong,
-                    DaBan = s.SoLuongDaBan,
-                    ChatLieu = s.ChatLieu ?? "",
-                    KichThuoc = s.KichThuoc ?? "",
-                    TrangThai = s.TrangThai == TrangThaiSanPham.DangBan ? "Đang bán" :
-                                s.TrangThai == TrangThaiSanPham.HetHang ? "Hết hàng" :
-                                s.TrangThai == TrangThaiSanPham.An ? "Đang ẩn" : "Ngừng kinh doanh"
+                    MoTa = s.MoTa ?? "",
+                    GiaTien = s.GiaTien,
+                    HinhAnh = s.HinhAnh ?? "",
+                    ChatLieu = "",
+                    KichThuoc = "",
+                    DanhMucId = s.DanhMucId
                 })
                 .ToListAsync();
 
-            // 2. Sử dụng MemoryStream để tạo file Excel trong bộ nhớ
             var memoryStream = new MemoryStream();
-
-            // MiniExcel sẽ tự động lấy tên thuộc tính làm tiêu đề cột (MaSanPham, TenSanPham...)
             memoryStream.SaveAs(data);
             memoryStream.Position = 0;
 
-            // 3. Đặt tên file theo ngày giờ hiện tại để tránh trùng lặp
-            string fileName = $"Danh_Sach_San_Pham_{DateTime.Now:yyyyMMdd_HHmmss}.xlsx";
-
-            // 4. Trả về file cho trình duyệt tải xuống
-            return File(
-                memoryStream,
-                "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-                fileName
-            );
-        }
-        // =========================================================
-        //                  QUẢN LÝ NGƯỜI DÙNG
-        // =========================================================
-
-        // 1. Hiển thị danh sách và Tìm kiếm người dùng
-        public async Task<IActionResult> NguoiDung(string searchString)
-        {
-            // Giữ lại từ khóa tìm kiếm trên ô input
-            ViewData["CurrentFilter"] = searchString;
-
-            // Lấy toàn bộ danh sách người dùng
-            var usersQuery = from n in _context.NguoiDungs
-                             select n;
-
-            // Nếu có từ khóa tìm kiếm, tiến hành lọc theo Tên hoặc Email
-            if (!string.IsNullOrEmpty(searchString))
-            {
-                usersQuery = usersQuery.Where(n =>
-                    (n.HoTen != null && n.HoTen.Contains(searchString)) ||
-                    (n.Email != null && n.Email.Contains(searchString))
-                );
-            }
-
-            // Sắp xếp người mới đăng ký lên đầu
-            var danhSach = await usersQuery.OrderByDescending(n => n.Id).ToListAsync();
-
-            return View(danhSach);
+            return File(memoryStream, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", $"Danh_Sach_San_Pham_{DateTime.Now:yyyyMMdd}.xlsx");
         }
 
-        
-
-        // 3. Xóa người dùng
+        [HttpPost("xoa-nguoi-dung/{id}")]
         public async Task<IActionResult> XoaNguoiDung(int id)
         {
             var nguoiDung = await _context.NguoiDungs.FindAsync(id);
 
             if (nguoiDung != null)
             {
-                // Kiểm tra an toàn: Không cho phép tự ý xóa tài khoản Admin
                 if (nguoiDung.VaiTro == "Admin")
                 {
                     TempData["Error"] = "Không thể xóa tài khoản Quản trị viên!";
@@ -671,59 +737,190 @@ namespace OceanShellCraft.Controllers
 
             return RedirectToAction(nameof(NguoiDung));
         }
-        // Mở form chỉnh sửa người dùng
-        [HttpGet]
-        public async Task<IActionResult> SuaNguoiDung(int? id)
+
+        [HttpGet("quan-ly-bien-the")]
+        public async Task<IActionResult> QuanLyBienThe()
         {
-            if (id == null) return NotFound();
+            var model = new CaiDatViewModel
+            {
+                SanPhams = await _context.SanPhams.OrderByDescending(s => s.Id).ToListAsync(),
 
-            var nguoiDung = await _context.NguoiDungs.FindAsync(id);
-            if (nguoiDung == null) return NotFound();
-
-            return View(nguoiDung);
+                BienThes = await _context.BienTheSanPhams
+                                 .Include(b => b.SanPham)
+                                 .OrderByDescending(b => b.Id)
+                                 .ToListAsync()
+            };
+            return View(model);
         }
 
-        // Lưu dữ liệu khi Admin bấm Cập nhật
-        [HttpPost]
+        [HttpPost("luu-danh-sach-bien-the")]
+        public async Task<IActionResult> LuuDanhSachBienThe(int ParentProductId, List<BienTheSanPham> Variants)
+        {
+            if (ParentProductId <= 0 || Variants == null || !Variants.Any())
+            {
+                TempData["Error"] = "Dữ liệu không hợp lệ hoặc danh sách biến thể trống!";
+                return RedirectToAction("QuanLyBienThe");
+            }
+
+            try
+            {
+                foreach (var item in Variants)
+                {
+                    item.SanPhamId = ParentProductId;
+                    _context.BienTheSanPhams.Add(item);
+                }
+
+                await _context.SaveChangesAsync();
+                TempData["Success"] = $"Hệ thống đã khởi tạo thành công {Variants.Count} biến thể cho sản phẩm.";
+            }
+            catch (Exception ex)
+            {
+                TempData["Error"] = "Lỗi lưu dữ liệu: " + ex.Message;
+            }
+
+            return RedirectToAction("QuanLyBienThe");
+        }
+
+        [HttpPost("xoa-bien-the/{id}")]
+        public async Task<IActionResult> XoaBienThe(int id)
+        {
+            var item = await _context.BienTheSanPhams.FindAsync(id);
+            if (item != null)
+            {
+                _context.BienTheSanPhams.Remove(item);
+                await _context.SaveChangesAsync();
+                TempData["Success"] = "Đã xóa biến thể khỏi hệ thống.";
+            }
+            else
+            {
+                TempData["Error"] = "Không tìm thấy biến thể cần xóa!";
+            }
+            return RedirectToAction("QuanLyBienThe");
+        }
+
+        [HttpGet("quan-ly-danh-muc")]
+        public async Task<IActionResult> QuanLyDanhMuc()
+        {
+            var model = new CaiDatViewModel
+            {
+                DanhMucs = await _context.DanhMucs.OrderByDescending(d => d.Id).ToListAsync()
+            };
+            return View(model);
+        }
+
+        [HttpGet("cai-dat")]
+        public IActionResult CaiDat()
+        {
+            return View(new CaiDatViewModel());
+        }
+
+        [HttpPost("them-sua-danh-muc")]
+        public async Task<IActionResult> ThemSuaDanhMuc(int Id, string TenDanhMuc)
+        {
+            if (string.IsNullOrWhiteSpace(TenDanhMuc))
+            {
+                TempData["Error"] = "Tên danh mục không được để trống!";
+                return RedirectToAction("QuanLyDanhMuc");
+            }
+
+            if (Id == 0)
+            {
+                _context.DanhMucs.Add(new DanhMuc { TenDanhMuc = TenDanhMuc });
+                TempData["Success"] = "Thêm thành công!";
+            }
+            else
+            {
+                var cat = await _context.DanhMucs.FindAsync(Id);
+                if (cat != null)
+                {
+                    cat.TenDanhMuc = TenDanhMuc;
+                    _context.Update(cat);
+                    TempData["Success"] = "Cập nhật thành công!";
+                }
+            }
+
+            await _context.SaveChangesAsync();
+            return RedirectToAction("QuanLyDanhMuc");
+        }
+
+        [HttpPost("xoa-danh-muc/{id}")]
+        public async Task<IActionResult> XoaDanhMuc(int id)
+        {
+            var cat = await _context.DanhMucs.FindAsync(id);
+            if (cat != null)
+            {
+                var hasProducts = await _context.SanPhams.AnyAsync(s => s.DanhMucId == id);
+                if (hasProducts)
+                {
+                    TempData["Error"] = "Danh mục có sản phẩm, không thể xóa!";
+                }
+                else
+                {
+                    _context.DanhMucs.Remove(cat);
+                    await _context.SaveChangesAsync();
+                    TempData["Success"] = "Xóa thành công!";
+                }
+            }
+            return RedirectToAction("QuanLyDanhMuc");
+        }
+
+        [HttpGet("nguoi-dung")]
+        public async Task<IActionResult> NguoiDung(string searchString)
+        {
+            ViewData["CurrentFilter"] = searchString;
+            var query = _context.NguoiDungs.AsQueryable();
+
+            if (!string.IsNullOrEmpty(searchString))
+            {
+                query = query.Where(n => (n.HoTen != null && n.HoTen.Contains(searchString)) ||
+                                         (n.Email != null && n.Email.Contains(searchString)));
+            }
+
+            return View(await query.OrderByDescending(n => n.Id).ToListAsync());
+        }
+
+        [HttpGet("sua-nguoi-dung/{id}")]
+        public async Task<IActionResult> SuaNguoiDung(int id)
+        {
+            var user = await _context.NguoiDungs.FindAsync(id);
+            if (user == null) return NotFound();
+            return View(user);
+        }
+
+        [HttpPost("sua-nguoi-dung/{id}")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> SuaNguoiDung(int id, NguoiDung model)
         {
             if (id != model.Id) return NotFound();
 
-            try
-            {
-                // Lấy user cũ từ Database
-                var userInDb = await _context.NguoiDungs.FindAsync(id);
-                if (userInDb == null) return NotFound();
+            var userInDb = await _context.NguoiDungs.FindAsync(id);
+            if (userInDb == null) return NotFound();
 
-                // Chỉ cập nhật những trường cho phép (Không cập nhật Email hay Mật khẩu ở đây để bảo mật)
+            if (ModelState.IsValid)
+            {
                 userInDb.HoTen = model.HoTen;
                 userInDb.SoDienThoai = model.SoDienThoai;
-                userInDb.VaiTro = model.VaiTro; // Có thể cấp quyền Admin tại đây
+                userInDb.DiaChi = model.DiaChi;
+                userInDb.VaiTro = model.VaiTro;
+                userInDb.IsLocked = model.IsLocked;
 
                 _context.Update(userInDb);
                 await _context.SaveChangesAsync();
-
-                TempData["Success"] = "Cập nhật thông tin người dùng thành công!";
+                TempData["Success"] = "Cập nhật thành công!";
                 return RedirectToAction(nameof(NguoiDung));
             }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!_context.NguoiDungs.Any(e => e.Id == id)) return NotFound();
-                else throw;
-            }
+            return View(model);
         }
-        // =========================================================
-        //                  CÀI ĐẶT HỆ THỐNG
-        // =========================================================
-        public IActionResult CaiDat()
+
+        [HttpPost("toggle-lock-user/{id}")]
+        public async Task<IActionResult> ToggleLockUser(int id)
         {
-            // Hiện tại trang Cài đặt (Bento Grid) chủ yếu là giao diện tĩnh chứa các liên kết.
-            // Nếu sau này bạn cần truy xuất cấu hình từ database (ví dụ: Logo, Phí ship mặc định...)
-            // thì có thể gọi qua _context ở đây rồi truyền sang View.
-            return View();
+            var user = await _context.NguoiDungs.FindAsync(id);
+            if (user == null || user.VaiTro == "Admin") return Json(new { success = false });
+
+            user.IsLocked = !user.IsLocked;
+            await _context.SaveChangesAsync();
+            return Json(new { success = true });
         }
-
     }
-
 }

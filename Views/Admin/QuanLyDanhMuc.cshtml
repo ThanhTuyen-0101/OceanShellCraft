@@ -1,0 +1,153 @@
+﻿@model OceanShellCraft.Models.ViewModels.CaiDatViewModel
+@{
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+    ViewData["Title"] = "Danh mục";
+}
+
+<div class="container-fluid py-4">
+    <div class="glass-card mb-4 d-flex justify-content-between align-items-center" style="padding: 12px 20px;">
+        <h2 class="m-0 fw-normal opacity-75" style="font-size: 1.5rem;">Danh mục</h2>
+        <a href="/admin/cai-dat" class="glass-btn fw-normal text-decoration-none py-1">
+            <i class="bi bi-arrow-left me-1"></i> Quay lại
+        </a>
+    </div>
+
+    <form action="/admin/them-sua-danh-muc" method="post" id="catForm">
+        <input type="hidden" name="Id" id="catId" value="0" />
+
+        <div class="row g-4">
+            <div class="col-xl-8">
+                <div class="glass-card h-100">
+                    <h5 class="opacity-75 mb-4 fw-normal">Thông tin</h5>
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="small opacity-75 mb-1 fw-normal">Tên *</label>
+                            <input type="text" name="TenDanhMuc" id="catName" class="glass-input pill-style fw-normal"
+                                   placeholder="..." required onkeyup="generateSlug(this.value)">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="small opacity-75 mb-1 fw-normal">Link</label>
+                            <input type="text" name="DuongDan" id="catSlug" class="glass-input pill-style fw-normal"
+                                   placeholder="...">
+                        </div>
+                        <div class="col-12">
+                            <label class="small opacity-75 mb-1 fw-normal">Mô tả</label>
+                            <textarea name="MoTa" id="catDesc" class="glass-input fw-normal" rows="7"
+                                      placeholder="..."></textarea>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-xl-4">
+                <div class="glass-card h-100 d-flex flex-column">
+                    <h5 class="opacity-75 mb-4 fw-normal">Cài đặt</h5>
+
+                    <div class="mb-3">
+                        <label class="small opacity-75 mb-1 fw-normal">Cấp cha</label>
+                        <select name="DanhMucChaId" id="parentId" class="glass-input pill-style fw-normal">
+                            <option value="">-- Gốc --</option>
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="small opacity-75 mb-1 fw-normal">Thứ tự</label>
+                        <input type="number" name="ThuTu" id="catOrder" class="glass-input pill-style fw-normal" value="1">
+                    </div>
+
+                    <div class="p-2 rounded-3 mb-4" style="background: rgba(255,255,255,0.03);">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <span class="small fw-normal opacity-75">Hiển thị</span>
+                            <div class="form-check form-switch m-0">
+                                <input class="form-check-input" type="checkbox" name="TrangThai" checked id="isActive">
+                            </div>
+                        </div>
+
+                        <div class="d-flex justify-content-between align-items-center">
+                            <span class="small fw-normal opacity-75">Trang chủ</span>
+                            <div class="form-check form-switch m-0">
+                                <input class="form-check-input" type="checkbox" name="HienTrangChu" id="showHome">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mt-auto">
+                        <button type="submit" id="btnSubmitCat" class="glass-btn w-100 py-2 fw-normal">
+                            Lưu
+                        </button>
+                        <button type="button" id="btnCancelCat" class="glass-btn w-100 py-1 mt-2 d-none opacity-50 fw-normal" onclick="resetCatForm()">
+                            Hủy
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+
+    <div class="glass-card mt-5">
+        <h5 class="opacity-75 mb-4 fw-normal">Danh sách</h5>
+
+        <div class="table-responsive hide-scrollbar">
+            <table class="glass-table">
+                <thead>
+                    <tr class="fw-normal">
+                        <th class="ps-3 fw-normal">Tên</th>
+                        <th class="fw-normal">Link</th>
+                        <th class="text-center fw-normal">STT</th>
+                        <th class="text-center fw-normal">Trạng thái</th>
+                        <th class="text-end pe-3 fw-normal">Sửa/Xóa</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model.DanhMucs ?? new List<OceanShellCraft.Models.DanhMuc>())
+                    {
+                        <tr>
+                            <td class="ps-3 fw-normal">@item.TenDanhMuc</td>
+                            <td><span class="opacity-50 small fw-normal">/@item.DuongDan</span></td>
+                            <td class="text-center fw-normal">@item.ThuTu</td>
+                            <td class="text-center fw-normal">
+                                @(item.TrangThai ? "Hiện" : "Ẩn")
+                            </td>
+                            <td class="text-end pe-3">
+                                <button onclick="editCat(@item.Id, '@item.TenDanhMuc', '@item.DuongDan')" class="glass-circle-ghost me-1 p-0">
+                                    <i class="bi bi-pencil-square opacity-75"></i>
+                                </button>
+                                <form action="/admin/xoa-danh-muc/@item.Id" method="post" class="d-inline" onsubmit="return confirm('Xóa?')">
+                                    <button type="submit" class="glass-circle-ghost p-0">
+                                        <i class="bi bi-trash3 opacity-75"></i>
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        function generateSlug(text) {
+            var slug = text.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, "");
+            slug = slug.replace(/[đĐ]/g, 'd').replace(/([^0-9a-z-\s])/g, '').replace(/(\s+)/g, '-').replace(/-+/g, '-').trim();
+            document.getElementById('catSlug').value = slug;
+        }
+
+        function editCat(id, name, slug) {
+            document.getElementById('catId').value = id;
+            document.getElementById('catName').value = name;
+            document.getElementById('catSlug').value = slug;
+            document.getElementById('btnSubmitCat').innerText = "Cập nhật";
+            document.getElementById('btnCancelCat').classList.remove('d-none');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function resetCatForm() {
+            document.getElementById('catForm').reset();
+            document.getElementById('catId').value = "0";
+            document.getElementById('btnSubmitCat').innerText = "Lưu";
+            document.getElementById('btnCancelCat').classList.add('d-none');
+        }
+    </script>
+}

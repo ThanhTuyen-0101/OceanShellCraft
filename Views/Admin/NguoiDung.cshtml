@@ -1,38 +1,86 @@
 ﻿@model IEnumerable<OceanShellCraft.Models.NguoiDung>
 @{
     Layout = "~/Views/Shared/_AdminLayout.cshtml";
-    ViewData["Title"] = "Quản lý người dùng";
+    ViewData["Title"] = "Quản lý thành viên";
+
+    // --- Tính toán thống kê từ Model ---
+    var totalUsers = Model?.Count() ?? 0;
+    var totalPoints = Model?.Sum(x => x.DiemTichLuy) ?? 0;
+    var lockedUsers = Model?.Count(x => x.IsLocked == true) ?? 0;
+    var adminCount = Model?.Count(x => x.VaiTro == "Admin") ?? 0;
 }
 
 <div class="container-fluid py-4">
-    @* --- Đầu trang --- *@
+    @* --- 1. BỐN Ô THỐNG KÊ TRÊN ĐẦU (Sử dụng .glass-card) --- *@
+    <div class="row g-4 mb-4">
+        @{
+            var stats = new[] {
+                new { Lab = "Tổng thành viên", Val = totalUsers.ToString("N0"), Icon = "bi-people" },
+                new { Lab = "Tổng điểm tích lũy", Val = totalPoints.ToString("N0"), Icon = "bi-star" },
+                new { Lab = "Tài khoản bị khóa", Val = lockedUsers.ToString("N0"), Icon = "bi-lock" },
+                new { Lab = "Quản trị viên", Val = adminCount.ToString("N0"), Icon = "bi-shield-check" }
+                };
+        }
+
+        @foreach (var stat in stats)
+        {
+            <div class="col-12 col-sm-6 col-xl-3">
+                <div class="glass-card d-flex justify-content-between align-items-center">
+                    <div>
+                        <p class="mb-0 opacity-50 small">@stat.Lab</p>
+                        <h4 class="mb-0">@stat.Val</h4>
+                    </div>
+                    <i class="bi @stat.Icon fs-2 opacity-25"></i>
+                </div>
+            </div>
+        }
+    </div>
+
+    @* --- 2. TIÊU ĐỀ VÀ NÚT THAO TÁC NHANH --- *@
     <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-3">
-        <div>
-            <h4 class="m-0 fw-normal">@ViewData["Title"]</h4>
+        <div class="d-flex align-items-center gap-2">
+            <div class="glass-circle-ghost">
+                <i class="bi bi-person-badge opacity-75"></i>
+            </div>
+            <h5 class="m-0 opacity-75">Danh sách thành viên</h5>
         </div>
 
-        @* --- Form Tìm kiếm thay cho nút Thêm mới --- *@
-        <div class="d-flex gap-2" style="width: 100%; max-width: 400px;">
-            <form asp-action="NguoiDung" method="get" class="d-flex w-100 position-relative">
-                <input type="text" name="searchString" value="@ViewData["CurrentFilter"]" class="glass-input pill-style pe-5" placeholder="Tìm kiếm theo Tên hoặc Email..." />
-                <button type="submit" class="glass-btn position-absolute end-0 top-0 bottom-0 m-1 px-3" style="border-radius: 40px;">
-                    <i class="bi bi-search"></i>
-                </button>
-            </form>
+        <div class="d-flex gap-2 align-items-center">
+            <button id="btnDeleteBulk" class="glass-btn d-none" onclick="deleteBulk()">
+                <i class="bi bi-trash3 me-1"></i> Xóa đã chọn
+            </button>
         </div>
     </div>
 
-    @* --- Bảng dữ liệu --- *@
+    @* --- 3. BỘ LỌC TÌM KIẾM (Sử dụng .glass-input) --- *@
+    <div class="glass-card p-3 mb-4">
+        <form action="/admin/nguoi-dung" method="get" class="row g-3 align-items-center">
+            <div class="col-md-5">
+                <div class="position-relative">
+                    <input type="text" name="searchString" value="@ViewData["CurrentFilter"]"
+                           class="glass-input pill-style ps-4 pe-5" placeholder="Tìm theo tên hoặc email..." />
+                    <button type="submit" class="position-absolute end-0 top-50 translate-middle-y border-0 bg-transparent pe-3">
+                        <i class="bi bi-search opacity-50"></i>
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    @* --- 4. BẢNG DANH SÁCH THÀNH VIÊN (Sử dụng .glass-table) --- *@
     <div class="glass-card p-0 overflow-hidden">
         <div class="table-responsive">
             <table class="glass-table mb-0 align-middle">
                 <thead>
                     <tr>
-                        <th class="ps-4" style="width: 40px;"><input type="checkbox" class="form-check-input" id="selectAll"></th>
-                        <th class="fw-normal">Họ và tên</th>
-                        <th class="fw-normal">Email (Tài khoản)</th>
-                        <th class="fw-normal">Số điện thoại</th>
+                        <th class="ps-4" style="width: 45px;">
+                            <input type="checkbox" class="form-check-input" id="selectAll">
+                        </th>
+                        <th class="fw-normal">Thành viên</th>
+                        <th class="fw-normal">Email</th>
+                        <th class="text-center fw-normal">Điểm</th>
                         <th class="text-center fw-normal">Vai trò</th>
+                        <th class="text-center fw-normal">Trạng thái</th>
                         <th class="text-end pe-4 fw-normal">Thao tác</th>
                     </tr>
                 </thead>
@@ -41,51 +89,48 @@
                     {
                         foreach (var item in Model)
                         {
-                            <tr>
+                            <tr id="row-@item.Id">
                                 <td class="ps-4">
                                     <input type="checkbox" class="form-check-input item-checkbox" value="@item.Id">
                                 </td>
                                 <td>
-                                    @* Nếu không có tên, hiển thị mờ 'Chưa cập nhật' *@
-                                    @if (!string.IsNullOrEmpty(item.HoTen))
-                                    {
-                                        <div class="fw-bold">@item.HoTen</div>
-                                    }
-                                    else
-                                    {
-                                        <div class="fw-normal opacity-50 fst-italic">Chưa cập nhật</div>
-                                    }
-                                </td>
-                                <td>
-                                    <div class="fw-normal">@item.Email</div>
-                                </td>
-                                <td>
-                                    <div class="fw-normal @(string.IsNullOrEmpty(item.SoDienThoai) ? "opacity-50 fst-italic" : "")">
-                                        @(string.IsNullOrEmpty(item.SoDienThoai) ? "Chưa có SDT" : item.SoDienThoai)
+                                    <div class="d-flex align-items-center">
+                                        <img src="@(string.IsNullOrEmpty(item.AnhDaiDien) ? "https://ui-avatars.com/api/?name=" + item.HoTen : item.AnhDaiDien)"
+                                             class="rounded-circle me-3" style="width: 38px; height: 38px; object-fit: cover; border: 1px solid rgba(255,255,255,0.2);">
+                                        <div>
+                                            <div class="fw-bold text-truncate" style="max-width: 150px;">@item.HoTen</div>
+                                            <div class="small opacity-50">ID: #@item.Id</div>
+                                        </div>
                                     </div>
                                 </td>
+                                <td><span class="small">@item.Email</span></td>
+                                <td class="text-center">@item.DiemTichLuy</td>
                                 <td class="text-center">
-                                    @* Phân biệt vai trò bằng độ mờ và class glass-effect thay vì màu sắc *@
-                                    @if (item.VaiTro == "Admin")
-                                    {
-                                        <span class="badge glass-effect px-3 py-2 fw-bold">Quản trị viên</span>
-                                    }
-                                    else
-                                    {
-                                        <span class="badge glass-effect px-3 py-2 fw-normal opacity-75">Khách hàng</span>
-                                    }
+                                    <span class="badge border border-white border-opacity-10 fw-light px-3 py-2">
+                                        @(item.VaiTro == "Admin" ? "Quản trị" : "Khách hàng")
+                                    </span>
+                                </td>
+                                <td class="text-center">
+                                    <div class="form-check form-switch d-inline-block">
+                                        <input class="form-check-input cursor-pointer" type="checkbox"
+                                               @(item.VaiTro == "Admin" ? "disabled" : "")
+                                               @(item.IsLocked ? "" : "checked")
+                                               onclick="toggleLock(@item.Id)">
+                                    </div>
                                 </td>
                                 <td class="text-end pe-4">
                                     <div class="d-flex justify-content-end gap-2">
-                                        @* Thay vì sửa/xóa, với user thường xem chi tiết lịch sử mua hàng hoặc cấp quyền *@
-                                        <a asp-action="SuaNguoiDung" asp-route-id="@item.Id" class="glass-btn p-1 px-2 fw-normal" title="Chỉnh sửa">
-                                            <i class="bi bi-pencil small"></i>
+                                        <a href="/admin/sua-nguoi-dung/@item.Id" class="glass-circle-ghost p-2" title="Sửa">
+                                            <i class="bi bi-pencil-square opacity-75"></i>
                                         </a>
                                         @if (item.VaiTro != "Admin")
                                         {
-                                            <a asp-action="XoaNguoiDung" asp-route-id="@item.Id" class="glass-btn p-1 px-2 fw-normal" onclick="return confirm('Xác nhận xóa tài khoản này? Mọi dữ liệu liên quan có thể bị mất.');" title="Xóa người dùng">
-                                                <i class="bi bi-trash small"></i>
-                                            </a>
+                                            <form action="/admin/xoa-nguoi-dung/@item.Id" method="post" class="d-inline" onsubmit="return confirm('Xác nhận xóa tài khoản này?');">
+                                                @Html.AntiForgeryToken()
+                                                <button type="submit" class="glass-circle-ghost border-0 p-2">
+                                                    <i class="bi bi-trash3 opacity-75"></i>
+                                                </button>
+                                            </form>
                                         }
                                     </div>
                                 </td>
@@ -95,7 +140,7 @@
                     else
                     {
                         <tr>
-                            <td colspan="6" class="text-center py-4 opacity-50">Không tìm thấy người dùng nào phù hợp.</td>
+                            <td colspan="7" class="text-center py-5 opacity-50 fst-italic">Không tìm thấy thành viên nào.</td>
                         </tr>
                     }
                 </tbody>
@@ -106,12 +151,64 @@
 
 @section Scripts {
     <script>
-        // Xử lý Checkbox chọn tất cả
         const selectAll = document.getElementById('selectAll');
-        const checkboxes = document.querySelectorAll('.item-checkbox');
+        const btnDeleteBulk = document.getElementById('btnDeleteBulk');
 
-        selectAll.addEventListener('change', function() {
-            checkboxes.forEach(cb => cb.checked = this.checked);
+        selectAll?.addEventListener('change', function() {
+            const checkboxes = document.querySelectorAll('.item-checkbox');
+            checkboxes.forEach(cb => {
+                cb.checked = this.checked;
+            });
+            toggleBulkButton();
         });
+
+        document.addEventListener('change', e => {
+            if (e.target.classList.contains('item-checkbox')) {
+                toggleBulkButton();
+            }
+        });
+
+        function toggleBulkButton() {
+            const checkedCount = document.querySelectorAll('.item-checkbox:checked').length;
+            if(checkedCount > 0) {
+                btnDeleteBulk.classList.remove('d-none');
+                btnDeleteBulk.innerHTML = `<i class="bi bi-trash3 me-1"></i> Xóa đã chọn (${checkedCount})`;
+            } else {
+                btnDeleteBulk.classList.add('d-none');
+            }
+        }
+
+        function toggleLock(id) {
+            fetch(`/admin/toggle-lock-user/${id}`, { method: 'POST' })
+            .then(res => res.json())
+            .then(data => {
+                if(!data.success) {
+                    alert("Lỗi: Không thể thao tác trên tài khoản Admin!");
+                    location.reload();
+                }
+            });
+        }
+
+        async function deleteBulk() {
+            const ids = Array.from(document.querySelectorAll('.item-checkbox:checked')).map(cb => parseInt(cb.value));
+            if(!confirm(`Xác nhận xóa vĩnh viễn ${ids.length} tài khoản?`)) return;
+
+            const token = document.querySelector('input[name="__RequestVerificationToken"]')?.value;
+
+            try {
+                const response = await fetch('/admin/xoa-nhieu-nguoi-dung', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'RequestVerificationToken': token
+                    },
+                    body: JSON.stringify(ids)
+                });
+                const result = await response.json();
+                if(result.success) location.reload();
+            } catch (err) {
+                alert("Lỗi kết nối máy chủ!");
+            }
+        }
     </script>
 }

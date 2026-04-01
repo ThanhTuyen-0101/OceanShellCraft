@@ -5,7 +5,7 @@
 }
 
 <div class="container mt-5 mb-5">
-    <a asp-action="DanhSach" class="glass-btn mb-4 px-4 py-2">
+    <a href="/san-pham" class="glass-btn mb-4 px-4 py-2">
         <i class="bi bi-arrow-left me-2"></i> Quay lại cửa hàng
     </a>
 
@@ -23,29 +23,49 @@
 
                 <h2 class="h3 mb-4">@Model.GiaTien.ToString("N0") VNĐ</h2>
 
-                <div class="d-flex align-items-center gap-3 mb-5">
-                    @if (User.Identity.IsAuthenticated)
+                <div class="mb-5">
+                    @if (User.Identity != null && User.Identity.IsAuthenticated)
                     {
-                        <form asp-controller="GioHang" asp-action="ThemVaoGio" method="get" class="m-0">
+                        @* ĐÃ SỬA THÀNH ĐƯỜNG DẪN TUYỆT ĐỐI *@
+                        <form action="/GioHang/ThemVaoGio" method="get" class="m-0">
                             <input type="hidden" name="sanPhamId" value="@Model.Id" />
-                            <button type="submit" class="glass-btn rounded-pill px-4 py-3">
-                                Thêm giỏ hàng <i class="bi bi-arrow-right ms-2"></i>
-                            </button>
-                        </form>
-                        <button class="glass-btn rounded-pill px-4 py-3">Mua ngay</button>
 
-                        <button id="btnFavorite" type="button" class="glass-circle p-0" style="width: 53px; height: 53px;" data-id="@Model.Id" title="Yêu thích sản phẩm">
-                            <i id="iconFavorite" class="bi @(ViewBag.IsFavorite == true ? "bi-heart-fill" : "bi-heart") fs-5"></i>
-                        </button>
+                            @if (Model.BienThes != null && Model.BienThes.Any())
+                            {
+                                <div class="mb-4">
+                                    <label class="small fw-bold opacity-75 mb-2">Chọn phiên bản:</label>
+                                    <select name="bienTheId" class="glass-input rounded-pill px-3 py-2 w-100" style="max-width: 300px; border: 1px solid var(--border-light);" required>
+                                        @foreach (var bt in Model.BienThes)
+                                        {
+                                            <option value="@bt.Id" style="color: black;">
+                                                @bt.TenBienThe @(bt.GiaRieng > 0 ? $"(+ {bt.GiaRieng:N0}đ)" : "")
+                                            </option>
+                                        }
+                                    </select>
+                                </div>
+                            }
+
+                            <div class="d-flex align-items-center gap-3">
+                                <button type="submit" class="glass-btn rounded-pill px-4 py-3">
+                                    Thêm giỏ hàng <i class="bi bi-arrow-right ms-2"></i>
+                                </button>
+
+                                <button id="btnFavorite" type="button" class="glass-circle p-0" style="width: 53px; height: 53px;" data-id="@Model.Id" title="Yêu thích sản phẩm">
+                                    <i id="iconFavorite" class="bi @(ViewBag.IsFavorite == true ? "bi-heart-fill" : "bi-heart") fs-5"></i>
+                                </button>
+                            </div>
+                        </form>
                     }
                     else
                     {
-                        <a asp-controller="TaiKhoan" asp-action="DangNhap" class="glass-btn rounded-pill px-4 py-3">
-                            <i class="bi bi-lock-fill me-2"></i> Đăng nhập mua
-                        </a>
-                        <a asp-controller="TaiKhoan" asp-action="DangNhap" class="glass-circle p-0" style="width: 53px; height: 53px;" title="Đăng nhập để lưu yêu thích">
-                            <i class="bi bi-heart fs-5"></i>
-                        </a>
+                        <div class="d-flex align-items-center gap-3">
+                            <a asp-controller="TaiKhoan" asp-action="DangNhap" class="glass-btn rounded-pill px-4 py-3">
+                                <i class="bi bi-lock-fill me-2"></i> Đăng nhập mua
+                            </a>
+                            <a asp-controller="TaiKhoan" asp-action="DangNhap" class="glass-circle p-0" style="width: 53px; height: 53px;" title="Đăng nhập để lưu yêu thích">
+                                <i class="bi bi-heart fs-5"></i>
+                            </a>
+                        </div>
                     }
                 </div>
 
@@ -67,20 +87,21 @@
 
         <div class="row p-5 pt-0 align-items-start">
             <div class="col-lg-6 d-flex flex-wrap gap-4">
+
                 <div class="glass-card p-4 flex-fill" style="border-radius: 25px;">
                     <div class="glass-circle mb-3" style="width: 50px; height: 50px;">
-                        <i class="bi bi-gem fs-4"></i>
+                        <i class="bi bi-box-seam fs-4"></i>
                     </div>
-                    <h5 class="mb-1">Chất liệu</h5>
-                    <p class="opacity-75 small mb-0">@Model.ChatLieu</p>
+                    <h5 class="mb-1">Tình trạng</h5>
+                    <p class="opacity-75 small mb-0">@(Model.SoLuong > 0 ? "Còn hàng" : "Tạm hết hàng")</p>
                 </div>
 
                 <div class="glass-card p-4 flex-fill" style="border-radius: 25px;">
                     <div class="glass-circle mb-3" style="width: 50px; height: 50px;">
-                        <i class="bi bi-ruler fs-4"></i>
+                        <i class="bi bi-tags fs-4"></i>
                     </div>
-                    <h5 class="mb-1">Kích thước</h5>
-                    <p class="opacity-75 small mb-0">@Model.KichThuoc</p>
+                    <h5 class="mb-1">Phiên bản</h5>
+                    <p class="opacity-75 small mb-0">@(Model.BienThes != null && Model.BienThes.Any() ? $"{Model.BienThes.Count} tùy chọn" : "Bản tiêu chuẩn")</p>
                 </div>
             </div>
 
@@ -96,7 +117,7 @@
     <div id="danh-gia" class="glass-card p-5">
         <h3 class="mb-4">Đánh giá từ khách hàng</h3>
 
-        @if (User.Identity.IsAuthenticated)
+        @if (User.Identity != null && User.Identity.IsAuthenticated)
         {
             @if (ViewBag.CanReview == true)
             {

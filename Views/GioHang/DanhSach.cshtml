@@ -3,7 +3,6 @@
     ViewData["Title"] = "Giỏ hàng - OceanShellCraft";
     Layout = "~/Views/Shared/_Layout.cshtml";
 
-    // Tính toán tổng tiền giỏ hàng
     decimal tongTien = 0;
     if (Model != null && Model.Any())
     {
@@ -32,10 +31,10 @@
             <h3 class="mb-3">Vui lòng đăng nhập</h3>
             <p class="opacity-75 mb-5 fs-5">Bạn cần đăng nhập để xem và quản lý giỏ hàng của mình.</p>
             <div class="d-flex gap-3 flex-wrap justify-content-center">
-                <a asp-controller="TaiKhoan" asp-action="DangNhap" class="glass-btn px-5 py-3">
+                <a href="/dang-nhap" class="glass-btn px-5 py-3">
                     <i class="bi bi-box-arrow-in-right me-2"></i>Đăng nhập ngay
                 </a>
-                <a asp-controller="TaiKhoan" asp-action="DangKy" class="text-decoration-none px-4 py-3 opacity-75">
+                <a href="/dang-ky" class="text-decoration-none px-4 py-3 opacity-75">
                     Chưa có tài khoản? Đăng ký
                 </a>
             </div>
@@ -47,7 +46,7 @@
             <i class="bi bi-cart-x display-1 opacity-25 mb-3"></i>
             <h3 class="mb-3">Giỏ hàng trống</h3>
             <p class="opacity-75 mb-5">Bạn chưa chọn sản phẩm nào. Hãy khám phá những tuyệt tác từ biển cả ngay nhé!</p>
-            <a asp-controller="SanPham" asp-action="DanhSach" class="glass-btn px-5 py-3">
+            <a href="/san-pham" class="glass-btn px-5 py-3">
                 Tiếp tục mua sắm <i class="bi bi-arrow-right ms-2"></i>
             </a>
         </div>
@@ -78,6 +77,7 @@
                                     <tr>
                                         <td class="py-4">
                                             <div class="d-flex align-items-center gap-4">
+                                                @* SỬA LẠI ĐƯỜNG DẪN Ở ĐÂY ĐỂ TRÁNH LỖI 404 *@
                                                 <a href="/SanPham/ChiTiet/@item.SanPham.Id">
                                                     <img src="@(item.SanPham.HinhAnh ?? "/images/default-shell.png")" alt="product" class="rounded-circle" width="70" height="70" style="border: 1px solid var(--border-light); object-fit: cover;">
                                                 </a>
@@ -119,8 +119,7 @@
                                         </td>
 
                                         <td class="text-end py-4 px-3">
-                                            <form asp-action="XoaKhoiGio" asp-controller="GioHang" method="post" class="m-0">
-                                                <input type="hidden" name="id" value="@item.Id" />
+                                            <form action="/gio-hang/xoa/@item.Id" method="post" class="m-0">
                                                 <button type="submit" class="glass-circle border-0 opacity-50" title="Xóa sản phẩm" style="width: 30px; height: 30px;">
                                                     <i class="bi bi-x-lg" style="font-size: 0.8rem;"></i>
                                                 </button>
@@ -134,7 +133,7 @@
                 </div>
 
                 <div class="mt-4 ms-2">
-                    <a asp-controller="SanPham" asp-action="DanhSach" class="text-decoration-none opacity-75 small" style="letter-spacing: 1px;">
+                    <a href="/san-pham" class="text-decoration-none opacity-75 small" style="letter-spacing: 1px;">
                         <i class="bi bi-arrow-left me-2"></i>Tiếp tục mua sắm
                     </a>
                 </div>
@@ -161,7 +160,7 @@
                         <span class="display-6">@tongTien.ToString("N0") <span class="fs-4">đ</span></span>
                     </div>
 
-                    <a asp-controller="GioHang" asp-action="DatHang" class="glass-btn w-100 py-3 d-flex justify-content-center align-items-center gap-2">
+                    <a href="/gio-hang/dat-hang" class="glass-btn w-100 py-3 d-flex justify-content-center align-items-center gap-2">
                         <i class="bi bi-bag-check fs-5"></i>Thanh toán
                     </a>
 
@@ -192,7 +191,7 @@
                         formData.append('id', id);
                         formData.append('soLuong', soLuong);
 
-                        const response = await fetch('@Url.Action("CapNhatSoLuong", "GioHang")', {
+                        const response = await fetch('/gio-hang/cap-nhat', {
                             method: 'POST',
                             body: formData
                         });

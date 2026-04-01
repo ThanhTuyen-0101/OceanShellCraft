@@ -4,7 +4,6 @@
     ViewData["Title"] = "Đơn hàng của tôi";
     Layout = "~/Views/Shared/_KhachHangLayout.cshtml";
 
-    // Hàm hỗ trợ viết hoa chữ cái đầu tiên (Dùng cho filterText)
     string CapitalizeFirst(string input)
     {
         if (string.IsNullOrWhiteSpace(input)) return input;
@@ -12,156 +11,159 @@
         return char.ToUpper(input[0]) + input.Substring(1);
     }
 
-    // Lấy trạng thái hiện tại từ Query String để hiển thị bộ lọc
     var currentFilter = Context.Request.Query["trangThai"].ToString();
-    var filterText = string.IsNullOrEmpty(currentFilter) ? "Tất cả trạng thái" : CapitalizeFirst(currentFilter);
 }
 
 <div class="container-fluid py-4 min-vh-100 hide-scrollbar">
 
-    @* --- Thông báo hệ thống --- *@
     @if (TempData["ThongBao"] != null)
     {
-        <div class="glass-card mb-4 p-3 d-flex align-items-center">
-            <i class="bi bi-check-circle me-2"></i> @CapitalizeFirst(TempData["ThongBao"]?.ToString())
+        <div class="glass-card mb-4 p-3 d-flex align-items-center" style="border-left: 4px solid #198754;">
+            <i class="bi bi-check-circle-fill me-3 fs-5"></i>
+            <span>@CapitalizeFirst(TempData["ThongBao"]?.ToString())</span>
         </div>
     }
     @if (TempData["Loi"] != null)
     {
-        <div class="glass-card mb-4 p-3 d-flex align-items-center opacity-75">
-            <i class="bi bi-exclamation-triangle me-2"></i> @CapitalizeFirst(TempData["Loi"]?.ToString())
+        <div class="glass-card mb-4 p-3 d-flex align-items-center opacity-75" style="border-left: 4px solid #dc3545;">
+            <i class="bi bi-exclamation-triangle-fill me-3 fs-5"></i>
+            <span>@CapitalizeFirst(TempData["Loi"]?.ToString())</span>
         </div>
     }
 
-    @* --- Bộ lọc đơn hàng --- *@
-    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-5 pb-3" style="border-bottom: 1px solid var(--border-light);">
-        <h4 class="m-0">Đơn hàng của tôi</h4>
-
-        <div class="dropdown mt-3 mt-md-0">
-            <button class="glass-btn small px-4 dropdown-toggle" type="button" data-bs-toggle="dropdown">
-                <i class="bi bi-funnel me-2"></i>@filterText
-            </button>
-            <ul class="dropdown-menu glass-dropdown">
-                <li><a class="dropdown-item glass-dropdown-item @(string.IsNullOrEmpty(currentFilter) ? "opacity-100" : "opacity-50")" href="@Url.Action("Orders", "KhachHang")">Tất cả đơn hàng</a></li>
-                <li><hr class="dropdown-divider" style="border-color: var(--border-light);"></li>
-                <li><a class="dropdown-item glass-dropdown-item @(currentFilter == "Chờ xử lý" ? "opacity-100" : "opacity-50")" href="@Url.Action("Orders", "KhachHang", new { trangThai = "Chờ xử lý" })">Chờ xử lý</a></li>
-                <li><a class="dropdown-item glass-dropdown-item @(currentFilter == "Đang đóng gói" ? "opacity-100" : "opacity-50")" href="@Url.Action("Orders", "KhachHang", new { trangThai = "Đang đóng gói" })">Đang đóng gói</a></li>
-                <li><a class="dropdown-item glass-dropdown-item @(currentFilter == "Đang giao hàng" ? "opacity-100" : "opacity-50")" href="@Url.Action("Orders", "KhachHang", new { trangThai = "Đang giao hàng" })">Đang giao hàng</a></li>
-                <li><a class="dropdown-item glass-dropdown-item @(currentFilter == "Đã hoàn thành" ? "opacity-100" : "opacity-50")" href="@Url.Action("Orders", "KhachHang", new { trangThai = "Đã hoàn thành" })">Đã hoàn thành</a></li>
-                <li><a class="dropdown-item glass-dropdown-item @(currentFilter == "Đã hủy" ? "opacity-100" : "opacity-50")" href="@Url.Action("Orders", "KhachHang", new { trangThai = "Đã hủy" })">Đã hủy</a></li>
-            </ul>
-        </div>
+    <div class="mb-4">
+        <h4 class="fw-bold m-0 ls-3">ĐƠN HÀNG CỦA TÔI</h4>
     </div>
 
-    @* --- Danh sách đơn hàng --- *@
+    <div class="row g-3 mb-5">
+        @{
+            var filters = new[] {
+                new { Name = "Tất cả", Icon = "bi-collection", Value = "" },
+                new { Name = "Chờ xử lý", Icon = "bi-hourglass-split", Value = "Chờ xử lý" },
+                new { Name = "Đóng gói", Icon = "bi-box-seam", Value = "Đang đóng gói" },
+                new { Name = "Đang giao", Icon = "bi-truck", Value = "Đang giao hàng" },
+                new { Name = "Hoàn thành", Icon = "bi-check-circle", Value = "Đã hoàn thành" },
+                new { Name = "Đã hủy", Icon = "bi-x-octagon", Value = "Đã hủy" }
+                };
+
+            foreach (var item in filters)
+            {
+                bool isActive = (currentFilter == item.Value) || (string.IsNullOrEmpty(currentFilter) && string.IsNullOrEmpty(item.Value));
+                string activeClass = isActive ? "opacity-100 border-bottom border-2" : "opacity-50";
+
+                int count = 0;
+                if (Model != null)
+                {
+                    count = string.IsNullOrEmpty(item.Value) ? Model.Count() : Model.Count(x => x.TrangThai == item.Value);
+                }
+
+                <div class="col-6 col-md-4 col-lg-2">
+                    <a href="@Url.Action("Orders", "KhachHang", new { trangThai = item.Value })"
+                       class="glass-card text-center text-decoration-none d-flex flex-column align-items-center justify-content-center h-100 p-3 @activeClass"
+                       style="min-height: 110px;">
+                        <i class="bi @item.Icon fs-3 mb-2"></i>
+                        <span class="small fw-bold">@item.Name</span>
+
+                        @if (count > 0)
+                        {
+                            <span class="badge bg-white text-dark rounded-pill mt-2">@count</span>
+                        }
+                    </a>
+                </div>
+            }
+        }
+    </div>
+
     @if (Model != null && Model.Any())
     {
         foreach (var donHang in Model)
         {
-            int progressPercent = 0;
-            string dotXacNhan = "opacity-25", dotDongGoi = "opacity-25", dotGiaoHang = "opacity-25", dotThanhCong = "opacity-25";
-
-            if (donHang.TrangThai == "Chờ xử lý") { progressPercent = 10; dotXacNhan = "opacity-100"; }
-            else if (donHang.TrangThai == "Đang đóng gói") { progressPercent = 40; dotXacNhan = "opacity-100"; dotDongGoi = "opacity-100"; }
-            else if (donHang.TrangThai == "Đang giao hàng") { progressPercent = 70; dotXacNhan = "opacity-100"; dotDongGoi = "opacity-100"; dotGiaoHang = "opacity-100"; }
-            else if (donHang.TrangThai == "Đã hoàn thành") { progressPercent = 100; dotXacNhan = "opacity-100"; dotDongGoi = "opacity-100"; dotGiaoHang = "opacity-100"; dotThanhCong = "opacity-100"; }
-
             var isCancelled = donHang.TrangThai == "Đã hủy";
 
             <div class="glass-card p-4 mb-4 @(isCancelled ? "opacity-50" : "")">
-                <div class="d-flex justify-content-between align-items-center mb-4 pb-3" style="border-bottom: 1px solid var(--border-light);">
+
+                <div class="d-flex flex-wrap justify-content-between align-items-center pb-3">
                     <div>
-                        <h5 class="m-0" style="letter-spacing: 1px;">Mã đơn: #ORD-@donHang.Id.ToString("D4")</h5>
-                        <small class="opacity-50"><i class="bi bi-calendar3 me-1"></i>@donHang.NgayDat.ToString("dd/MM/yyyy HH:mm")</small>
+                        <h5 class="fw-bold m-0">#ORD-@donHang.Id.ToString("D4")</h5>
+                        <small class="opacity-75"><i class="bi bi-clock me-1"></i>@donHang.NgayDat.ToString("dd/MM/yyyy HH:mm")</small>
                     </div>
-                    <span class="glass-effect px-3 py-1 rounded-pill small">
-                        @donHang.TrangThai
-                    </span>
+                    <div class="mt-2 mt-md-0">
+                        <span class="glass-effect px-3 py-1 rounded-pill small">
+                            @donHang.TrangThai
+                        </span>
+                    </div>
                 </div>
 
-                @if (!isCancelled)
-                {
-                    <div class="position-relative mb-5 px-md-5 py-2">
-                        <div class="tracking-line" style="background: var(--glass-bg); height: 2px; border-radius: 2px;">
-                            <div class="tracking-line-fill" style="width: @progressPercent%; background: var(--text-main); height: 100%;"></div>
-                        </div>
-                        <div class="d-flex justify-content-between position-relative" style="margin-top: -10px;">
-                            <div class="text-center @dotXacNhan" style="width: 80px; margin-left: -30px;">
-                                <div class="glass-circle mx-auto mb-2" style="width: 18px; height: 18px; border: 2px solid var(--text-main);"></div>
-                                <small class="small">Đã duyệt</small>
-                            </div>
-                            <div class="text-center @dotDongGoi" style="width: 80px;">
-                                <div class="glass-circle mx-auto mb-2" style="width: 18px; height: 18px; border: 2px solid var(--text-main);"></div>
-                                <small class="small">Đóng gói</small>
-                            </div>
-                            <div class="text-center @dotGiaoHang" style="width: 80px;">
-                                <div class="glass-circle mx-auto mb-2" style="width: 18px; height: 18px; border: 2px solid var(--text-main);"></div>
-                                <small class="small">Đang giao</small>
-                            </div>
-                            <div class="text-center @dotThanhCong" style="width: 80px; margin-right: -30px;">
-                                <div class="glass-circle mx-auto mb-2" style="width: 18px; height: 18px; border: 2px solid var(--text-main);"></div>
-                                <small class="small">Hoàn thành</small>
-                            </div>
-                        </div>
-                    </div>
-                }
+                <hr class="opacity-25 m-0 mb-3" />
 
-                <div class="glass-effect rounded-4 p-3 mb-4">
-                    <div class="d-flex align-items-center gap-3">
-                        <div class="glass-circle d-flex justify-content-center align-items-center" style="width: 60px; height: 60px; border-radius: 12px;">
-                            <i class="bi bi-box-seam fs-3 opacity-75"></i>
-                        </div>
-                        <div class="flex-grow-1">
-                            @if (donHang.ChiTietDonHangs != null && donHang.ChiTietDonHangs.Any())
-                            {
-                                var firstItem = donHang.ChiTietDonHangs.First();
-                                <h6 class="m-0">@(firstItem.SanPham?.TenSanPham ?? "Sản phẩm mỹ nghệ")</h6>
-                                <small class="opacity-50">Số lượng: @firstItem.SoLuong</small>
-                                @if (donHang.ChiTietDonHangs.Count > 1)
-                                {
-                                    <small class="opacity-50 d-block">...và @(donHang.ChiTietDonHangs.Count - 1) sản phẩm khác</small>
+                <div class="py-2">
+                    @if (donHang.ChiTietDonHangs != null && donHang.ChiTietDonHangs.Any())
+                    {
+                        var firstItem = donHang.ChiTietDonHangs.First();
+                        <div class="d-flex align-items-center">
+                            <img src="@(firstItem.SanPham?.HinhAnh ?? "/images/default-product.png")" alt="Product"
+                                 class="rounded-3 shadow-sm" style="width: 80px; height: 80px; object-fit: cover; border: 1px solid var(--glass-bg);"
+                                 onerror="this.src='/images/default-product.png'" />
+
+                            <div class="ms-3 flex-grow-1">
+                                <h6 class="fw-bold m-0">@(firstItem.SanPham?.TenSanPham ?? "Sản phẩm mỹ nghệ")</h6>
+                                <small class="opacity-75 d-block mt-1">Số lượng: @firstItem.SoLuong</small>
+                            </div>
+                            <div class="text-end ps-3">
+                                @{
+                                    var giaHienTai = firstItem.SanPham?.GiaKhuyenMai ?? firstItem.SanPham?.GiaTien ?? 0;
+                                    var tongTienSanPham = giaHienTai * firstItem.SoLuong;
                                 }
-                            }
+                                <span class="fw-bold">@tongTienSanPham.ToString("N0") đ</span>
+                            </div>
                         </div>
-                        <div class="text-end">
-                            <small class="opacity-50 d-block mb-1 small">Tổng thanh toán</small>
-                            <h4 class="m-0" style="letter-spacing: 1px;">@donHang.TongTien.ToString("N0") đ</h4>
-                        </div>
-                    </div>
+
+                        if (donHang.ChiTietDonHangs.Count > 1)
+                        {
+                            <div class="text-center mt-3 pt-2">
+                                <small class="opacity-75 fst-italic">...và @(donHang.ChiTietDonHangs.Count - 1) sản phẩm khác</small>
+                            </div>
+                        }
+                    }
                 </div>
 
-                <div class="d-flex justify-content-between align-items-center pt-2">
-                    <small class="opacity-50"><i class="bi bi-geo-alt me-1"></i>@donHang.DiaChi</small>
-                    <div class="d-flex gap-2">
-                        <a href="/KhachHang/ChiTietDonHang/@donHang.Id" class="glass-btn small px-4">Chi tiết</a>
+                <hr class="opacity-25 mt-3 mb-3" />
+
+                <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center">
+                    <div class="mb-3 mb-md-0">
+                        <small class="opacity-75 d-block mb-1">Tổng thanh toán:</small>
+                        <h4 class="m-0 fw-bold">@donHang.TongTien.ToString("N0") đ</h4>
+                    </div>
+
+                    <div class="d-flex flex-wrap gap-2">
+                        <a href="/khach-hang/chi-tiet-don-hang/@donHang.Id" class="glass-btn px-4 small">Xem chi tiết</a>
 
                         @if (donHang.TrangThai == "Đã hoàn thành")
                         {
-                            <button class="glass-btn small px-4"><i class="bi bi-arrow-repeat me-1"></i> Mua lại</button>
+                            <button class="glass-btn px-4 small"><i class="bi bi-cart-plus me-1"></i> Mua lại</button>
                         }
                         else if (donHang.TrangThai == "Chờ xử lý")
                         {
-                            <form asp-action="HuyDonHang" asp-route-id="@donHang.Id" method="post"
-                                  onsubmit="return confirm('Bạn có chắc chắn muốn hủy đơn hàng này không?');"
-                                  style="display: inline;">
+                            <form asp-action="HuyDonHang" asp-route-id="@donHang.Id" method="post" onsubmit="return confirm('Bạn có chắc chắn muốn hủy đơn hàng này không?');" class="m-0">
                                 @Html.AntiForgeryToken()
-                                <button type="submit" class="glass-btn small px-4 opacity-75">
+                                <button type="submit" class="glass-btn px-4 small">
                                     Hủy đơn
                                 </button>
                             </form>
                         }
                     </div>
                 </div>
+
             </div>
         }
     }
     else
     {
-        <div class="glass-card p-5 text-center my-5" style="border-style: dashed !important;">
-            <i class="bi bi-bag-x opacity-25" style="font-size: 5rem;"></i>
-            <h4 class="mt-4">Chưa có đơn hàng nào</h4>
-            <p class="opacity-50 mb-4">Hành trình khám phá đại dương của bạn đang chờ đợi...</p>
-            <a href="/SanPham" class="glass-btn px-5 py-2">Khám phá ngay</a>
+        <div class="glass-card p-5 text-center my-4" style="border: 2px dashed var(--glass-bg) !important;">
+            <i class="bi bi-receipt mb-3 d-block opacity-50" style="font-size: 4rem;"></i>
+            <h5 class="fw-bold">Chưa có đơn hàng nào</h5>
+            <p class="opacity-50 mb-4">Bạn chưa có giao dịch nào cho trạng thái này.</p>
+            <a href="/san-pham" class="glass-btn px-5 py-2">Khám phá sản phẩm</a>
         </div>
     }
 </div>

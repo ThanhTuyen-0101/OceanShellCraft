@@ -1,66 +1,171 @@
 ﻿@model OceanShellCraft.Models.GiamGia
+@using OceanShellCraft.Models
+@using Microsoft.AspNetCore.Mvc.Rendering
 @{
     Layout = "~/Views/Shared/_AdminLayout.cshtml";
-    // Tiêu đề thay đổi động tùy theo việc thêm mới (Id = 0) hay sửa
-    ViewData["Title"] = Model.Id == 0 ? "Thêm mới mã giảm giá" : "Cập nhật mã giảm giá";
+    ViewData["Title"] = Model.Id == 0 ? "Thêm mã" : "Sửa mã";
+
+    string currentNguoiDungText = "Tất cả khách hàng";
+    if (Model?.NguoiDungId != null && ViewBag.KhachHangList != null)
+    {
+        var selected = ((IEnumerable<SelectListItem>)ViewBag.KhachHangList).FirstOrDefault(x => x.Value == Model.NguoiDungId.ToString());
+        if (selected != null) currentNguoiDungText = selected.Text;
+    }
+
+    string currentLoaiGiamText = (Model?.LoaiGiam == LoaiGiam.SoTien) ? "Số tiền (đ)" : "Phần trăm (%)";
 }
 
+<style>
+    .switch-white .form-check-input:checked {
+        background-color: #fff !important;
+        border-color: #fff !important;
+        background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='-4 -4 8 8'%3e%3ccircle r='3' fill='%231e1e1e'/%3e%3c/svg%3e") !important;
+    }
+
+    .custom-dropdown-item:hover {
+        background-color: rgba(255, 255, 255, 0.1) !important;
+    }
+</style>
+
 <div class="container-fluid py-4">
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <div>
-            <a asp-action="GiamGia" class="text-decoration-none text-muted mb-2 d-inline-block">
-                <i class="bi bi-arrow-left me-1"></i>Quay lại danh sách
-            </a>
-            <h4 class="m-0 fw-normal">@ViewData["Title"]</h4>
-        </div>
+    <div class="mb-4">
+        <a href="/admin/giam-gia" class="text-decoration-none small opacity-75">
+            <i class="bi bi-arrow-left me-1"></i>Danh sách
+        </a>
+        <h4 class="m-0">@ViewData["Title"]</h4>
     </div>
 
     <div class="row justify-content-center">
-        <div class="col-lg-8">
+        <div class="col-lg-10">
             <div class="glass-card p-4">
-                <form asp-action="ThemSuaGiamGia" method="post">
+                <form action="/admin/them-sua-giam-gia" method="post">
                     @Html.AntiForgeryToken()
                     <input type="hidden" asp-for="Id" />
 
                     <div class="row g-4">
-                        @* Mã Voucher *@
-                        <div class="col-md-6">
-                            <label asp-for="MaVoucher" class="form-label opacity-75 small mb-1">Mã Voucher (Code) <span class="text-danger">*</span></label>
-                            <input asp-for="MaVoucher" class="glass-input form-control text-uppercase" placeholder="VD: OCEAN10, SUMMER20" required />
-                            <span asp-validation-for="MaVoucher" class="text-danger small"></span>
+                        <div class="col-md-7">
+                            <h6 class="mb-3 opacity-75">1. Thông tin chung</h6>
+
+                            <div class="mb-3">
+                                <label class="form-label small">Tên mã *</label>
+                                <input asp-for="TenVoucher" class="glass-input form-control" placeholder="Ưu đãi tháng 4" required />
+                            </div>
+
+                            <div class="row mb-3 align-items-end">
+                                <div class="col-md-8">
+                                    <label class="form-label small">Mã code *</label>
+                                    <div class="d-flex gap-2">
+                                        <input asp-for="MaVoucher" id="txtMa" class="glass-input form-control text-uppercase" placeholder="OS26ABCD" required />
+                                        <button type="button" onclick="generateCode()" class="glass-btn px-3 small">Tự động</button>
+                                    </div>
+                                </div>
+                                <div class="col-md-4 mb-2">
+                                    <div class="form-check form-switch switch-white ms-2">
+                                        <input asp-for="IsKichHoat" class="form-check-input" type="checkbox">
+                                        <label class="form-check-label small ms-1">Mở mã</label>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="small mb-1">Khách hàng áp dụng</label>
+                                <select asp-for="NguoiDungId" id="realNguoiDung" class="d-none">
+                                    <option value="">Tất cả khách hàng</option>
+                                    @if (ViewBag.KhachHangList != null)
+                                    {
+                                        foreach (var item in ViewBag.KhachHangList)
+                                        {
+                                            <option value="@item.Value">@item.Text</option>
+                                        }
+                                    }
+                                </select>
+
+                                <div class="dropdown">
+                                    <button class="glass-input d-flex justify-content-between align-items-center w-100 text-start"
+                                            type="button" data-bs-toggle="dropdown" data-bs-boundary="viewport" aria-expanded="false"
+                                            style="background: #1e1e1e !important; border: 1px solid rgba(255,255,255,0.1); border-radius: 12px;">
+                                        <span id="selectedNguoiDungText">@currentNguoiDungText</span>
+                                        <i class="bi bi-chevron-down small opacity-50"></i>
+                                    </button>
+                                    <ul class="dropdown-menu w-100 p-2 shadow-lg" style="background: #1e1e1e; border: 1px solid rgba(255,255,255,0.1); border-radius: 12px;">
+                                        <li><a class="dropdown-item rounded-3 text-white small custom-dropdown-item" href="javascript:void(0)" onclick="selectNguoiDung('', 'Tất cả khách hàng')">Tất cả khách hàng</a></li>
+                                        @if (ViewBag.KhachHangList != null)
+                                        {
+                                            foreach (var item in ViewBag.KhachHangList)
+                                            {
+                                                <li><a class="dropdown-item rounded-3 text-white small custom-dropdown-item" href="javascript:void(0)" onclick="selectNguoiDung('@item.Value', '@item.Text')">@item.Text</a></li>
+                                            }
+                                        }
+                                    </ul>
+                                </div>
+                            </div>
                         </div>
 
-                        @* Tên Voucher *@
-                        <div class="col-md-6">
-                            <label asp-for="TenVoucher" class="form-label opacity-75 small mb-1">Tên chương trình / Mô tả <span class="text-danger">*</span></label>
-                            <input asp-for="TenVoucher" class="glass-input form-control" placeholder="VD: Giảm 10% cho khách hàng mới" required />
-                            <span asp-validation-for="TenVoucher" class="text-danger small"></span>
-                        </div>
+                        <div class="col-md-5">
+                            <div class="glass-effect p-4 rounded-4">
+                                <h6 class="mb-3 opacity-75">2. Mức giảm</h6>
 
-                        @* Hạn Sử Dụng *@
-                        <div class="col-md-6">
-                            <label asp-for="HanSuDung" class="form-label opacity-75 small mb-1">Hạn sử dụng <span class="text-danger">*</span></label>
-                            <input asp-for="HanSuDung" type="datetime-local" class="glass-input form-control" required />
-                            <span asp-validation-for="HanSuDung" class="text-danger small"></span>
-                        </div>
+                                <div class="mb-3">
+                                    <label class="small mb-1">Loại giảm</label>
+                                    <select asp-for="LoaiGiam" id="realLoaiGiam" class="d-none">
+                                        <option value="@LoaiGiam.PhanTram">Phần trăm (%)</option>
+                                        <option value="@LoaiGiam.SoTien">Số tiền (đ)</option>
+                                    </select>
 
-                        @* Đối Tượng Áp Dụng (Chọn người dùng) *@
-                        <div class="col-md-6">
-                            <label asp-for="NguoiDungId" class="form-label opacity-75 small mb-1">Cấp riêng cho khách hàng (Tùy chọn)</label>
-                            <select asp-for="NguoiDungId" class="glass-input form-select" asp-items="ViewBag.KhachHangList">
-                                <option value="">-- Áp dụng cho tất cả mọi người --</option>
-                            </select>
-                            <div class="form-text opacity-50 small" style="color: var(--text-main);">Để trống nếu muốn voucher dùng chung.</div>
-                            <span asp-validation-for="NguoiDungId" class="text-danger small"></span>
-                        </div>
+                                    <div class="dropdown">
+                                        <button class="glass-input d-flex justify-content-between align-items-center w-100 text-start"
+                                                type="button" data-bs-toggle="dropdown" data-bs-boundary="viewport" aria-expanded="false"
+                                                style="background: #1e1e1e !important; border: 1px solid rgba(255,255,255,0.1); border-radius: 12px;">
+                                            <span id="selectedLoaiGiamText">@currentLoaiGiamText</span>
+                                            <i class="bi bi-chevron-down small opacity-50"></i>
+                                        </button>
+                                        <ul class="dropdown-menu w-100 p-2" style="background: #1e1e1e; border: 1px solid rgba(255,255,255,0.1); border-radius: 12px;">
+                                            <li><a class="dropdown-item rounded-3 text-white small custom-dropdown-item" href="javascript:void(0)" onclick="selectLoaiGiam('@((int)LoaiGiam.PhanTram)', 'Phần trăm (%)')">Phần trăm (%)</a></li>
+                                            <li><a class="dropdown-item rounded-3 text-white small custom-dropdown-item" href="javascript:void(0)" onclick="selectLoaiGiam('@((int)LoaiGiam.SoTien)', 'Số tiền (đ)')">Số tiền (đ)</a></li>
+                                        </ul>
+                                    </div>
+                                </div>
 
+                                <div class="row g-2 mb-3">
+                                    <div class="col-6">
+                                        <label class="small mb-1">Giảm</label>
+                                        <input asp-for="GiaTriGiam" type="number" step="0.01" class="glass-input form-control" required />
+                                    </div>
+                                    <div class="col-6" id="divGiamToiDa">
+                                        <label class="small mb-1">Tối đa</label>
+                                        <input asp-for="GiamToiDa" type="number" class="glass-input form-control" placeholder="Vô hạn" />
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <label class="small mb-1">Đơn tối thiểu (đ)</label>
+                                    <input asp-for="DonHangToiThieu" type="number" class="glass-input form-control" placeholder="Vd: 50000" />
+                                </div>
+                            </div>
+                        </div>
                     </div>
 
-                    <div class="mt-5 pt-4 d-flex justify-content-end gap-2" style="border-top: 1px solid rgba(255,255,255,0.1);">
-                        <a asp-action="GiamGia" class="glass-btn px-4 fw-normal opacity-75">Hủy bỏ</a>
-                        <button type="submit" class="glass-btn px-4 fw-normal text-success">
-                            <i class="bi bi-check-circle me-1"></i>Lưu thông tin
-                        </button>
+                    <hr class="my-4 opacity-10">
+
+                    <h6 class="mb-3 opacity-75">3. Thời hạn & Lượt dùng</h6>
+                    <div class="row g-3">
+                        <div class="col-md-4">
+                            <label class="small mb-1">Tổng lượt dùng</label>
+                            <input asp-for="SoLuongGioiHan" type="number" class="glass-input form-control" placeholder="0 = Vô hạn" />
+                        </div>
+                        <div class="col-md-4">
+                            <label class="small mb-1">Ngày bắt đầu</label>
+                            <input asp-for="NgayBatDau" type="datetime-local" class="glass-input form-control" required />
+                        </div>
+                        <div class="col-md-4">
+                            <label class="small mb-1">Ngày kết thúc *</label>
+                            <input asp-for="HanSuDung" type="datetime-local" class="glass-input form-control" required />
+                        </div>
+                    </div>
+
+                    <div class="mt-5 d-flex justify-content-end gap-2">
+                        <a href="/admin/giam-gia" class="glass-btn px-4 small opacity-75 text-decoration-none">Hủy</a>
+                        <button type="submit" class="glass-btn px-5">Lưu lại</button>
                     </div>
                 </form>
             </div>
@@ -72,11 +177,44 @@
     @{
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
     }
-
     <script>
-        // Tự động viết hoa mã voucher khi người dùng nhập
-        document.querySelector('input[name="MaVoucher"]').addEventListener('input', function (e) {
-            this.value = this.value.toUpperCase().replace(/\s/g, ''); // Viết hoa và xóa khoảng trắng
+        function generateCode() {
+            // OS (2 chữ đầu) + 26 (số cố định) + 4 ký tự random
+            const prefix = "OS";
+            const year = "26";
+            const randomStr = Math.random().toString(36).substring(2, 6).toUpperCase();
+
+            document.getElementById('txtMa').value = prefix + year + randomStr;
+        }
+
+        document.getElementById('txtMa').addEventListener('input', function (e) {
+            this.value = this.value.toUpperCase().replace(/\s/g, '');
         });
+
+        function selectNguoiDung(val, text) {
+            document.getElementById('realNguoiDung').value = val;
+            document.getElementById('selectedNguoiDungText').innerText = text;
+        }
+
+        function selectLoaiGiam(val, text) {
+            document.getElementById('realLoaiGiam').value = val;
+            document.getElementById('selectedLoaiGiamText').innerText = text;
+            toggleGiamToiDa();
+        }
+
+        function toggleGiamToiDa() {
+            const realLoaiGiam = document.getElementById('realLoaiGiam');
+            const divGiamToiDa = document.getElementById('divGiamToiDa');
+            // Nếu là Phần trăm thì hiện Tối đa, nếu là Số tiền thì ẩn
+            if (realLoaiGiam.value === '@((int)LoaiGiam.PhanTram)') {
+                divGiamToiDa.style.visibility = 'visible';
+            } else {
+                divGiamToiDa.style.visibility = 'hidden';
+                document.getElementById('GiamToiDa').value = '';
+            }
+        }
+
+        // Chạy kiểm tra khi load trang
+        toggleGiamToiDa();
     </script>
 }

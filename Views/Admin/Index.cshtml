@@ -1,248 +1,189 @@
 ﻿@model OceanShellCraft.Models.ViewModels.AdminDashboardVM
 @{
     Layout = "~/Views/Shared/_AdminLayout.cshtml";
+    var duLieuThongKe = new List<dynamic>
+    {
+        new { TieuDe = "Doanh thu", GiaTri = Model.DoanhThuThangNay.ToString("N0") + "đ", Icon = "bi-bar-chart-fill", Opacity = "opacity-50" },
+        new { TieuDe = "Khách mới", GiaTri = Model.TongKhachHang.ToString(), Icon = "bi-people-fill", Opacity = "opacity-50" },
+        new { TieuDe = "Đơn hàng", GiaTri = Model.TongDonHang.ToString(), Icon = "bi-bag-check-fill", Opacity = "opacity-75" },
+        new { TieuDe = "Sản phẩm", GiaTri = Model.TongSanPham.ToString(), Icon = "bi-graph-up", Opacity = "opacity-75" }
+    };
 }
 
-<div class="container-fluid py-4">
-    <div class="d-flex justify-content-between align-items-center mb-4">
+<div class="container-fluid p-0">
+    <div class="d-flex justify-content-between align-items-center mb-4 pb-2">
         <div>
-            <h2 class="m-0 fw-bold">Dữ liệu</h2>
-            <p class="opacity-50 small m-0">@DateTime.Now.ToString("dd.MM.yyyy") - Thống kê tổng quan</p>
+            <h3 class="m-0 fw-bold">@DateTime.Now.ToString("dd.MM.yyyy")</h3>
         </div>
         <div class="d-flex align-items-center gap-3">
-            <div style="width: 250px;">
-                <form action="/Admin/HoaDon" method="get" class="m-0 w-100">
-                    <input type="text"
-                           name="id"
-                           inputmode="numeric"
-                           pattern="[0-9]*"
-                           class="glass-input pill-style small w-100"
-                           placeholder="Tìm mã đơn hàng..."
+            <div class="glass-effect rounded-pill d-flex align-items-center px-3 py-1" style="border-radius: 30px !important; min-width: 250px;">
+                <i class="bi bi-search opacity-50"></i>
+                <form action="/admin/hoa-don" method="get" class="m-0 w-100">
+                    <input type="text" name="id" inputmode="numeric" pattern="[0-9]*"
+                           class="bg-transparent border-0 text-white shadow-none ms-2 w-100"
+                           style="outline: none;"
+                           placeholder="Tìm kiếm..."
                            value="@Context.Request.Query["id"]">
                 </form>
             </div>
-            
-            <a href="/" class="glass-circle" title="Xem trang chủ"><i class="bi bi-house"></i></a>
+            <div class="d-flex gap-2">
+                <a href="/admin/chat" class="glass-circle border border-white border-opacity-25 bg-white bg-opacity-10 text-white" style="width: 45px; height: 45px;" title="Trò chuyện">
+                    <i class="bi bi-chat-dots"></i>
+                </a>
+                <a href="/" class="glass-circle border border-white border-opacity-25" style="width: 45px; height: 45px;" title="Thông báo">
+                    <i class="bi bi-bell"></i>
+                </a>
+            </div>
         </div>
     </div>
-
-    <div class="row g-4">
-        <div class="col-xl-7 col-lg-12 d-flex flex-column gap-4">
-            <div class="row g-4">
-                <div class="col-sm-6">
-                    <div class="glass-card p-4 h-100">
-                        <div class="d-flex justify-content-between align-items-start">
-                            <div>
-                                <h6 class="opacity-50 small mb-2">Tổng đơn hàng</h6>
-                                <h2 class="fw-bold m-0">@Model.TongDonHang.ToString("N0")</h2>
-                            </div>
-                            <div class="glass-circle-ghost border border-white border-opacity-25" style="width: 35px; height: 35px;">
-                                <i class="bi bi-box-seam"></i>
-                            </div>
-                        </div>
-                        <div class="small mt-4 opacity-50"><i class="bi bi-arrow-up-short"></i> Hôm nay: @Model.DonHangHomNay</div>
+    <partial name="_TheThongKe" model="duLieuThongKe" />
+    <div class="row g-4 mb-4">
+        <div class="col-xl-6">
+            <div class="glass-card p-4 h-100 d-flex flex-column" style="border-radius: 20px !important;">
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <h5 class="m-0 fw-bold">Biến động <span class="badge bg-white bg-opacity-10 border border-white border-opacity-25 rounded-pill fw-normal ms-2 small">Ổn định</span></h5>
+                    <input type="number" id="yearFilter"
+                           class="small py-1 px-3 opacity-75 border-0 text-white text-center"
+                           style="font-size: 0.85rem; border-radius: 8px; background: rgba(255,255,255,0.1) !important; box-shadow: none !important; outline: none; width: 80px;"
+                           min="2020" max="2099" step="1"
+                           value="@(ViewBag.NamDuocChon ?? DateTime.Now.Year)"
+                           onchange="locDoanhThuTheoNam()">
+                </div>
+                <div class="mb-4 d-flex gap-4">
+                    <div>
+                        <div class="small opacity-50 mb-1">Tổng năm</div>
+                        <h4 class="fw-bold m-0">@Model.TongDoanhThu.ToString("N0")đ</h4>
                     </div>
                 </div>
-
-                <div class="col-sm-6">
-                    <div class="glass-card p-4 h-100">
-                        <div class="d-flex justify-content-between align-items-start">
-                            <div>
-                                <h6 class="opacity-50 small mb-2">Doanh thu tháng</h6>
-                                <h2 class="fw-bold m-0">@Model.DoanhThuThangNay.ToString("N0")</h2>
-                            </div>
-                            <div class="glass-circle-ghost border border-white border-opacity-25" style="width: 35px; height: 35px;">
-                                <i class="bi bi-currency-dollar"></i>
-                            </div>
-                        </div>
-                        <div class="small mt-4 opacity-50"><i class="bi bi-arrow-up-short"></i> Tổng: @Model.TongDoanhThu.ToString("N0")</div>
-                    </div>
-                </div>
-
-                <div class="col-sm-6">
-                    <div class="glass-card p-4 h-100">
-                        <div class="d-flex justify-content-between align-items-start">
-                            <div>
-                                <h6 class="opacity-50 small mb-2">Khách hàng</h6>
-                                <h2 class="fw-bold m-0">@Model.TongKhachHang</h2>
-                            </div>
-                            <div class="glass-circle-ghost border border-white border-opacity-25" style="width: 35px; height: 35px;">
-                                <i class="bi bi-people"></i>
-                            </div>
-                        </div>
-                        <div class="small mt-4 opacity-50"><i class="bi bi-dash"></i> Tăng trưởng ổn định</div>
-                    </div>
-                </div>
-
-                <div class="col-sm-6">
-                    <div class="glass-card p-4 h-100">
-                        <div class="d-flex justify-content-between align-items-start">
-                            <div>
-                                <h6 class="opacity-50 small mb-2">Sản phẩm</h6>
-                                <h2 class="fw-bold m-0">@Model.TongSanPham</h2>
-                            </div>
-                            <div class="glass-circle-ghost border border-white border-opacity-25" style="width: 35px; height: 35px;">
-                                <i class="bi bi-tags"></i>
-                            </div>
-                        </div>
-                        <div class="small mt-4 opacity-50"><i class="bi bi-exclamation-circle"></i> Sắp hết: @Model.SanPhamSapHetHang</div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="glass-card p-4 flex-grow-1">
-                <div class="d-flex justify-content-between align-items-center mb-4">
-                    <h5 class="m-0 fw-bold">Doanh thu</h5>
-                    <input type="month" id="monthFilter"
-                           class="glass-input small py-1 px-3 opacity-75"
-                           style="font-size: 0.85rem; border-radius: 8px; color: white;"
-                           value="@ViewBag.ThangDuocChon"
-                           onchange="locDoanhThu()">
-                </div>
-                <div style="height: 280px; width: 100%; position: relative;">
+                <div class="flex-grow-1" style="min-height: 200px; position: relative;">
                     <canvas id="revenueLineChart"></canvas>
                 </div>
             </div>
         </div>
 
-        <div class="col-xl-5 col-lg-12 d-flex flex-column gap-4">
+        <div class="col-xl-3">
+            <div class="glass-card p-4 h-100 d-flex flex-column justify-content-between" style="border-radius: 20px !important;">
+                <div>
+                    <h5 class="fw-bold mb-2">Tiến độ</h5>
+                    <p class="small opacity-50 mb-4">Xử lý đơn</p>
+                </div>
 
-            <div class="glass-card p-4">
-                <h5 class="mb-4 fw-bold">Trạng thái đơn hàng</h5>
                 @{
                     int total = Model.DonChoXuLy + Model.DonDangGiao + Model.DonHoanThanh;
-                    int p1 = total == 0 ? 0 : (Model.DonChoXuLy * 100 / total);
-                    int p2 = total == 0 ? 0 : (Model.DonDangGiao * 100 / total);
                     int p3 = total == 0 ? 0 : (Model.DonHoanThanh * 100 / total);
                 }
-                <div class="row g-4">
-                    <div class="col-6">
-                        <div class="d-flex flex-column gap-3">
-                            <div>
-                                <div class="d-flex justify-content-between mb-1 small opacity-75"><span>Chờ xử lý</span><span>@Model.DonChoXuLy</span></div>
-                                <div class="progress glass-effect" style="height: 6px; border: none !important;">
-                                    <div class="progress-bar bg-white opacity-75" style="width: @p1%;"></div>
-                                </div>
-                            </div>
-                            <div>
-                                <div class="d-flex justify-content-between mb-1 small opacity-75"><span>Đang giao</span><span>@Model.DonDangGiao</span></div>
-                                <div class="progress glass-effect" style="height: 6px; border: none !important;">
-                                    <div class="progress-bar bg-white opacity-50" style="width: @p2%;"></div>
-                                </div>
-                            </div>
+
+                <div class="text-center mb-4">
+                    <div class="position-relative d-inline-block">
+                        <svg viewBox="0 0 36 36" class="circular-chart" style="width: 120px; height: 120px;">
+                            <path class="circle-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="3" />
+                            <path class="circle" stroke-dasharray="@p3, 100" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="rgba(255,255,255,0.85)" stroke-width="3" stroke-linecap="round" />
+                        </svg>
+                        <div class="position-absolute top-50 start-50 translate-middle text-center">
+                            <h4 class="fw-bold m-0">@p3%</h4>
                         </div>
                     </div>
-                    <div class="col-6">
-                        <div class="d-flex flex-column h-100 justify-content-center">
-                            <div class="d-flex justify-content-between mb-1 small fw-bold"><span>Hoàn thành</span><span>@Model.DonHoanThanh</span></div>
-                            <div class="progress glass-effect" style="height: 6px; border: none !important;">
-                                <div class="progress-bar bg-white" style="width: @p3%;"></div>
-                            </div>
-                            <span class="small opacity-50 mt-2">Đã giao thành công</span>
-                        </div>
-                    </div>
+                </div>
+
+                <div class="d-flex justify-content-between text-center mt-auto">
+                    <div><span class="d-block small fw-bold">@Model.DonChoXuLy</span><span class="small opacity-50">Chờ</span></div>
+                    <div><span class="d-block small fw-bold">@Model.DonDangGiao</span><span class="small opacity-50">Giao</span></div>
+                    <div><span class="d-block small fw-bold">@Model.DonHoanThanh</span><span class="small opacity-50">Xong</span></div>
                 </div>
             </div>
+        </div>
 
-            <div class="row g-4">
-                <div class="col-sm-6">
-                    <div class="glass-card p-4 h-100 d-flex flex-column justify-content-center align-items-center text-center">
-                        <div class="glass-circle-ghost border border-white border-opacity-25 mb-3" style="width: 40px; height: 40px;">
-                            <i class="bi bi-lightning"></i>
-                        </div>
-                        <h6 class="fw-bold mb-2">Thao tác</h6>
-                        <a href="/Admin/SanPham/Create" class="glass-btn small py-1 px-3 w-100 mb-2" style="font-size: 0.75rem;">Thêm SP</a>
-                        <a href="/Admin/DonHang" class="glass-btn small py-1 px-3 w-100" style="font-size: 0.75rem;">Đơn hàng</a>
+        <div class="col-xl-3">
+            <div class="glass-card p-4 h-100 d-flex flex-column align-items-center justify-content-center text-center" style="border-radius: 20px !important;">
+                <img src="/img/logo.png" alt="Admin" class="rounded-circle mb-3 border border-2 border-white border-opacity-25" style="width: 80px; height: 80px; object-fit: cover; background: rgba(0,0,0,0.2); padding: 5px;">
+                <h5 class="fw-bold mb-1">Admin</h5>
+                <p class="small opacity-50 mb-4">admin@oceanshell.com</p>
+
+                <div class="d-flex w-100 justify-content-around text-center mb-4 pt-2 border-top border-white border-opacity-10">
+                    <div>
+                        <h5 class="fw-bold m-0">@Model.TongSanPham</h5>
+                        <span class="small opacity-50" style="font-size: 0.75rem;">Mặt hàng</span>
+                    </div>
+                    <div>
+                        <h5 class="fw-bold m-0">@Model.DonHoanThanh</h5>
+                        <span class="small opacity-50" style="font-size: 0.75rem;">Đã bán</span>
                     </div>
                 </div>
-                <div class="col-sm-6">
-                    <div class="glass-card p-4 h-100 d-flex flex-column justify-content-center align-items-center text-center">
-                        <div class="glass-circle-ghost border border-white border-opacity-25 mb-3" style="width: 40px; height: 40px;">
-                            <i class="bi bi-journal-text"></i>
-                        </div>
-                        <h6 class="fw-bold mb-2">Ghi chú</h6>
-                        <textarea class="glass-input p-2 small text-center w-100" rows="2" style="font-size: 0.75rem; border-radius: 8px;" placeholder="Nhập nhắc nhở..."></textarea>
-                    </div>
-                </div>
+
+                <a href="/admin/them-sua-san-pham" class="glass-btn small py-2 w-100" style="border-radius: 12px; background: rgba(255,255,255,0.1) !important;">Thêm SP</a>
             </div>
+        </div>
+    </div>
 
-            <div class="glass-card p-4 flex-grow-1 overflow-auto" style="min-height: 300px;">
-                <div class="d-flex justify-content-between align-items-center mb-4">
-                    <h5 class="m-0 fw-bold">Đơn hàng mới</h5>
-                    <i class="bi bi-arrow-clockwise opacity-50 cursor-pointer"
-                       title="Tải lại dữ liệu"
-                       style="transition: transform 0.4s ease, opacity 0.3s ease;"
-                       onclick="taiLaiDonHang(this)"></i>
+    @* --- 4. BẢNG GIAO DỊCH MỚI --- *@
+    <div class="row g-4">
+        <div class="col-xl-8">
+            <div class="glass-card p-4 h-100 d-flex flex-column" style="border-radius: 20px !important;">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h5 class="m-0 fw-bold">Giao dịch mới</h5>
+                    <i class="bi bi-arrow-clockwise opacity-50 cursor-pointer fs-5" title="Tải lại" onclick="taiLaiDonHang(this)"></i>
                 </div>
-                <div class="table-responsive">
-                    <table class="glass-table align-middle" style="font-size: 0.85rem;">
-                        <thead class="opacity-50 border-bottom border-white border-opacity-10">
-                            <tr>
-                                <th class="pb-2">Khách hàng</th>
-                                <th class="pb-2">Trạng thái</th>
-                                <th class="pb-2 text-end">Tiền</th>
-                            </tr>
-                        </thead>
+                <div class="table-responsive flex-grow-1">
+                    <table class="glass-table align-middle w-100" style="font-size: 0.9rem;">
                         <tbody>
-                            @foreach (var item in Model.DonHangGanDay)
+                            @foreach (var item in Model.DonHangGanDay.Take(4))
                             {
                                 <tr>
-                                    <td class="py-3">
-                                        <div class="d-flex align-items-center gap-2">
-                                            <div class="glass-circle" style="width: 28px; height: 28px; font-size: 0.65rem;">
+                                    <td class="py-3 border-bottom border-white border-opacity-10">
+                                        <div class="d-flex align-items-center gap-3">
+                                            <div class="rounded-circle d-flex align-items-center justify-content-center bg-white bg-opacity-10 fw-bold" style="width: 35px; height: 35px; font-size: 0.85rem;">
                                                 @(string.IsNullOrEmpty(item.NguoiDung?.HoTen) ? "?" : item.NguoiDung.HoTen.Substring(0, 1).ToUpper())
                                             </div>
                                             <div>
                                                 <div class="fw-bold">@item.NguoiDung?.HoTen</div>
-                                                <div class="opacity-50" style="font-size: 0.7rem;">#@item.Id</div>
+                                                <div class="opacity-50" style="font-size: 0.75rem;">#@item.Id</div>
                                             </div>
                                         </div>
                                     </td>
-                                    <td class="py-3">
-                                        <span class="badge rounded-pill fw-normal glass-effect px-2 py-1" style="font-size: 0.7rem;">
-                                            @item.TrangThai
-                                        </span>
+                                    <td class="py-3 border-bottom border-white border-opacity-10">
+                                        <span class="badge rounded-pill fw-normal bg-white bg-opacity-10 px-3 py-1" style="font-size: 0.75rem;">@item.TrangThai</span>
                                     </td>
-                                    <td class="py-3 text-end fw-bold">@item.TongTien.ToString("N0")đ</td>
+                                    <td class="py-3 text-end fw-bold border-bottom border-white border-opacity-10">@item.TongTien.ToString("N0")đ</td>
                                 </tr>
                             }
                         </tbody>
                     </table>
                 </div>
             </div>
+        </div>
 
+        <div class="col-xl-4">
+            <div class="glass-card p-4 h-100 d-flex flex-column align-items-center justify-content-center text-center" style="border-radius: 20px !important;">
+                <i class="bi bi-shield-lock mb-3 opacity-75" style="font-size: 3rem;"></i>
+                <h5 class="fw-bold mb-2">Bảo mật</h5>
+                <p class="small opacity-50 mb-4">Quản lý mật khẩu và an toàn tài khoản.</p>
+                <a href="/admin/cai-dat" class="glass-btn small py-2 w-100" style="border-radius: 12px; background: rgba(255,255,255,0.1) !important;">Thiết lập</a>
+            </div>
         </div>
     </div>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
-    // 1. Hàm lọc tháng doanh thu
-    function locDoanhThu() {
-        var selectedMonth = document.getElementById("monthFilter").value;
-        if (selectedMonth) {
-            window.location.href = '?thang=' + selectedMonth;
+    function locDoanhThuTheoNam() {
+        var selectedYear = document.getElementById("yearFilter").value;
+        if (selectedYear) {
+            window.location.href = '?nam=' + selectedYear;
         }
     }
 
-    // 2. Hàm xoay icon và tải lại trang
     function taiLaiDonHang(iconElement) {
-        // Tạo hiệu ứng xoay 360 độ và sáng lên
         iconElement.style.transform = "rotate(360deg)";
         iconElement.classList.remove("opacity-50");
         iconElement.classList.add("opacity-100", "text-white");
-
-        // Đợi 0.4s cho hiệu ứng xoay chạy xong rồi reload
         setTimeout(function () {
             window.location.reload();
         }, 400);
     }
 
-    // 3. Khởi tạo Biểu đồ đường (Line Chart)
     document.addEventListener("DOMContentLoaded", function () {
         const labels = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.NhanBieuDo));
         const dataValues = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.DoanhThuTheoNgay));
-
         const ctx = document.getElementById('revenueLineChart').getContext('2d');
 
         new Chart(ctx, {
@@ -254,13 +195,10 @@
                     data: dataValues,
                     borderColor: 'rgba(255, 255, 255, 0.8)',
                     backgroundColor: 'rgba(255, 255, 255, 0.1)',
-                    borderWidth: 2,
+                    borderWidth: 3,
                     tension: 0.4,
                     fill: true,
-                    pointBackgroundColor: '#ffffff',
-                    pointBorderColor: 'rgba(255, 255, 255, 0.5)',
-                    pointBorderWidth: 2,
-                    pointRadius: 3,
+                    pointRadius: 0,
                     pointHoverRadius: 6
                 }]
             },
@@ -268,9 +206,7 @@
                 responsive: true,
                 maintainAspectRatio: false,
                 plugins: {
-                    legend: {
-                        display: false
-                    },
+                    legend: { display: false },
                     tooltip: {
                         callbacks: {
                             label: function(context) {
@@ -281,20 +217,8 @@
                     }
                 },
                 scales: {
-                    x: {
-                        grid: {
-                            display: false,
-                            drawBorder: false
-                        },
-                        ticks: {
-                            color: 'rgba(255, 255, 255, 0.6)',
-                            font: { size: 10 }
-                        }
-                    },
-                    y: {
-                        display: false,
-                        beginAtZero: true
-                    }
+                    x: { display: false },
+                    y: { display: false, beginAtZero: true }
                 }
             }
         });

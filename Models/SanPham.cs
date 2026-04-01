@@ -25,16 +25,17 @@ namespace OceanShellCraft.Models
 
         [Column(TypeName = "decimal(18,2)")]
         public decimal? GiaKhuyenMai { get; set; }
+        public string? Slug { get; set; }
 
         public string? HinhAnh { get; set; }   // Đường dẫn ảnh
-        public string? ChatLieu { get; set; }  // VD: Vỏ ốc hương
-        public string? KichThuoc { get; set; }
+
+        // (Đã xóa ChatLieu và KichThuoc ở đây)
 
         public bool IsFeatured { get; set; } // Sản phẩm nổi bật
         public bool IsFavorite { get; set; } // Sản phẩm yêu thích
 
         // --- QUẢN LÝ KHO & TRẠNG THÁI ---
-        public int SoLuong { get; set; } // Tồn kho (Chỉ định nghĩa 1 lần duy nhất ở đây)
+        public int SoLuong { get; set; } // Tồn kho tổng của SP
         public int SoLuongDaBan { get; set; } = 0;
         public TrangThaiSanPham TrangThai { get; set; } = TrangThaiSanPham.DangBan;
 
@@ -49,7 +50,6 @@ namespace OceanShellCraft.Models
             : 0;
 
         // --- CÁC QUAN HỆ (Navigation Properties) ---
-        // Chỉ định nghĩa 1 lần duy nhất cho mỗi danh sách
         public virtual ICollection<DanhGia> DanhGias { get; set; } = new List<DanhGia>();
         public virtual ICollection<BienTheSanPham> BienThes { get; set; } = new List<BienTheSanPham>();
     }

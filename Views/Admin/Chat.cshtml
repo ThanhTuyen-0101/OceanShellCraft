@@ -6,7 +6,6 @@
 
 <div class="row g-3 h-100">
 
-    @* --- DANH SÁCH KHÁCH HÀNG (BÊN TRÁI) --- *@
     <div class="col-lg-4 d-flex flex-column h-100">
         <div class="glass-card p-4 d-flex flex-column h-100">
             <div class="d-flex justify-content-between align-items-center mb-4">
@@ -27,7 +26,6 @@
 
                             <img src="/img/meo.jpg" class="rounded-circle" width="48" height="48" style="object-fit: cover; border: 1px solid var(--border-light);">
 
-                            @* Thêm border và style giống nhãn trực tuyến vào đây *@
                             <div class="flex-grow-1 overflow-hidden glass-effect px-3 py-2 rounded-4">
                                 <div class="d-flex justify-content-between align-items-center mb-1">
                                     <span class="text-truncate small">@item.UserName</span>
@@ -49,11 +47,9 @@
         </div>
     </div>
 
-    @* --- KHUNG CHAT CHI TIẾT (BÊN PHẢI) --- *@
     <div class="col-lg-8 d-flex flex-column h-100">
         <div class="glass-card p-0 d-flex flex-column h-100 overflow-hidden">
 
-            @* Header Khung Chat *@
             <div class="p-3 d-flex justify-content-between align-items-center" style="border-bottom: 1px solid var(--border-light);">
                 <div class="d-flex align-items-center gap-3">
                     <div class="position-relative">
@@ -71,7 +67,6 @@
                 </div>
             </div>
 
-            @* Nội dung tin nhắn *@
             <div id="messages-container" class="flex-grow-1 p-4 overflow-auto hide-scrollbar d-flex flex-column gap-3" style="background: rgba(255,255,255,0.02);">
                 <div class="text-center my-auto opacity-25">
                     <i class="bi bi-chat-quote fs-1 d-block mb-2"></i>
@@ -79,7 +74,6 @@
                 </div>
             </div>
 
-            @* Ô nhập liệu *@
             <div class="p-3" style="border-top: 1px solid var(--border-light);">
                 <div class="d-flex gap-2 align-items-center">
                     <input type="hidden" id="target-user-id">
@@ -113,7 +107,6 @@
 
             connection.start().catch(err => console.error("SignalR error: ", err));
 
-            // Lắng nghe tin nhắn thời gian thực
             connection.on("ReceiveMessage", function (userId, userName, message, role, time) {
                 updateCustomerList(userId, userName, message, role, time);
                 if (activeUserId == userId) {
@@ -121,7 +114,6 @@
                 }
             });
 
-            // Cập nhật danh sách bên trái
             function updateCustomerList(userId, userName, lastMsg, role, time) {
                 const listArea = document.getElementById("active-chats");
                 let item = document.getElementById(`user-item-${userId}`);
@@ -151,7 +143,6 @@
                 }
             }
 
-            // Chọn khách hàng
             window.selectCustomer = async function(userId, userName) {
                 activeUserId = userId;
                 document.getElementById("target-user-id").value = userId;
@@ -163,7 +154,6 @@
                 document.getElementById("btn-send-reply").disabled = false;
                 document.getElementById("admin-message-input").focus();
 
-                // Highlight UI: Tìm đến khung thông tin bên trong
                 document.querySelectorAll('#active-chats .flex-grow-1').forEach(el => {
                     el.classList.remove('active-chat-pill');
                     el.style.background = "var(--glass-bg)";
@@ -179,7 +169,7 @@
                 container.innerHTML = `<div class="text-center opacity-25 py-5"><div class="spinner-border spinner-border-sm"></div> Đang tải lịch sử...</div>`;
 
                 try {
-                    const response = await fetch(`/Admin/GetChatHistory?userId=${userId}`);
+                    const response = await fetch(`/admin/get-chat-history?userId=${userId}`);
                     const history = await response.json();
                     container.innerHTML = "";
                     history.forEach(msg => appendMessage(msg.userName, msg.noiDung, msg.isAdmin ? "Admin" : "KhachHang", msg.thoiGian));
@@ -188,7 +178,6 @@
                 }
             };
 
-            // Vẽ bong bóng chat
             function appendMessage(userName, message, role, time) {
                 const container = document.getElementById("messages-container");
                 const isAdmin = (role === "Admin" || role === "AdminReply");

@@ -2,7 +2,6 @@
 @inject OceanShellCraft.Models.MyNgheDbContext _context
 
 @{
-    // 1. Kiểm tra đăng nhập và lấy lịch sử chat ngay tại Layout
     var isAuthenticated = User.Identity.IsAuthenticated;
     var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
     List<OceanShellCraft.Models.TinNhan> chatHistory = new List<OceanShellCraft.Models.TinNhan>();
@@ -23,12 +22,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - oceanshellcraft</title>
 
-    @* Bootstrap 5 CSS *@
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
-
-    @* File CSS dùng chung đã tối ưu *@
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/css/ocean-theme.css" asp-append-version="true" />
 </head>
@@ -50,9 +46,12 @@
     {
         <partial name="_Footer" />
 
-        @* --- BẮT ĐẦU PHẦN CHAT WIDGET --- *@
         <div class="position-fixed d-flex flex-column gap-3" style="bottom: 30px; right: 30px; z-index: 9999;">
-            <button id="liveChatToggleBtn" class="glass-circle shadow-lg position-relative" style="width: 60px; height: 60px;" title="chat với nhân viên">
+            <button id="aiChatToggleBtn" class="glass-circle shadow-lg position-relative bg-primary text-white" style="width: 60px; height: 60px;" title="Chat với Trợ lý AI">
+                <i class="bi bi-robot fs-3"></i>
+            </button>
+
+            <button id="liveChatToggleBtn" class="glass-circle shadow-lg position-relative" style="width: 60px; height: 60px;" title="Chat với nhân viên">
                 <i class="bi bi-headset fs-3"></i>
                 @if (isAuthenticated)
                 {
@@ -62,9 +61,11 @@
         </div>
 
         <div id="liveChatWindow" class="glass-card position-fixed d-none p-0 d-flex flex-column shadow-lg" style="bottom: 100px; right: 30px; width: 350px; height: 500px; z-index: 9999; overflow: hidden;">
-
             <div class="px-3 py-3 d-flex justify-content-between align-items-center" style="border-bottom: 1px solid var(--border-light);">
-                <h6 class="mb-0">hỗ trợ trực tuyến</h6>
+                <div class="d-flex align-items-center gap-2">
+                    <i class="bi bi-headset fs-5 text-success"></i>
+                    <h6 class="mb-0">Hỗ trợ trực tuyến</h6>
+                </div>
                 <button id="liveChatCloseBtn" class="glass-btn border-0 p-1" style="border-radius: 50%; width: 30px; height: 30px;">
                     <i class="bi bi-x-lg"></i>
                 </button>
@@ -84,76 +85,153 @@
             </div>
 
             <div class="px-3 py-3 d-flex gap-2" style="border-top: 1px solid var(--border-light);">
-                <input type="text" id="liveChatInput" class="glass-input pill-style flex-grow-1" placeholder="nhập tin nhắn...">
+                <input type="text" id="liveChatInput" class="glass-input pill-style flex-grow-1" placeholder="Nhập tin nhắn...">
                 <button class="glass-circle" id="liveChatSendBtn" style="flex-shrink: 0;"><i class="bi bi-send"></i></button>
             </div>
         </div>
-        @* --- KẾT THÚC PHẦN CHAT WIDGET --- *@
+
+        <div id="aiChatWindow" class="glass-card position-fixed d-none p-0 d-flex flex-column shadow-lg" style="bottom: 100px; right: 30px; width: 350px; height: 500px; z-index: 9999; overflow: hidden;">
+            <div class="px-3 py-3 d-flex justify-content-between align-items-center" style="border-bottom: 1px solid var(--border-light);">
+                <div class="d-flex align-items-center gap-2">
+                    <i class="bi bi-robot fs-5 text-primary"></i>
+                    <h6 class="mb-0">Trợ lý ảo AI</h6>
+                </div>
+                <button id="aiChatCloseBtn" class="glass-btn border-0 p-1" style="border-radius: 50%; width: 30px; height: 30px;">
+                    <i class="bi bi-x-lg"></i>
+                </button>
+            </div>
+
+            <div class="p-3 overflow-auto hide-scrollbar flex-grow-1" id="aiChatBody">
+                <div class="d-flex mb-3 justify-content-start">
+                    <div class="chat-bubble-sm received-sm" style="max-width: 85%;">
+                        Beep boop! 🤖 Mình là AI của OceanShellCraft. Mình có thể giải đáp nhanh mọi thông tin về cửa hàng. Bạn muốn hỏi gì nào?
+                    </div>
+                </div>
+            </div>
+
+            <div class="px-3 py-3 d-flex gap-2" style="border-top: 1px solid var(--border-light);">
+                <input type="text" id="aiChatInput" class="glass-input pill-style flex-grow-1" placeholder="Hỏi AI...">
+                <button class="glass-circle text-primary" id="aiChatSendBtn" style="flex-shrink: 0;"><i class="bi bi-send"></i></button>
+            </div>
+        </div>
     }
 
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
 
-    @* SignalR và Script Xử lý Chat *@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/7.0.5/signalr.min.js"></script>
     <script>
         document.addEventListener("DOMContentLoaded", function () {
             const authStatus = @isAuthenticated.ToString().ToLower();
-            const chatWin = document.getElementById('liveChatWindow');
-            const chatToggle = document.getElementById('liveChatToggleBtn');
-            const widgetBody = document.getElementById('liveChatBody');
 
-            // 1. Xử lý yêu cầu đăng nhập khi nhấn nút chat
-            if (chatToggle) {
-                chatToggle.onclick = function() {
+            const liveWin = document.getElementById('liveChatWindow');
+            const liveToggle = document.getElementById('liveChatToggleBtn');
+            const liveBody = document.getElementById('liveChatBody');
+
+            const aiWin = document.getElementById('aiChatWindow');
+            const aiToggle = document.getElementById('aiChatToggleBtn');
+            const aiBody = document.getElementById('aiChatBody');
+            const aiInput = document.getElementById('aiChatInput');
+            const aiSendBtn = document.getElementById('aiChatSendBtn');
+
+            if (liveToggle) {
+                liveToggle.onclick = function() {
                     if (!authStatus) {
-                        window.location.href = '/TaiKhoan/DangNhap';
+                        window.location.href = '/dang-nhap';
                         return;
                     }
-                    chatWin.classList.toggle('d-none');
-                    if (widgetBody) widgetBody.scrollTop = widgetBody.scrollHeight;
+                    liveWin.classList.toggle('d-none');
+                    aiWin.classList.add('d-none');
+                    if (liveBody) liveBody.scrollTop = liveBody.scrollHeight;
+                };
+            }
+
+            if (aiToggle) {
+                aiToggle.onclick = function() {
+                    aiWin.classList.toggle('d-none');
+                    liveWin.classList.add('d-none');
+                    if (aiBody) aiBody.scrollTop = aiBody.scrollHeight;
                 };
             }
 
             if (document.getElementById('liveChatCloseBtn')) {
-                document.getElementById('liveChatCloseBtn').onclick = () => chatWin.classList.add('d-none');
+                document.getElementById('liveChatCloseBtn').onclick = () => liveWin.classList.add('d-none');
+            }
+            if (document.getElementById('aiChatCloseBtn')) {
+                document.getElementById('aiChatCloseBtn').onclick = () => aiWin.classList.add('d-none');
             }
 
-            // 2. Logic SignalR đồng bộ
+            function appendAiMessage(text, isUser) {
+                const align = isUser ? 'justify-content-end' : 'justify-content-start';
+                const bubbleClass = isUser ? 'sent-sm' : 'received-sm';
+                const msgHTML = `<div class="d-flex mb-3 ${align}"><div class="chat-bubble-sm ${bubbleClass}" style="max-width: 85%;">${text}</div></div>`;
+                aiBody.insertAdjacentHTML('beforeend', msgHTML);
+                aiBody.scrollTop = aiBody.scrollHeight;
+            }
+
+            async function sendAiMessage() {
+                if (!aiInput || !aiBody) return;
+                const text = aiInput.value.trim();
+                if (text !== '') {
+                    appendAiMessage(text, true);
+                    aiInput.value = '';
+                    const typingId = "typing-" + Date.now();
+                    const typingHTML = `<div id="${typingId}" class="d-flex mb-3 justify-content-start"><div class="chat-bubble-sm received-sm text-muted"><em>AI đang suy nghĩ...</em></div></div>`;
+                    aiBody.insertAdjacentHTML('beforeend', typingHTML);
+                    aiBody.scrollTop = aiBody.scrollHeight;
+
+                    try {
+                        const response = await fetch('/api/chat/ask-ai', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ NoiDung: text })
+                        });
+                        document.getElementById(typingId)?.remove();
+                        if (response.ok) {
+                            const data = await response.json();
+                            appendAiMessage(data.reply, false);
+                        } else {
+                            appendAiMessage("Dạ hệ thống AI đang gặp sự cố. Bạn vui lòng thử lại sau ạ.", false);
+                        }
+                    } catch (error) {
+                        document.getElementById(typingId)?.remove();
+                        appendAiMessage("Hệ thống đang bận hoặc mất kết nối mạng. Bạn vui lòng thử lại nhé.", false);
+                    }
+                }
+            }
+
+            if (aiSendBtn) aiSendBtn.onclick = sendAiMessage;
+            if (aiInput) aiInput.onkeypress = (e) => { if(e.key === 'Enter') sendAiMessage(); };
+
             if (authStatus) {
                 const connection = new signalR.HubConnectionBuilder().withUrl("/chatHub").withAutomaticReconnect().build();
                 connection.start().catch(err => console.error(err));
 
                 connection.on("ReceiveMessage", function (userId, userName, message, role, time) {
                     const isMe = (role === "KhachHang");
-
-                    // Cập nhật Widget nhỏ
-                    if (widgetBody) {
-                        const htmlWidget = `
-                            <div class="d-flex mb-3 ${isMe ? 'justify-content-end' : 'justify-content-start'}">
-                                <div class="chat-bubble-sm ${isMe ? 'sent-sm' : 'received-sm'}" style="max-width: 85%;">
-                                    ${message}
-                                    <div class="mt-1 opacity-50 text-end" style="font-size: 0.6rem;">${time}</div>
-                                </div>
-                            </div>`;
-                        widgetBody.insertAdjacentHTML('beforeend', htmlWidget);
-                        widgetBody.scrollTop = widgetBody.scrollHeight;
+                    if (liveBody) {
+                        const htmlWidget = `<div class="d-flex mb-3 ${isMe ? 'justify-content-end' : 'justify-content-start'}">
+                            <div class="chat-bubble-sm ${isMe ? 'sent-sm' : 'received-sm'}" style="max-width: 85%;">
+                                ${message}
+                                <div class="mt-1 opacity-50 text-end" style="font-size: 0.6rem;">${time}</div>
+                            </div>
+                        </div>`;
+                        liveBody.insertAdjacentHTML('beforeend', htmlWidget);
+                        liveBody.scrollTop = liveBody.scrollHeight;
                     }
 
-                    // Cập nhật Trang Chat lớn (nếu đang mở)
                     const pageChatBody = document.getElementById('customer-chat-content');
                     if (pageChatBody) {
                         const avatar = isMe ? '' : `<div class="glass-circle flex-shrink-0" style="width: 35px; height: 35px;"><img src="/img/logo-small.jpg" class="rounded-circle" width="35" height="35" style="opacity: 0.8;"></div>`;
-                        const htmlPage = `
-                            <div class="d-flex gap-3 ${isMe ? 'justify-content-end' : ''}">
-                                ${avatar}
-                                <div style="max-width: 75%;">
-                                    <small class="opacity-50 mb-1 d-block ${isMe ? 'text-end' : ''}">${isMe ? 'bạn' : 'oceanshellcraft'}</small>
-                                    <div class="chat-bubble-sm ${isMe ? 'sent-sm' : 'received-sm'}">${message}</div>
-                                    <small class="opacity-50 mt-1 d-block ${isMe ? 'text-end' : ''}" style="font-size: 0.7rem;">${time}</small>
-                                </div>
-                            </div>`;
+                        const htmlPage = `<div class="d-flex gap-3 ${isMe ? 'justify-content-end' : ''}">
+                            ${avatar}
+                            <div style="max-width: 75%;">
+                                <small class="opacity-50 mb-1 d-block ${isMe ? 'text-end' : ''}">${isMe ? 'bạn' : 'oceanshellcraft'}</small>
+                                <div class="chat-bubble-sm ${isMe ? 'sent-sm' : 'received-sm'}">${message}</div>
+                                <small class="opacity-50 mt-1 d-block ${isMe ? 'text-end' : ''}" style="font-size: 0.7rem;">${time}</small>
+                            </div>
+                        </div>`;
                         pageChatBody.insertAdjacentHTML('beforeend', htmlPage);
                         pageChatBody.scrollTop = pageChatBody.scrollHeight;
                     }
@@ -167,11 +245,11 @@
                     }
                 }
 
-                // Sự kiện cho Widget
-                document.getElementById('liveChatSendBtn').onclick = () => sendMessageAction('liveChatInput');
-                document.getElementById('liveChatInput').onkeypress = (e) => { if(e.key === 'Enter') sendMessageAction('liveChatInput'); };
+                const liveSendBtn = document.getElementById('liveChatSendBtn');
+                const liveInput = document.getElementById('liveChatInput');
+                if (liveSendBtn) liveSendBtn.onclick = () => sendMessageAction('liveChatInput');
+                if (liveInput) liveInput.onkeypress = (e) => { if(e.key === 'Enter') sendMessageAction('liveChatInput'); };
 
-                // Sự kiện cho Trang Chat chính (tự động kết nối)
                 const checkPageChat = setInterval(() => {
                     const pageSendBtn = document.getElementById('cust-page-send-btn');
                     const pageInput = document.getElementById('cust-page-input');

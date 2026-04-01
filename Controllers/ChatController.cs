@@ -1,66 +1,90 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using System.Text.Json;
 using System.Text;
+using OceanShellCraft.Models; // ĐẢM BẢO CÓ DÒNG NÀY để gọi MyNgheDbContext
+using Microsoft.EntityFrameworkCore;
 
 namespace OceanShellCraft.Controllers
 {
+    [Route("api/chat")]
+    [ApiController]
     public class ChatController : Controller
     {
-        public class ChatRequest
+        // 1. GỌI DATABASE CONTEXT VÀO CONTROLLER
+        private readonly MyNgheDbContext _context;
+
+        public ChatController(MyNgheDbContext context)
         {
-            public string Message { get; set; }
+            _context = context;
         }
 
-        [HttpPost]
+        public class ChatRequest
+        {
+            public string NoiDung { get; set; }
+        }
+
+        [HttpPost("ask-ai")]
         public async Task<IActionResult> AskAI([FromBody] ChatRequest request)
         {
-            if (string.IsNullOrEmpty(request?.Message))
+            if (string.IsNullOrEmpty(request?.NoiDung))
             {
-                return Json(new { reply = "Bạn chưa nhập tin nhắn." });
+                return Ok(new { reply = "Bạn chưa nhập tin nhắn." });
             }
 
-            string userMessage = request.Message;
+            string userMessage = request.NoiDung;
             string aiResponse = "";
 
             try
             {
                 // ==========================================
-                // THÔNG TIN NGỮ CẢNH CỦA CỬA HÀNG (SYSTEM PROMPT)
+                // 2. LẤY DỮ LIỆU TỪ DATABASE (CSDL)
+                // Lấy danh sách tên và giá sản phẩm (Giả sử bảng tên là SanPhams)
                 // ==========================================
-                string thongTinCuaHang = @"
+                var rawData = await _context.SanPhams
+                    .Where(sp => sp.TrangThai == OceanShellCraft.Models.TrangThaiSanPham.DangBan)
+                    .Select(sp => new { sp.TenSanPham, sp.GiaTien })
+                    .ToListAsync();
+
+                // Bước 2.2: Dùng C# format thêm dấu phẩy vào giá tiền
+                var danhSachSanPham = rawData
+                    .Select(sp => $"- {sp.TenSanPham}: {sp.GiaTien:N0} VNĐ")
+                    .ToList();
+
+                string dataSanPham = string.Join("\n", danhSachSanPham);
+                
+                // ==========================================
+                // 3. CẬP NHẬT LẠI SYSTEM PROMPT (THÊM DATA VÀO)
+                // ==========================================
+                string thongTinCuaHang = $@"
 Bạn là nhân viên tư vấn nhiệt tình, thân thiện của cửa hàng đồ mỹ nghệ OceanShellCraft.
 Dưới đây là thông tin về cửa hàng để bạn trả lời khách:
 - Cửa hàng chuyên bán các sản phẩm thủ công mỹ nghệ làm từ vỏ ốc, sao biển, ngọc trai tự nhiên.
-- Các sản phẩm tiêu biểu: Vỏ ốc trang trí, vòng ngọc trai, chuông gió vỏ ốc, bông tai vỏ sò, tượng vỏ sò.
 - Địa chỉ cửa hàng: 123 Đường Biển, Thành phố Nha Trang, Việt Nam.
 - Số điện thoại liên hệ: 0909 123 456.
 - Chính sách giao hàng: Miễn phí giao hàng toàn quốc cho đơn hàng từ 500.000 VNĐ trở lên.
 - Chính sách bảo hành: Đổi trả miễn phí trong 7 ngày nếu sản phẩm bị lỗi do vận chuyển.
-- Lịch làm việc: 8h00 sáng đến 10h00 tối các ngày trong tuần.
+
+DANH SÁCH SẢN PHẨM VÀ GIÁ BÁN HIỆN TẠI TẠI CỬA HÀNG:
+{dataSanPham}
 
 Nguyên tắc trả lời:
 1. Luôn xưng hô lịch sự (dạ, vâng, ạ, anh/chị/bạn).
-2. Chỉ trả lời dựa trên thông tin trên. Nếu khách hỏi giá cụ thể hoặc thông tin ngoài lề không có ở trên, hãy nói: 'Dạ, chi tiết này anh/chị vui lòng liên hệ Chat trực tiếp với nhân viên hoặc gọi vào hotline 0909 123 456 để được hỗ trợ chính xác nhất ạ'.
-3. Trả lời ngắn gọn, đi thẳng vào vấn đề.
+2. Khi khách hỏi giá, hãy tìm trong danh sách sản phẩm ở trên để báo giá cho khách.
+3. Nếu khách hỏi sản phẩm không có trong danh sách, hãy nói: 'Dạ hiện tại bên em chưa có sẵn thông tin của sản phẩm này, anh/chị vui lòng để lại số điện thoại hoặc gọi 0909 123 456 để nhân viên kiểm tra kho ạ'.
+4. Trả lời tự nhiên, ngắn gọn và thân thiện.
 ";
 
                 // API Key của bạn
-                string apiKey = "AIzaSyCY8KIHeLA_PpP_VUNQap9-0c6CNEl2LUg";
+                string apiKey = "AIzaSyDgBOtnH0-VOFtDvWm2qJzEO70bj22ZnOI"; // <-- ĐÃ THAY BẰNG KEY MỚI
 
                 using (var httpClient = new HttpClient())
                 {
-                    // ĐÃ SỬA: Đổi lại model name thành bản ổn định nhất là gemini-pro
-                    var apiUrl = $"https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key={apiKey}";
-
-                    // Kết hợp thông tin cửa hàng + Cấu trúc yêu cầu + Câu hỏi của khách
+                    var apiUrl = $"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key={apiKey}";
                     string finalPrompt = thongTinCuaHang + "\n\nCâu hỏi của khách hàng: " + userMessage;
 
                     var payload = new
                     {
-                        contents = new[]
-                        {
-                            new { parts = new[] { new { text = finalPrompt } } }
-                        }
+                        contents = new[] { new { parts = new[] { new { text = finalPrompt } } } }
                     };
 
                     var content = new StringContent(JsonSerializer.Serialize(payload), Encoding.UTF8, "application/json");
@@ -71,29 +95,33 @@ Nguyên tắc trả lời:
                         var jsonString = await response.Content.ReadAsStringAsync();
                         using (var doc = JsonDocument.Parse(jsonString))
                         {
-                            // Trích xuất text từ JSON trả về của Gemini
-                            aiResponse = doc.RootElement
-                                .GetProperty("candidates")[0]
-                                .GetProperty("content")
-                                .GetProperty("parts")[0]
-                                .GetProperty("text").GetString();
+                            try
+                            {
+                                aiResponse = doc.RootElement
+                                    .GetProperty("candidates")[0]
+                                    .GetProperty("content")
+                                    .GetProperty("parts")[0]
+                                    .GetProperty("text").GetString();
+                            }
+                            catch
+                            {
+                                aiResponse = "Dạ xin lỗi, câu hỏi này nằm ngoài khả năng xử lý của mình. Bạn vui lòng gọi hotline nhé!";
+                            }
                         }
                     }
                     else
                     {
-                        // Giữ nguyên việc đọc chi tiết lỗi để kiểm tra API Key
-                        string errorDetails = await response.Content.ReadAsStringAsync();
-                        aiResponse = $"Lỗi từ Google (Mã {response.StatusCode}): {errorDetails}";
+                        aiResponse = "Hệ thống AI đang bảo trì, bạn đợi xíu nhé!";
                     }
                 }
             }
             catch (Exception ex)
             {
-                aiResponse = "Đã xảy ra lỗi kết nối C#: " + ex.Message;
+                aiResponse = "Hệ thống đang bận. Bạn vui lòng đợi một lát nhé.";
+                Console.WriteLine("Lỗi: " + ex.Message);
             }
 
-            // Trả kết quả về cho JavaScript
-            return Json(new { reply = aiResponse });
+            return Ok(new { reply = aiResponse });
         }
     }
 }

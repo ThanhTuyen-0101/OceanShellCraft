@@ -1,0 +1,119 @@
+﻿@{
+    string propName = ViewData["PropName"]?.ToString() ?? "";
+    string defaultText = ViewData["DefaultText"]?.ToString() ?? "";
+    string defaultValue = ViewData["DefaultValue"]?.ToString() ?? "";
+    string selectedValue = ViewData["SelectedValue"]?.ToString() ?? "";
+    string selectedText = ViewData["SelectedText"]?.ToString() ?? defaultText;
+    string onChange = ViewData["OnChange"]?.ToString() ?? "";
+    var items = ViewData["Items"] as IEnumerable<Microsoft.AspNetCore.Mvc.Rendering.SelectListItem>;
+
+    string realId = "real_" + propName;
+    string textId = "text_" + propName;
+}
+
+<style>
+    /* Ép menu luôn nằm trên cùng của mọi lớp */
+    .dropdown-menu {
+        z-index: 99999 !important;
+        position: absolute !important;
+        background-color: #1e1e1e !important;
+        border: 1px solid rgba(255, 255, 255, 0.1) !important;
+        border-radius: 12px !important;
+        backdrop-filter: blur(15px);
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.8) !important;
+        margin-top: 5px !important;
+    }
+
+    /* Đảm bảo các thuộc tính bootstrap không ghi đè overflow */
+    .dropdown {
+        position: relative;
+        overflow: visible !important;
+    }
+
+    /* Hiệu ứng trượt nhẹ */
+    .dropdown-menu.show {
+        animation: glassDropdownFadeIn 0.2s ease-out;
+    }
+
+    @@keyframes glassDropdownFadeIn {
+        from {
+            opacity: 0;
+            transform: translateY(10px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .dropdown-item {
+        color: rgba(255, 255, 255, 0.8) !important;
+        transition: all 0.2s;
+    }
+
+        .dropdown-item:hover {
+            background-color: rgba(255, 255, 255, 0.1) !important;
+            color: white !important;
+            padding-left: 15px;
+        }
+</style>
+
+<select name="@propName" id="@realId" class="d-none">
+    <option value="@defaultValue">@defaultText</option>
+    @if (items != null)
+    {
+        foreach (var item in items)
+        {
+            <option value="@item.Value" selected="@(item.Value == selectedValue)">@item.Text</option>
+        }
+    }
+</select>
+
+<div class="dropdown w-100">
+    <button class="glass-input d-flex justify-content-between align-items-center w-100 text-start small text-white shadow-none"
+            type="button"
+            data-bs-toggle="dropdown"
+            data-bs-boundary="viewport" @* Quyết định việc nổi lên trên cùng *@
+            aria-expanded="false"
+            style="background-color: #1e1e1e; border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; outline: none; height: 38px;">
+        <span id="@textId">
+            @(string.IsNullOrEmpty(selectedText) ? defaultText : selectedText)
+        </span>
+        <i class="bi bi-chevron-down small opacity-50"></i>
+    </button>
+
+    <ul class="dropdown-menu w-100 p-2 shadow-lg">
+        <li>
+            <a class="dropdown-item rounded-3 small opacity-75" href="javascript:void(0)"
+               onclick="chonMenuThaXuong('@realId', '@textId', '@defaultValue', '@defaultText', '@onChange')">
+                @defaultText
+            </a>
+        </li>
+        @if (items != null)
+        {
+            foreach (var item in items)
+            {
+                <li>
+                    <a class="dropdown-item rounded-3 small" href="javascript:void(0)"
+                       onclick="chonMenuThaXuong('@realId', '@textId', '@item.Value', '@item.Text', '@onChange')">
+                        @item.Text
+                    </a>
+                </li>
+            }
+        }
+    </ul>
+</div>
+
+<script>
+    if (typeof chonMenuThaXuong !== 'function') {
+        function chonMenuThaXuong(realId, textId, val, text, onChangeHam) {
+            document.getElementById(realId).value = val;
+            document.getElementById(textId).innerText = text;
+
+            if (onChangeHam && typeof window[onChangeHam] === "function") {
+                window[onChangeHam](val);
+            }
+        }
+    }
+</script>

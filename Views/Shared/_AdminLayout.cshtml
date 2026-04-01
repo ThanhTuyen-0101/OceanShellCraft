@@ -3,98 +3,95 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - Admin OceanShellCraft</title>
+    <title>@ViewData["Title"] - Admin OceanShell</title>
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
     <link rel="stylesheet" href="~/css/site.css" />
 </head>
-<body class="overflow-hidden p-0 m-0">
+<body class="overflow-hidden p-0 m-0 bg-dark text-white">
 
-    <div class="d-flex flex-nowrap vh-100 vw-100">
+    <div id="admin-layout" class="d-flex flex-nowrap vh-100 vw-100 p-3 gap-4">
 
-        <div class="glass-effect d-flex flex-column p-4 h-100" style="width: 280px; z-index: 10;">
+        <aside class="glass-effect d-flex flex-column align-items-center py-4 h-100" style="width: 85px; flex-shrink: 0; z-index: 10; border-radius: 30px !important;">
 
-            <a href="/" class="d-flex align-items-center mb-5 text-decoration-none text-white px-2">
-                <span class="fs-4 fw-light">Admin</span>
+            <a href="/admin" class="text-decoration-none mb-4 d-flex justify-content-center" title="Trang chủ Ocean">
+                <img src="/img/logo.png" alt="Ocean Logo" style="width: 45px; height: 45px; object-fit: contain;" />
             </a>
 
-            <ul class="nav flex-column gap-2 mb-4">
-                <li class="nav-item">
-                    <a href="/Admin" class="glass-btn w-100 d-flex align-items-center justify-content-start ps-4 py-2 border-0 bg-transparent text-decoration-none text-white">
-                        <i class="bi bi-grid-1x2-fill me-3"></i>
-                        <span>Tổng quan</span>
+            <nav class="flex-grow-1 overflow-auto hide-scrollbar w-100 mt-2">
+                <ul class="nav flex-column gap-4 align-items-center mb-auto list-unstyled">
+                    <li class="nav-item">
+                        <a href="/admin" class="nav-link text-white p-2 fs-5 opacity-hover d-flex align-items-center justify-content-center" title="Tổng quan">
+                            <i class="bi bi-grid-1x2-fill"></i>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="/admin/bai-viet" class="nav-link text-white p-2 fs-5 opacity-hover d-flex align-items-center justify-content-center" title="Bài viết">
+                            <i class="bi bi-journal-text"></i>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="/admin/san-pham" class="nav-link text-white p-2 fs-5 opacity-hover d-flex align-items-center justify-content-center" title="Sản phẩm">
+                            <i class="bi bi-box-seam"></i>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="/admin/giam-gia" class="nav-link text-white p-2 fs-5 opacity-hover d-flex align-items-center justify-content-center" title="Mã giảm giá">
+                            <i class="bi bi-ticket-perforated"></i>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="/admin/nguoi-dung" class="nav-link text-white p-2 fs-5 opacity-hover d-flex align-items-center justify-content-center" title="Người dùng">
+                            <i class="bi bi-people"></i>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="/admin/hoa-don" class="nav-link text-white p-2 fs-5 opacity-hover d-flex align-items-center justify-content-center" title="Hóa đơn">
+                            <i class="bi bi-receipt"></i>
+                        </a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a href="/admin/quan-ly-danh-muc" class="nav-link text-white p-2 fs-5 opacity-hover d-flex align-items-center justify-content-center" title="Danh mục">
+                            <i class="bi bi-tags"></i>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="/admin/quan-ly-bien-the" class="nav-link text-white p-2 fs-5 opacity-hover d-flex align-items-center justify-content-center" title="Biến thể">
+                            <i class="bi bi-collection"></i>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#" class="nav-link text-white p-2 fs-5 opacity-hover d-flex align-items-center justify-content-center" title="Vận chuyển">
+                            <i class="bi bi-truck"></i>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#" class="nav-link text-white p-2 fs-5 opacity-hover d-flex align-items-center justify-content-center" title="Phân quyền">
+                            <i class="bi bi-shield-lock"></i>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+
+            <div class="mt-auto d-flex flex-column gap-4 align-items-center w-100 pt-3">
+                <div class="dropup d-flex justify-content-center">
+                    <a href="#" class="text-decoration-none text-white fs-3 opacity-hover" data-bs-toggle="dropdown" aria-expanded="false" title="Tài khoản">
+                        <img src="/img/logo.png" alt="User" class="rounded-circle" style="width: 35px; height: 35px; background: rgba(255,255,255,0.2); padding: 5px;">
                     </a>
-                </li>
+                    <ul class="dropdown-menu glass-dropdown mb-2 border-0 shadow" style="min-width: 180px; margin-left: 20px;">
+                        <li><a class="dropdown-item text-white d-flex align-items-center gap-2 opacity-hover" href="#"><i class="bi bi-person-vcard"></i> Hồ sơ</a></li>
+                        <li><hr class="dropdown-divider bg-light opacity-25 my-1"></li>
+                        <li><a class="dropdown-item text-danger d-flex align-items-center gap-2 opacity-hover" href="#"><i class="bi bi-box-arrow-right"></i> Đăng xuất</a></li>
+                    </ul>
+                </div>
+            </div>
+        </aside>
 
-                <li class="nav-item">
-                    <a href="#collapseManagement"
-                       class="glass-btn w-100 d-flex align-items-center justify-content-between ps-4 py-2 opacity-75 border-0 bg-transparent text-decoration-none text-white"
-                       data-bs-toggle="collapse"
-                       role="button">
-                        <div class="d-flex align-items-center">
-                            <i class="bi bi-collection-fill me-3"></i>
-                            <span>Quản lý</span>
-                        </div>
-                        <i class="bi bi-chevron-down small pe-3"></i>
-                    </a>
-
-                    <div class="collapse" id="collapseManagement">
-                        <ul class="nav flex-column mt-1 gap-1">
-                            <li class="nav-item">
-                                <a href="/Admin/BaiViet" class="glass-btn w-100 d-flex align-items-center ps-5 py-2 opacity-75 border-0 bg-transparent text-decoration-none text-white">
-                                    <i class="bi bi-journal-text me-3"></i>
-                                    <span>Bài viết</span>
-                                </a>
-                            </li>
-                            <li class="nav-item">
-                                <a href="/Admin/SanPham" class="glass-btn w-100 d-flex align-items-center ps-5 py-2 opacity-75 border-0 bg-transparent text-decoration-none text-white">
-                                    <i class="bi bi-box-seam me-3"></i>
-                                    <span>Sản phẩm</span>
-                                </a>
-                            </li>
-                            <li class="nav-item">
-                                <a href="/Admin/GiamGia" class="glass-btn w-100 d-flex align-items-center ps-5 py-2 opacity-75 border-0 bg-transparent text-decoration-none text-white">
-                                    <i class="bi bi-box-seam me-3"></i>
-                                    <span>Mã giảm giá</span>
-                                </a>
-                            </li>
-                            <li class="nav-item">
-                                <a href="/Admin/NguoiDung" class="glass-btn w-100 d-flex align-items-center ps-5 py-2 opacity-75 border-0 bg-transparent text-decoration-none text-white">
-                                    <i class="bi bi-box-seam me-3"></i>
-                                    <span>Người dùng</span>
-                                </a>
-                            </li>
-                        </ul>
-                    </div>
-                </li>
-
-                <li class="nav-item">
-                    <a href="/Admin/Chat" class="glass-btn w-100 d-flex align-items-center justify-content-start ps-4 py-2 opacity-75 border-0 bg-transparent text-decoration-none text-white">
-                        <i class="bi bi-chat-dots me-3"></i>
-                        <span>Trò chuyện</span>
-                    </a>
-                </li>
-
-                <li class="nav-item">
-                    <a href="/Admin/HoaDon" class="glass-btn w-100 d-flex align-items-center justify-content-start ps-4 py-2 opacity-75 border-0 bg-transparent text-decoration-none text-white">
-                        <i class="bi bi-receipt me-3"></i>
-                        <span>Hóa đơn</span>
-                    </a>
-                </li>
-
-                <li class="nav-item">
-                    <a href="/Admin/CaiDat" class="glass-btn w-100 d-flex align-items-center justify-content-start ps-4 py-2 opacity-75 border-0 bg-transparent text-decoration-none text-white">
-                        <i class="bi bi-gear me-3"></i>
-                        <span>Cài đặt</span>
-                    </a>
-                </li>
-            </ul>
-        </div>
-
-        <div class="glass-effect flex-grow-1 p-4 p-md-5 d-flex flex-column h-100 overflow-auto border-start-0" style="z-index: 5;">
+        <main class="flex-grow-1 h-100 overflow-auto hide-scrollbar" style="z-index: 5;">
             @RenderBody()
-        </div>
+        </main>
 
     </div>
 

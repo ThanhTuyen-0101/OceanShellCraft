@@ -1,0 +1,51 @@
+﻿@model OceanShellCraft.Models.ViewModels.QuenMatKhauVM
+@{
+    ViewData["Title"] = "Xác nhận mã OTP";
+    ViewData["HideHeaderFooter"] = true;
+}
+
+<div class="login-scope container-fluid g-0">
+    <div class="row g-0 min-vh-100">
+        <div class="col-lg-6 d-flex flex-column justify-content-center p-5 position-relative">
+            <div class="my-auto animate__animated animate__fadeInLeft">
+                <h1 class="display-3 mb-0" style="line-height: 1.1;">Xác minh <br />danh tính</h1>
+                <p class="mt-4 opacity-75">Vui lòng nhập mã OTP gồm 6 chữ số đã được gửi vào hòm thư Email của bạn.</p>
+            </div>
+        </div>
+
+        <div class="col-lg-6 glass-effect d-flex align-items-center justify-content-center p-4 p-md-5">
+            <div class="w-100" style="max-width: 420px;">
+                <h2 class="mb-5 fs-1">Nhập mã OTP</h2>
+
+                @if (ViewBag.Loi != null)
+                {
+                    <div class="alert alert-danger bg-danger bg-opacity-10 border-0 text-white small mb-4">
+                        <i class="bi bi-exclamation-circle me-2"></i> @ViewBag.Loi
+                    </div>
+                }
+
+                <form action="/xac-nhan-otp" method="post" autocomplete="off">
+                    @Html.AntiForgeryToken()
+
+                    <div class="mb-5">
+                        <label class="mb-2 ps-2 small opacity-75">Mã xác nhận (6 số)</label>
+                        <input asp-for="OTP" type="text" class="glass-input pill-style text-center fs-2"
+                               placeholder="000000" maxlength="6" required
+                               style="letter-spacing: 10px; font-weight: bold;" />
+                        <span asp-validation-for="OTP" class="text-danger small ms-2"></span>
+                    </div>
+
+                    <button type="submit" class="glass-btn w-100 py-2 mb-4 fs-5">
+                        Xác nhận mã
+                    </button>
+
+                    <div class="text-center mt-5">
+                        <a href="/quen-mat-khau" class="text-decoration-none small opacity-75">
+                            Gửi lại mã khác
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

@@ -2,29 +2,76 @@
 @{
     Layout = "~/Views/Shared/_AdminLayout.cshtml";
     ViewData["Title"] = "Quản lý bài viết";
+
+    var totalPosts = Model?.Count() ?? 0;
+    var totalLikes = Model?.Sum(x => x.LuotThich) ?? 0;
+    var totalViews = Model?.Sum(x => x.LuotXem) ?? 0;
+    var totalComments = Model?.Sum(x => x.TongLuotDanhGia) ?? 0;
 }
 
-<div class="container-fluid py-4">
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h4 class="m-0 fw-normal">@ViewData["Title"]</h4>
+@Html.AntiForgeryToken()
 
-        <div class="d-flex gap-3 align-items-center">
-            <a href="/Admin/ThemSuaBaiViet" id="btnAdd" class="glass-btn small py-1 px-3 fw-normal">
-                <i class="bi bi-plus-circle me-1"></i> Thêm mới (F7)
-            </a>
-        </div>
+<div class="container-fluid py-4">
+    @* --- Thống kê --- *@
+    <div class="row g-4 mb-4">
+        @foreach (var stat in new[] {
+                new { Lab = "Tổng bài viết", Val = totalPosts, Icon = "bi-file-earmark-richtext" },
+                new { Lab = "Tổng lượt xem", Val = totalViews, Icon = "bi-eye" },
+                new { Lab = "Tổng lượt thích", Val = totalLikes, Icon = "bi-heart" },
+                new { Lab = "Bình luận", Val = totalComments, Icon = "bi-chat-dots" }
+                })
+        {
+            <div class="col-12 col-sm-6 col-xl-3">
+                <div class="glass-card d-flex justify-content-between align-items-center">
+                    <div>
+                        <p class="mb-0 opacity-50 small">@stat.Lab</p>
+                        <h4 class="mb-0">@stat.Val.ToString("N0")</h4>
+                    </div>
+                    <i class="@stat.Icon fs-2 opacity-25"></i>
+                </div>
+            </div>
+        }
     </div>
 
-    <div class="glass-card p-0 overflow-hidden">
-        <div class="table-responsive hide-scrollbar">
-            <table class="glass-table mb-0 align-middle">
+    @* --- Danh sách bài viết --- *@
+    <div class="glass-card p-4">
+        <div class="d-flex flex-wrap justify-content-between align-items-center mb-4 pb-3" style="border-bottom: 1px solid rgba(255, 255, 255, 0.05);">
+            <div class="d-flex align-items-center gap-2">
+                <div class="glass-circle-ghost" style="width: 32px; height: 32px;">
+                    <i class="bi bi-journal-text opacity-75"></i>
+                </div>
+                <h5 class="m-0 opacity-75">Quản lý bài viết</h5>
+            </div>
+
+            <div class="d-flex gap-2">
+                @* ĐÃ CẬP NHẬT: NÚT XÓA CHUYỂN TỪ ĐỎ SANG TRẮNG *@
+                <button id="btnBulkDelete" class="glass-btn d-none"
+                        style="background: transparent !important; backdrop-filter: none !important; border: 1px solid rgba(255, 255, 255, 0.3) !important; color: #ffffff !important;"
+                        onclick="bulkDeletePosts()">
+                    <i class="bi bi-trash me-2"></i> Xóa đã chọn
+                </button>
+
+                @* NÚT THÊM MỚI: Màu trắng trong suốt *@
+                <a href="/admin/them-sua-bai-viet" class="glass-btn text-decoration-none"
+                   style="background: transparent !important; backdrop-filter: none !important; border: 1px solid rgba(255,255,255,0.3) !important;">
+                    <i class="bi bi-plus-lg me-2"></i> Thêm bài mới (F7)
+                </a>
+            </div>
+        </div>
+
+        <div class="table-responsive">
+            <table class="glass-table align-middle w-100">
                 <thead>
                     <tr>
-                        <th class="ps-4 fw-normal" style="width: 10%;">Ảnh nền</th>
-                        <th class="fw-normal" style="width: 25%;">Tiêu đề</th>
-                        <th class="fw-normal" style="width: 35%;">Nội dung tóm tắt</th>
-                        <th class="text-center fw-normal" style="width: 15%;">Tác giả</th>
-                        <th class="text-end pe-4 fw-normal" style="width: 15%;">Thao tác</th>
+                        <th class="ps-3" style="width: 40px;">
+                            <input type="checkbox" class="form-check-input shadow-none" id="selectAll"
+                                   style="background-color: transparent !important; border: 1px solid rgba(255,255,255,0.6) !important;">
+                        </th>
+                        <th style="width: 70px;">Ảnh</th>
+                        <th>Bài viết</th>
+                        <th>Phân loại</th>
+                        <th class="text-center">Tương tác</th>
+                        <th class="text-end pe-4">Thao tác</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -32,33 +79,38 @@
                     {
                         foreach (var item in Model)
                         {
-                            <tr>
-                                <td class="ps-4 py-3">
-                                    <img src="@(string.IsNullOrEmpty(item.AnhNen) ? "/img/no-image.png" : item.AnhNen)"
-                                         class="rounded-circle object-fit-cover"
-                                         style="width: 45px; height: 45px; border: 1px solid var(--border-light);" alt="thumbnail" />
+                            <tr onmouseover="this.style.background='rgba(255, 255, 255, 0.04)'" onmouseout="this.style.background='transparent'">
+                                <td class="ps-3">
+                                    <input type="checkbox" class="form-check-input item-checkbox shadow-none" value="@item.Id"
+                                           style="background-color: transparent !important; border: 1px solid rgba(255,255,255,0.4) !important;">
                                 </td>
                                 <td>
-                                    @* Bỏ ToLower() để giữ định dạng tiêu đề chuẩn *@
-                                    <span class="opacity-100">@item.TieuDe</span>
+                                    <img src="@(string.IsNullOrEmpty(item.AnhNen) ? "/img/no-image-post.png" : item.AnhNen)"
+                                         class="rounded-3 object-fit-cover shadow-sm" style="width: 48px; height: 48px; border: 1px solid rgba(255,255,255,0.1);" />
+                                </td>
+                                <td style="max-width: 300px;">
+                                    <div class="text-truncate fw-bold mb-1">@item.TieuDe</div>
+                                    <div class="small opacity-50">
+                                        <i class="bi bi-person me-1"></i>@item.TacGia • @item.NgayDang?.ToString("dd/MM/yyyy")
+                                    </div>
                                 </td>
                                 <td>
-                                    <span class="opacity-75 small">
-                                        @(string.IsNullOrEmpty(item.NoiDungTomTat) ? "" : (item.NoiDungTomTat.Length > 80 ? item.NoiDungTomTat.Substring(0, 80) + "..." : item.NoiDungTomTat))
-                                    </span>
+                                    <span class="badge border border-white border-opacity-10 fw-light">@item.HinhThuc</span>
                                 </td>
                                 <td class="text-center">
-                                    <span class="small opacity-75">Admin</span>
+                                    <div class="d-flex flex-column gap-1">
+                                        <span class="small"><i class="bi bi-eye me-1"></i>@item.LuotXem</span>
+                                        <span class="small opacity-50"><i class="bi bi-heart me-1"></i>@item.LuotThich</span>
+                                    </div>
                                 </td>
                                 <td class="text-end pe-4">
-                                    <div class="d-flex justify-content-end gap-2">
-                                        <a asp-action="ThemSuaBaiViet" asp-route-id="@item.Id" class="glass-btn py-1 px-2 fw-normal" title="Sửa">
-                                            <i class="bi bi-pencil small"></i>
+                                    <div class="d-flex justify-content-end gap-1">
+                                        <a href="/admin/them-sua-bai-viet/@item.Id" class="glass-circle-ghost p-2 text-decoration-none">
+                                            <i class="bi bi-pencil opacity-75"></i>
                                         </a>
-                                        <form asp-action="XoaBaiViet" asp-route-id="@item.Id" method="post"
-                                              onsubmit="return confirm('Bạn có chắc chắn muốn xóa bài viết này không?')" style="display:inline;">
-                                            <button type="submit" class="glass-btn py-1 px-2 fw-normal opacity-75" title="Xóa">
-                                                <i class="bi bi-trash small"></i>
+                                        <form action="/admin/xoa-bai-viet/@item.Id" method="post" class="d-inline" onsubmit="return confirm('Xác nhận xóa bài viết này?');">
+                                            <button type="submit" class="glass-circle-ghost border-0 p-2">
+                                                <i class="bi bi-trash3 opacity-75"></i>
                                             </button>
                                         </form>
                                     </div>
@@ -69,35 +121,83 @@
                     else
                     {
                         <tr>
-                            <td colspan="5" class="text-center py-5 opacity-50 fw-normal fw-italic">Không có dữ liệu bài viết</td>
+                            <td colspan="6" class="text-center py-5 opacity-50">Chưa có dữ liệu bài viết</td>
                         </tr>
                     }
                 </tbody>
             </table>
         </div>
     </div>
-
-    @if (Model != null && Model.Any())
-    {
-        <div class="d-flex justify-content-between align-items-center mt-4 pt-3 opacity-75 small" style="border-top: 1px solid var(--border-light);">
-            <span>Hiển thị @Model.Count() bài viết</span>
-            <div class="d-flex gap-2">
-                <button class="glass-btn small py-1 px-3 border-0 opacity-50 fw-normal">Trước</button>
-                <button class="glass-btn small py-1 px-3 border-0 fw-normal">Sau</button>
-            </div>
-        </div>
-    }
 </div>
 
 @section Scripts {
     <script>
-        // Bắt sự kiện phím tắt F7 để thêm mới bài viết
-        document.addEventListener('keydown', function(e) {
-            if (e.key === 'F7') {
+        // Phím tắt F7
+        document.addEventListener('keydown', e => {
+            if (e.key.toLowerCase() === 'f7') {
                 e.preventDefault();
-                const btn = document.getElementById('btnAdd');
-                if(btn) btn.click();
+                window.location.href = '/admin/them-sua-bai-viet';
             }
         });
+
+        // Chọn nhiều
+        const selectAll = document.getElementById('selectAll');
+        const btnBulkDelete = document.getElementById('btnBulkDelete');
+
+        selectAll?.addEventListener('change', function() {
+            const checkboxes = document.querySelectorAll('.item-checkbox');
+            checkboxes.forEach(cb => {
+                cb.checked = this.checked;
+                cb.style.borderColor = this.checked ? "#fff" : "rgba(255,255,255,0.4)";
+            });
+            toggleBulkBtn();
+        });
+
+        document.addEventListener('change', e => {
+            if (e.target.classList.contains('item-checkbox')) {
+                e.target.style.borderColor = e.target.checked ? "#fff" : "rgba(255,255,255,0.4)";
+                toggleBulkBtn();
+            }
+        });
+
+        function toggleBulkBtn() {
+            const checkedCount = document.querySelectorAll('.item-checkbox:checked').length;
+            if(checkedCount > 0) {
+                btnBulkDelete.classList.remove('d-none');
+                btnBulkDelete.classList.add('d-inline-flex');
+                btnBulkDelete.innerHTML = `<i class="bi bi-trash me-2"></i> Xóa đã chọn (${checkedCount})`;
+            } else {
+                btnBulkDelete.classList.add('d-none');
+                btnBulkDelete.classList.remove('d-inline-flex');
+            }
+        }
+
+        // AJAX Xóa hàng loạt
+        async function bulkDeletePosts() {
+            const ids = Array.from(document.querySelectorAll('.item-checkbox:checked')).map(cb => parseInt(cb.value));
+            if (!confirm(`Xác nhận xóa vĩnh viễn ${ids.length} bài viết đã chọn?`)) return;
+
+            const token = document.querySelector('input[name="__RequestVerificationToken"]')?.value;
+
+            try {
+                const response = await fetch('/admin/xoa-nhieu-bai-viet', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'RequestVerificationToken': token
+                    },
+                    body: JSON.stringify(ids)
+                });
+
+                const result = await response.json();
+                if (result.success) {
+                    location.reload();
+                } else {
+                    alert("Lỗi: " + result.message);
+                }
+            } catch (err) {
+                alert("Lỗi kết nối máy chủ!");
+            }
+        }
     </script>
 }

@@ -1,49 +1,100 @@
 ﻿@model List<OceanShellCraft.Models.TinNhan>
 @{
-    ViewData["Title"] = "hỗ trợ trực tuyến";
+    ViewData["Title"] = "Hỗ trợ trực tuyến";
     Layout = "~/Views/Shared/_KhachHangLayout.cshtml";
 }
 
-<div class="glass-card p-0 d-flex flex-column overflow-hidden" style="height: calc(100vh - 150px);">
+@* Container chính: Sử dụng class Bootstrap để quản lý layout và độ trong suốt *@
+<div class="d-flex flex-column h-100 bg-transparent overflow-hidden">
 
-    <div class="p-3 d-flex align-items-center" style="border-bottom: 1px solid var(--border-light);">
-        <div class="glass-circle me-3" style="width: 45px; height: 45px; overflow: hidden; border: 1px solid var(--border-light);">
-            <img src="/img/logo-small.jpg" alt="logo" width="45" height="45">
+    @* Header: Sử dụng border của Bootstrap và class hỗ trợ từ site.css *@
+    <div class="p-3 px-4 d-flex align-items-center border-bottom border-white border-opacity-10 bg-transparent">
+        <div class="glass-circle me-3">
+            @* Sử dụng class Bootstrap để xử lý ảnh *@
+            <img src="/img/logo.png" alt="Ocean Logo" class="w-100 h-100 object-fit-contain p-1">
         </div>
         <div>
-            <h6 class="m-0">oceanshellcraft support</h6>
-            <small class="opacity-75"><i class="bi bi-circle-fill me-1" style="color: #28a745; font-size: 0.5rem;"></i> Trực tuyến</small>
+            <h6 class="m-0 fw-bold text-white">OceanShellCraft Support</h6>
+            <small class="text-white opacity-75">
+                <i class="bi bi-circle-fill me-1 small"></i> Trực tuyến
+            </small>
         </div>
     </div>
 
-    <div id="customer-chat-content" class="flex-grow-1 p-4 overflow-auto d-flex flex-column gap-3 hide-scrollbar">
-        @foreach (var msg in Model)
+    @* Nội dung tin nhắn: Sử dụng class hide-scrollbar từ site.css *@
+    <div id="customer-chat-content" class="flex-grow-1 p-4 overflow-auto d-flex flex-column gap-4 hide-scrollbar bg-transparent">
+        @if (Model != null && Model.Any())
         {
-            bool isMe = !msg.IsAdmin;
-            <div class="d-flex gap-3 @(isMe ? "justify-content-end" : "")">
-                @if (!isMe)
-                {
-                    <div class="glass-circle align-self-end" style="width: 35px; height: 35px; flex-shrink: 0;">
-                        <img src="/img/logo-small.jpg" class="rounded-circle" width="35" height="35" style="opacity: 0.8;">
+            @foreach (var msg in Model)
+            {
+                var isMe = !msg.IsAdmin;
+                <div class="d-flex gap-3 @(isMe ? "justify-content-end" : "justify-content-start")">
+
+                    @if (!isMe)
+                    {
+                        @* Avatar hệ thống *@
+                        <div class="glass-circle align-self-end">
+                            <img src="/img/logo.png" class="w-100 h-100 object-fit-contain p-1">
+                        </div>
+                    }
+
+                    <div class="w-75">
+                        <small class="mb-1 d-block text-white opacity-50 @(isMe ? "text-end" : "")">
+                            @(isMe ? "Bạn" : "OceanShellCraft")
+                        </small>
+
+                        @* Sử dụng các class chat-bubble đã có trong site.css *@
+                        <div class="chat-bubble-sm @(isMe ? "sent-sm" : "received-sm")">
+                            @msg.NoiDung
+                        </div>
+
+                        <small class="mt-1 d-block text-white opacity-50 @(isMe ? "text-end" : "")">
+                            @msg.ThoiGian.ToString("HH:mm")
+                        </small>
                     </div>
-                }
-                <div style="max-width: 75%;">
-                    <small class="opacity-50 mb-1 d-block @(isMe ? "text-end" : "")">@(isMe ? "bạn" : "oceanshellcraft")</small>
-                    <div class="chat-bubble-sm @(isMe ? "sent-sm" : "received-sm")">
-                        @msg.NoiDung?.ToLower()
-                    </div>
-                    <small class="opacity-50 mt-1 d-block @(isMe ? "text-end" : "")" style="font-size: 0.7rem;">@msg.ThoiGian.ToString("HH:mm")</small>
                 </div>
+            }
+        }
+        else
+        {
+            <div class="text-center my-auto text-white opacity-25">
+                <i class="bi bi-chat-dots fs-1 d-block mb-2"></i>
+                <p>Bắt đầu cuộc trò chuyện với chúng tôi</p>
             </div>
         }
     </div>
 
-    <div class="p-3">
-        <div class="d-flex gap-2 align-items-center">
-            <input type="text" id="cust-page-input" class="glass-input pill-style flex-grow-1" placeholder="nhập tin nhắn...">
-            <button id="cust-page-send-btn" class="glass-circle" style="width: 45px; height: 45px; flex-shrink: 0;">
-                <i class="bi bi-send"></i>
+    @* Footer nhập liệu *@
+    <div class="p-4 border-top border-white border-opacity-10 bg-transparent">
+        <div class="d-flex gap-3 align-items-center">
+            @* Class glass-input từ site.css *@
+            <input type="text" id="cust-page-input" class="glass-input" placeholder="Nhập tin nhắn của bạn...">
+
+            @* Class glass-circle từ site.css cho nút gửi *@
+            <button id="cust-page-send-btn" class="glass-circle border-0">
+                <i class="bi bi-send-fill"></i>
             </button>
         </div>
     </div>
 </div>
+
+@section Scripts {
+    <script>
+        // Logic cuộn mượt bằng JavaScript
+        const chatContainer = document.getElementById('customer-chat-content');
+        if (chatContainer) {
+            chatContainer.scrollTop = chatContainer.scrollHeight;
+        }
+
+        // Logic hover đơn giản cho nút gửi (vì không được dùng CSS mới)
+        const sendBtn = document.getElementById('cust-page-send-btn');
+        if (sendBtn) {
+            sendBtn.addEventListener('mouseenter', () => {
+                sendBtn.classList.add('opacity-75');
+            });
+            sendBtn.addEventListener('mouseleave', () => {
+                sendBtn.classList.remove('opacity-75');
+            });
+        }
+    </script>
+}

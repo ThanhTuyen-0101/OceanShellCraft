@@ -1,34 +1,68 @@
 ﻿@model IEnumerable<OceanShellCraft.Models.GiamGia>
+@using OceanShellCraft.Models
 @{
     Layout = "~/Views/Shared/_AdminLayout.cshtml";
     ViewData["Title"] = "Quản lý mã giảm giá";
+
+    var thongKeDatar = new List<dynamic>
+    {
+        new { TieuDe = "Tổng lượt dùng", GiaTri = ViewBag.TongLuotDung, Icon = "bi-ticket-perforated", Opacity = "opacity-50" },
+        new { TieuDe = "Tiền đã giảm", GiaTri = ViewBag.TongTienGiam?.ToString("N0") + "đ", Icon = "bi-cash-coin", Opacity = "opacity-50" },
+        new { TieuDe = "Tỷ lệ dùng", GiaTri = "8.5%", Icon = "bi-graph-up-arrow", Opacity = "opacity-50" },
+        new { TieuDe = "Mã tốt nhất", GiaTri = ViewBag.MaHieuQua, Icon = "bi-award", Opacity = "opacity-50" }
+    };
 }
 
 <div class="container-fluid py-4">
-    @* --- Đầu trang --- *@
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <div>
-            <h4 class="m-0 fw-normal">@ViewData["Title"]</h4>
-        </div>
 
-        <div class="d-flex gap-2">
-            <a href="/Admin/ThemSuaGiamGia" class="glass-btn small py-1 px-3 fw-normal">
-                <i class="bi bi-plus-circle me-1"></i>Thêm mới (F7)
-            </a>
-        </div>
+    @await Html.PartialAsync("_TheThongKe", thongKeDatar)
+
+    @* Khối lọc dữ liệu: Đặt z-index cao để menu không bị đè *@
+    <div class="glass-card p-3 mb-4" style="background: transparent !important; box-shadow: none !important; border: none !important; position: relative; z-index: 1100;">
+        <form method="get" class="row g-2 align-items-end">
+            <div class="col-md-4">
+                <input type="text" name="search" class="glass-input form-control small" placeholder="Tìm mã hoặc tên..."
+                       style="background: transparent !important; border: none !important; box-shadow: 0 2px 8px var(--shadow-light) !important;">
+            </div>
+            <div class="col-md-3">
+                @{
+                    ViewData["PropName"] = "trangThai";
+                    ViewData["DefaultText"] = "Tất cả trạng thái";
+                    ViewData["DefaultValue"] = "";
+                    ViewData["SelectedValue"] = Context.Request.Query["trangThai"].ToString();
+                    ViewData["Items"] = new List<SelectListItem>
+                                {
+                                new SelectListItem { Value = "active", Text = "Đang chạy" },
+                                new SelectListItem { Value = "expired", Text = "Hết hạn" }
+                                };
+                    ViewData["OnChange"] = "filterByStatus";
+                }
+                <partial name="_MenuThaXuong" view-data="ViewData" />
+            </div>
+            <div class="col-md-5 text-end d-flex justify-content-end gap-2">
+                <button type="submit" class="glass-btn px-4 fw-normal small"
+                        style="background: transparent !important; border: none !important; box-shadow: 0 2px 8px var(--shadow-light) !important;">
+                    <i class="bi bi-filter me-1"></i> Lọc
+                </button>
+                <a href="/admin/them-sua-giam-gia" class="glass-btn px-4 fw-normal small"
+                   style="background: transparent !important; border: none !important; box-shadow: 0 2px 8px var(--shadow-light) !important;">
+                    <i class="bi bi-plus-lg me-1"></i> Tạo mã mới
+                </a>
+            </div>
+        </form>
     </div>
 
-    @* --- Bảng dữ liệu --- *@
-    <div class="glass-card p-0 overflow-hidden">
-        <div class="table-responsive">
+    @* Khối bảng dữ liệu: Quan trọng là overflow: visible *@
+    <div class="glass-card p-0" style="background: transparent !important; box-shadow: none !important; border: none !important; overflow: visible !important;">
+        <div class="table-responsive" style="overflow: visible !important;">
             <table class="glass-table mb-0 align-middle">
                 <thead>
                     <tr>
-                        <th class="ps-4" style="width: 40px;"><input type="checkbox" class="form-check-input" id="selectAll"></th>
-                        <th class="fw-normal">Mã Voucher</th>
-                        <th class="fw-normal">Tên Voucher</th>
-                        <th class="text-center fw-normal">Hạn sử dụng</th>
-                        <th class="text-center fw-normal">Đối tượng áp dụng</th>
+                        <th class="ps-4 fw-normal">Chương trình / Mã code</th>
+                        <th class="fw-normal">Loại giảm</th>
+                        <th class="fw-normal">Giá trị</th>
+                        <th class="text-center fw-normal">Đã dùng</th>
+                        <th class="text-center fw-normal">Thời hạn</th>
                         <th class="text-center fw-normal">Trạng thái</th>
                         <th class="text-end pe-4 fw-normal">Thao tác</th>
                     </tr>
@@ -41,51 +75,46 @@
                             var isExpired = item.HanSuDung < DateTime.Now;
                             <tr>
                                 <td class="ps-4">
-                                    <input type="checkbox" class="form-check-input item-checkbox" value="@item.Id">
+                                    <div class="fw-normal text-uppercase @(isExpired ? "opacity-50" : "")">@item.MaVoucher</div>
+                                    <div class="small @(isExpired ? "opacity-50" : "opacity-75")">@item.TenVoucher</div>
                                 </td>
                                 <td>
-                                    <div class="fw-bold text-uppercase @(isExpired ? "opacity-50" : "")">@item.MaVoucher</div>
+                                    <span class="fw-normal small @(isExpired ? "opacity-50" : "")">
+                                        @(item.LoaiGiam == LoaiGiam.PhanTram ? "Giảm %" : "Giảm tiền")
+                                    </span>
                                 </td>
                                 <td>
-                                    <div class="fw-normal @(isExpired ? "opacity-50" : "")">@item.TenVoucher</div>
+                                    <div class="fw-normal fs-6 @(isExpired ? "opacity-50" : "")">
+                                        @(item.LoaiGiam == LoaiGiam.PhanTram ? item.GiaTriGiam + "%" : item.GiaTriGiam.ToString("N0") + "đ")
+                                    </div>
+                                    <div class="small opacity-50">Đơn từ @item.DonHangToiThieu.ToString("N0")đ</div>
+                                </td>
+                                <td class="text-center small @(isExpired ? "opacity-50" : "")">
+                                    @item.SoLuongDaDung / @(item.SoLuongGioiHan == 0 ? "∞" : item.SoLuongGioiHan.ToString())
                                 </td>
                                 <td class="text-center">
-                                    @* Nếu hết hạn thì làm mờ ngày tháng đi *@
-                                    <div class="small @(isExpired ? "opacity-50" : "")">@item.HanSuDung.ToString("dd/MM/yyyy")</div>
-                                    <div class="small opacity-50">@item.HanSuDung.ToString("HH:mm")</div>
+                                    <div class="small @(isExpired ? "opacity-50" : "")">@item.NgayBatDau.ToString("dd/MM") - @item.HanSuDung.ToString("dd/MM/yyyy")</div>
                                 </td>
                                 <td class="text-center">
-                                    @* Dùng class glass-effect từ site.css *@
-                                    @if (item.NguoiDungId.HasValue)
-                                    {
-                                        <span class="badge glass-effect px-3 py-2 fw-normal @(isExpired ? "opacity-50" : "")">
-                                            Cá nhân: @(item.NguoiDung?.Id.ToString() ?? "N/A")
-                                        </span>
-                                    }
-                                    else
-                                    {
-                                        <span class="badge glass-effect px-3 py-2 fw-normal opacity-75 @(isExpired ? "opacity-50" : "")">
-                                            Dùng chung
-                                        </span>
-                                    }
-                                </td>
-                                <td class="text-center">
-                                    @* Phân biệt bằng độ mờ thay vì màu sắc *@
                                     @if (isExpired)
                                     {
-                                        <span class="badge glass-effect px-3 py-2 fw-normal opacity-50">Hết hạn</span>
+                                        <div class="small opacity-50">Hết hạn</div>
+                                    }
+                                    else if (!item.IsKichHoat)
+                                    {
+
+                                        <div class="small opacity-75">Tạm dừng</div>
                                     }
                                     else
                                     {
-                                        <span class="badge glass-effect px-3 py-2 fw-normal">Còn hạn</span>
+
+                                        <div class="small">Đang chạy</div>
                                     }
                                 </td>
                                 <td class="text-end pe-4">
-                                    <div class="d-flex justify-content-end gap-2">
-                                        <a asp-action="ThemSuaGiamGia" asp-route-id="@item.Id" class="glass-btn p-1 px-2 fw-normal"><i class="bi bi-pencil small"></i></a>
-                                        @* Đã bỏ class text-danger ở icon thùng rác *@
-                                        <a asp-action="XoaGiamGia" asp-route-id="@item.Id" class="glass-btn p-1 px-2 fw-normal" onclick="return confirm('Xác nhận xóa mã voucher này?');"><i class="bi bi-trash small"></i></a>
-                                    </div>
+                                    <a href="/admin/them-sua-giam-gia/@item.Id" class="glass-btn p-1 px-2 fw-normal" style="background: transparent !important; box-shadow: none !important; border: none !important;">
+                                        <i class="bi bi-pencil small"></i>
+                                    </a>
                                 </td>
                             </tr>
                         }
@@ -93,7 +122,7 @@
                     else
                     {
                         <tr>
-                            <td colspan="7" class="text-center py-4 opacity-50">Chưa có mã giảm giá nào</td>
+                            <td colspan="7" class="text-center py-5 opacity-50 fw-normal">Chưa có mã giảm giá nào</td>
                         </tr>
                     }
                 </tbody>
@@ -102,14 +131,15 @@
     </div>
 </div>
 
-@section Scripts {
-    <script>
-        // Phím tắt F7
-        document.addEventListener('keydown', e => {
-            if (e.key === 'F7') {
-                e.preventDefault();
-                window.location.href = '/Admin/ThemSuaGiamGia';
-            }
-        });
-    </script>
-}
+<style>
+    /* CSS bổ trợ để đảm bảo cấu trúc table-responsive không chặn menu */
+    .table-responsive {
+        position: relative;
+    }
+</style>
+
+<script>
+    function filterByStatus(val) {
+        console.log("Trạng thái đã chọn:", val);
+    }
+</script>

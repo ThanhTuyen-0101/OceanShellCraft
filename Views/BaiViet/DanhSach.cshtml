@@ -1,90 +1,247 @@
 ﻿@model IEnumerable<OceanShellCraft.Models.BaiViet>
+@{
+    ViewData["Title"] = "Bài viết - OceanShellCraft";
+}
+
+<style>
+    /* 1. Container chính cuộn dọc */
+    .ds-scroll-container {
+        height: 100vh;
+        overflow-y: scroll;
+        scroll-snap-type: y mandatory;
+        /* Ẩn thanh cuộn cho IE, Edge và Firefox */
+        -ms-overflow-style: none;
+        scrollbar-width: none;
+    }
+        /* Ẩn thanh cuộn dọc cho Chrome, Safari */
+        .ds-scroll-container::-webkit-scrollbar {
+            display: none;
+        }
+
+    /* 2. Track cuộn ngang (Slider bài viết) */
+    .ds-slider-track {
+        display: flex;
+        gap: 1.5rem;
+        overflow-x: auto;
+        padding-bottom: 20px; /* Giữ padding để bóng đổ không bị cắt */
+        scroll-snap-type: x mandatory;
+        /* QUAN TRỌNG: Ẩn thanh cuộn ngang */
+        -ms-overflow-style: none; /* IE và Edge */
+        scrollbar-width: none; /* Firefox */
+    }
+
+        /* Ẩn thanh cuộn ngang cho Chrome, Safari, Opera */
+        .ds-slider-track::-webkit-scrollbar {
+            display: none;
+        }
+
+    /* Các CSS còn lại giữ nguyên */
+    .article-card-wrapper {
+        flex: 0 0 auto;
+        width: 320px;
+        scroll-snap-align: center;
+    }
+
+    .article-card {
+        border-radius: 20px;
+        overflow: hidden;
+        position: relative;
+        cursor: pointer;
+        transition: transform 0.3s ease;
+    }
+
+        .article-card:hover {
+            transform: translateY(-10px);
+        }
+
+    .article-content-card {
+        padding: 20px;
+        background: rgba(255,255,255,0.05);
+        border-top: 1px solid rgba(255,255,255,0.1);
+    }
+
+    .nav-arrow {
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 45px;
+        height: 45px;
+        z-index: 10;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: rgba(0,0,0,0.5);
+        backdrop-filter: blur(10px);
+        border-radius: 50%;
+        color: white;
+        cursor: pointer;
+    }
+
+        .nav-arrow.left {
+            left: -20px;
+        }
+
+        .nav-arrow.right {
+            right: -20px;
+        }
+</style>
 
 <div class="ds-scroll-container hide-scrollbar" id="mainScroll">
+    @* PHẦN TRÊN: SLIDER *@
+    <section class="position-relative d-flex flex-column justify-content-center" style="height: 100vh; scroll-snap-align: start;">
+        <div class="container position-relative">
+            <div class="mb-5 ms-3">
+                <h1 class="display-4 fw-light mb-2">Thông tin đồ <br> mỹ nghệ</h1>
+                <p class="opacity-75">Cùng nhau khám phá những câu chuyện đằng sau mỗi tác phẩm</p>
+            </div>
 
-    @* --- SECTION 1: SLIDER THẺ BÀI VIẾT --- *@
-    <section class="d-flex align-items-start" style="height: 100vh; scroll-snap-align: start; padding-top: 15vh;">
-        <div class="w-100 overflow-hidden py-5">
-            <div class="ds-slider-track" id="sliderTrack">
-                @if (Model != null)
-                {
-                    @* Nhân bản dữ liệu để tạo hiệu ứng chạy vô tận *@
-                    @for (int i = 0; i < 3; i++)
+            <div class="position-relative mt-5">
+                <div class="nav-arrow left" onclick="document.getElementById('sliderTrack').scrollBy({left: -335, behavior: 'smooth'})">
+                    <i class="bi bi-chevron-left"></i>
+                </div>
+
+                <div class="ds-slider-track px-4" id="sliderTrack">
+                    @if (Model != null && Model.Any())
                     {
                         @foreach (var item in Model)
                         {
-                            // Xử lý viết hoa chữ cái đầu tiên cho Tiêu đề bài viết
-                            string tieuDe = item.TieuDe?.ToLower() ?? "Bài viết";
-                            if (!string.IsNullOrEmpty(tieuDe))
-                            {
-                                tieuDe = char.ToUpper(tieuDe[0]) + tieuDe.Substring(1);
-                            }
-
-                            <div class="glass-card m-3 text-center d-flex flex-column align-items-center" onclick="loadArticle('@item.Id')" style="width: 350px; cursor: pointer; border-radius: 40px;">
-                                <div class="mb-4">
-                                    <img src="@(item.AnhNen ?? "/img/bien.jpg")"
-                                         class="rounded-circle"
-                                         style="width:140px; height:140px; object-fit:cover; border: 1px solid var(--border-light); padding: 5px; background: var(--glass-bg);" />
+                            <div class="article-card-wrapper">
+                                <div class="glass-card article-card p-0" onclick="loadArticle('@item.Id')">
+                                    <div class="p-4 d-flex justify-content-center" style="background: rgba(255,255,255,0.05);">
+                                        <img src="@(string.IsNullOrEmpty(item.AnhNen) ? "/img/bien.jpg" : item.AnhNen)"
+                                             class="rounded-circle"
+                                             style="width: 150px; height: 150px; object-fit: cover; border: 5px solid rgba(255,255,255,0.2);" />
+                                    </div>
+                                    <div class="article-content-card text-center text-white">
+                                        <div class="small opacity-50 mb-2">@(item.HinhThuc ?? "Nghệ thuật") • @item.NgayTao.ToString("dd/MM/yyyy")</div>
+                                        <h5 class="mb-3 text-truncate">@item.TieuDe</h5>
+                                        <button class="glass-btn py-1 px-3" style="font-size: 0.85rem;">Đọc ngay</button>
+                                    </div>
                                 </div>
-                                <h3 class="fs-5 mb-3">@tieuDe</h3>
-                                <p class="small opacity-50">
-                                    Đọc câu chuyện <i class="bi bi-arrow-right ms-1"></i>
-                                </p>
                             </div>
                         }
                     }
-                }
+                </div>
+
+                <div class="nav-arrow right" onclick="document.getElementById('sliderTrack').scrollBy({left: 335, behavior: 'smooth'})">
+                    <i class="bi bi-chevron-right"></i>
+                </div>
             </div>
         </div>
     </section>
 
-    @* --- SECTION 2: CHI TIẾT BÀI VIẾT --- *@
+    @* PHẦN DƯỚI: CHI TIẾT *@
     <section id="section-detail" class="position-relative" style="min-height: 100vh; scroll-snap-align: start;">
-        <div class="container py-5 h-100 d-flex align-items-center justify-content-center">
-            <div id="detailPlaceholder" class="w-100 h-100">
+        <div class="container py-5">
+            <div id="detailPlaceholder">
                 <div class="text-center opacity-25 py-5">
                     <i class="bi bi-mouse fs-1 d-block mb-3"></i>
-                    <p class="fs-5">Cuộn hoặc chọn một câu chuyện để khám phá</p>
+                    <p class="fs-5">Chọn một bài viết để xem chi tiết và bình luận</p>
                 </div>
             </div>
         </div>
     </section>
 </div>
 
-<script>
-    // Hàm tải chi tiết bài viết qua AJAX
-    function loadArticle(id) {
-        const placeholder = document.getElementById('detailPlaceholder');
-        const detailSection = document.getElementById('section-detail');
+@section Scripts {
+    <script>
+        // 1. Hàm tải chi tiết bài viết (QUAN TRỌNG - Lỗi cũ nằm ở đây)
+        function loadArticle(id) {
+            const placeholder = document.getElementById('detailPlaceholder');
+            placeholder.innerHTML = '<div class="text-center py-5"><div class="spinner-border text-warning" role="status"></div><p class="mt-2">Đang tải...</p></div>';
 
-        // Hiệu ứng loading kính mờ
-        placeholder.innerHTML = `
-            <div class="d-flex justify-content-center py-5">
-                <div class="spinner-border opacity-25" style="width: 3rem; height: 3rem;" role="status"></div>
-            </div>`;
+            // Cuộn xuống khu vực hiển thị trước
+            document.getElementById('section-detail').scrollIntoView({ behavior: 'smooth' });
 
-        // Cuộn xuống phần chi tiết mượt mà
-        detailSection.scrollIntoView({ behavior: 'smooth' });
+            fetch(`/bai-viet/chi-tiet/${id}`)
+                .then(res => {
+                    if (!res.ok) throw new Error("Không tìm thấy bài viết");
+                    return res.text();
+                })
+                .then(html => {
+                    placeholder.innerHTML = html;
+                })
+                .catch(err => {
+                    placeholder.innerHTML = `<div class="alert alert-danger">${err.message}</div>`;
+                });
+        }
 
-        // Gọi API lấy nội dung bài viết
-        fetch(`/BaiViet/GetChiTiet/${id}`)
-            .then(res => {
-                if (!res.ok) throw new Error("Không thể tải bài viết");
-                return res.text();
-            })
-            .then(html => {
-                // Bọc trong glass-card chuẩn hệ thống
-                placeholder.innerHTML = `<div class="glass-card p-4 p-md-5" style="border-radius: 40px;">${html}</div>`;
-            })
-            .catch(err => {
-                placeholder.innerHTML = `<div class="text-center opacity-50">Có lỗi xảy ra khi tải nội dung.</div>`;
-            });
-    }
+        // 2. Hàm xử lý chọn số sao trong Dropdown (Gắn vào window để gọi từ HTML động)
+        window.chonMenuThaXuong = function(realId, textId, val, text) {
+            const input = document.getElementById(realId);
+            const label = document.getElementById(textId);
+            if(input) input.value = val;
+            if(label) label.innerText = text;
+        };
 
-    // Điều khiển hiệu ứng dừng/chạy khi tương tác với slider (Giữ lại logic chạy tự động)
-    const track = document.getElementById('sliderTrack');
-    if (track) {
-        track.addEventListener('mouseenter', () => track.style.animationPlayState = 'paused');
-        track.addEventListener('mouseleave', () => track.style.animationPlayState = 'running');
-    }
-</script>
+        // 3. Xử lý Gửi Bình Luận bằng Event Delegation
+        document.addEventListener('submit', function (e) {
+            const form = e.target;
+            if (form && form.id === 'formBinhLuanBV') {
+                e.preventDefault();
+
+                const saoInput = document.getElementById('real_SoSao');
+                if (!saoInput || !saoInput.value) {
+                    alert("Vui lòng chọn số sao đánh giá!");
+                    return;
+                }
+
+                const formData = new FormData(form);
+                const token = form.querySelector('input[name="__RequestVerificationToken"]').value;
+
+                // Hiệu ứng nút bấm khi đang gửi
+                const btn = form.querySelector('button[type="submit"]');
+                const originalBtnText = btn.innerHTML;
+                btn.disabled = true;
+                btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span> Đang gửi...';
+
+                fetch('/bai-viet/them-binh-luan', {
+                    method: 'POST',
+                    body: formData,
+                    headers: { 'RequestVerificationToken': token }
+                })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.success) {
+                        const noiDung = formData.get('NoiDung');
+                        const sao = saoInput.value;
+                        const now = new Date();
+                        const timeStr = now.toLocaleDateString('vi-VN') + ' ' + now.getHours() + ':' + ('0' + now.getMinutes()).slice(-2);
+
+                        let starsHtml = '';
+                        for (let i = 1; i <= 5; i++) {
+                            starsHtml += `<i class="bi ${i <= sao ? 'bi-star-fill text-warning' : 'bi-star'} me-1"></i>`;
+                        }
+
+                        const newCommentHtml = `
+                            <div class="glass-card p-4 mb-4" style="border-radius: 20px; animation: fadeIn 0.5s; background: rgba(255,255,255,0.05);">
+                                <div class="d-flex align-items-center mb-3">
+                                    <div class="glass-circle me-3" style="width: 45px; height: 45px; background: rgba(255,255,255,0.1); display:flex; align-items:center; justify-content:center; border-radius:50%;"><i class="bi bi-person fs-4"></i></div>
+                                    <div>
+                                        <h6 class="mb-0 text-warning">Bạn (Vừa đăng)</h6>
+                                        <div class="small opacity-75 mt-1">${starsHtml}<span class="ms-2" style="font-size:0.75rem;">${timeStr}</span></div>
+                                    </div>
+                                </div>
+                                <p class="opacity-85 mb-0 small">${noiDung}</p>
+                            </div>`;
+
+                        const container = document.getElementById('danhSachBinhLuanContainer');
+                        const emptyMsg = document.getElementById('empty-review-msg');
+                        if (emptyMsg) emptyMsg.remove();
+
+                        container.insertAdjacentHTML('afterbegin', newCommentHtml);
+                        form.reset();
+                        window.chonMenuThaXuong('real_SoSao', 'text_SoSao', '', '-- Chọn số sao --');
+                    } else {
+                        alert(data.message);
+                    }
+                })
+                .catch(err => alert("Lỗi kết nối máy chủ."))
+                .finally(() => {
+                    btn.disabled = false;
+                    btn.innerHTML = originalBtnText;
+                });
+            }
+        });
+    </script>
+}

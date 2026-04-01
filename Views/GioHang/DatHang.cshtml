@@ -1,63 +1,76 @@
 ﻿@model OceanShellCraft.Models.ViewModels.GioHangViewModel
+@using System.Globalization
+
+@{
+    ViewData["Title"] = "Xác nhận đặt hàng";
+    // Đảm bảo lấy giá trị số chuẩn để JS không bị lỗi dấu phẩy/chấm
+    var rawTotal = Model.TongTien;
+}
 
 <div class="container py-5" style="min-height: 85vh;">
-    <h2 class="mb-5 pb-3 text-center" style="border-bottom: 1px solid var(--border-light);">
+    <h2 class="mb-5 pb-3 text-center text-white" style="border-bottom: 1px solid rgba(255,255,255,0.1);">
         <i class="bi bi-bag-check me-2"></i>Thông tin đặt hàng 🐚
     </h2>
 
-    <form asp-action="XacNhanDatHang" method="post" id="formDatHang">
+    <form action="/gio-hang/xac-nhan" method="post" id="formDatHang">
+        @Html.AntiForgeryToken()
         <div class="row g-4">
 
+            @* CỘT TRÁI: THÔNG TIN GIAO HÀNG *@
             <div class="col-lg-5">
-                <div class="glass-card p-4 sticky-top" style="top: 100px; z-index: 10;">
-                    <h5 class="mb-4 pb-3 opacity-75" style="border-bottom: 1px solid var(--border-light); letter-spacing: 1px;">Địa chỉ nhận hàng</h5>
+                <div class="glass-card p-4 sticky-top" style="top: 100px;">
+                    <h5 class="mb-4 pb-3 text-white opacity-75 border-bottom border-light">Địa chỉ nhận hàng</h5>
 
                     <div class="mb-4">
-                        <label class="small opacity-75 mb-2 ps-2">Số điện thoại *</label>
+                        <label class="small text-white opacity-75 mb-2 ps-2">Số điện thoại *</label>
                         <input type="tel" name="SoDienThoai" class="glass-input" required placeholder="Nhập số điện thoại..." />
                     </div>
 
                     <div class="mb-4">
-                        <label class="small opacity-75 mb-2 ps-2">Địa chỉ giao hàng *</label>
+                        <label class="small text-white opacity-75 mb-2 ps-2">Địa chỉ giao hàng *</label>
                         <textarea name="DiaChi" class="glass-input" rows="3" required placeholder="Nhập địa chỉ giao hàng chi tiết..."></textarea>
+                    </div>
+
+                    @* KHỐI MÃ GIẢM GIÁ *@
+                    <div class="mt-5 p-3 rounded-4" style="background: rgba(255,255,255,0.05); border: 1px dashed rgba(255,255,255,0.2);">
+                        <label class="small text-white opacity-75 mb-2">Mã ưu đãi (Voucher)</label>
+                        <div class="d-flex gap-2">
+                            @* Ô nhập này có name="MaGiamGia" để gửi trực tiếp khi submit form *@
+                            <input type="text" name="MaGiamGia" id="inputVoucher" class="glass-input m-0" placeholder="Nhập mã ưu đãi..." />
+                            <button type="button" id="btnApplyVoucher" class="glass-btn py-0 px-3" style="white-space: nowrap;">Áp dụng</button>
+                        </div>
+                        <div id="voucherMessage" class="small mt-2" style="display:none;"></div>
                     </div>
                 </div>
             </div>
 
+            @* CỘT PHẢI: KIỂM TRA SẢN PHẨM *@
             <div class="col-lg-7">
                 <div class="glass-card p-4">
-                    <h5 class="mb-4 pb-3 opacity-75" style="border-bottom: 1px solid var(--border-light); letter-spacing: 1px;">Kiểm tra sản phẩm</h5>
+                    <h5 class="mb-4 pb-3 text-white opacity-75 border-bottom border-light">Kiểm tra sản phẩm</h5>
 
                     <div class="table-responsive hide-scrollbar">
-                        <table class="w-100 align-middle">
+                        <table class="w-100 align-middle text-white">
                             <tbody>
-                                @for (int i = 0; i < Model.DanhSachItem.Count; i++)
+                                @foreach (var item in Model.DanhSachItem)
                                 {
-                                    var item = Model.DanhSachItem[i];
-                                    <tr class="product-row" data-price="@item.SanPham.GiaTien" style="border-bottom: 1px solid var(--border-light);">
-                                        @* Lưu ID sản phẩm *@
+                                    var donGia = (item.SanPham.GiaKhuyenMai > 0 && item.SanPham.GiaKhuyenMai < item.SanPham.GiaTien)
+                                    ? item.SanPham.GiaKhuyenMai.Value : item.SanPham.GiaTien;
+
+                                    <tr class="product-row" style="border-bottom: 1px solid rgba(255,255,255,0.05);">
+                                        @* Hidden inputs quan trọng để gửi list về controller *@
                                         <input type="hidden" name="ListSanPhamId" value="@item.SanPhamId" />
+                                        <input type="hidden" name="ListSoLuong" value="@item.SoLuong" />
 
                                         <td class="py-4" style="width: 80px;">
-                                            <img src="@(item.SanPham?.HinhAnh ?? "/images/default-shell.png")"
-                                                 alt="product"
-                                                 class="rounded-3"
-                                                 style="width: 70px; height: 70px; object-fit: cover; border: 1px solid var(--border-light);" />
+                                            <img src="@(item.SanPham?.HinhAnh ?? "/images/default-shell.png")" class="rounded-3 shadow-sm" style="width: 70px; height: 70px; object-fit: cover;" />
                                         </td>
-
                                         <td class="py-4 px-3">
-                                            <div class="mb-2" style="font-size: 1rem;">@item.SanPham.TenSanPham</div>
-
-                                            @* Ô nhập số lượng *@
-                                            <div class="d-flex align-items-center rounded-pill" style="width: fit-content; border: 1px solid var(--border-light); background: var(--glass-bg); padding: 2px 10px;">
-                                                <span class="small opacity-50 me-2">SL:</span>
-                                                <input type="number" name="ListSoLuong" class="bg-transparent border-0 text-center input-soluong"
-                                                       value="@item.SoLuong" min="1" style="width: 50px; height: 30px; font-size: 0.9rem; color: var(--text-main); outline: none;" />
-                                            </div>
+                                            <div class="mb-1 fw-bold">@item.SanPham?.TenSanPham</div>
+                                            <small class="opacity-50">Số lượng: @item.SoLuong</small>
                                         </td>
-
-                                        <td class="py-4 text-end">
-                                            <span class="line-total">@((item.SoLuong * item.SanPham.GiaTien).ToString("N0"))</span> đ
+                                        <td class="py-4 text-end fw-bold text-white">
+                                            <span>@((item.SoLuong * donGia).ToString("N0"))</span> đ
                                         </td>
                                     </tr>
                                 }
@@ -65,20 +78,34 @@
                         </table>
                     </div>
 
-                    <div class="d-flex justify-content-between align-items-center mt-5 mb-4 pt-4" style="border-top: 1px solid var(--border-light);">
-                        <span class="opacity-75">Tổng cộng</span>
-                        <div class="fs-4">
-                            <span id="grand-total">@Model.TongTien.ToString("N0")</span> đ
+                    @* TỔNG KẾT TIỀN *@
+                    <div class="mt-5 pt-4 border-top border-light text-white">
+                        <div class="d-flex justify-content-between mb-2">
+                            <span class="opacity-75">Tạm tính:</span>
+                            <span id="subtotalDisplay" class="fw-bold">@Model.TongTien.ToString("N0") đ</span>
+                        </div>
+
+                        @* Dòng giảm giá này mặc định ẩn, chỉ hiện khi áp mã thành công *@
+                        <div class="d-flex justify-content-between mb-2 text-warning fw-bold" id="rowDiscount" style="display:none !important;">
+                            <span class="opacity-75">Giảm giá (Voucher):</span>
+                            <span>-<span id="discountAmount">0</span> đ</span>
+                        </div>
+
+                        <div class="d-flex justify-content-between align-items-center mt-3">
+                            <span class="fs-5">Tổng thanh toán:</span>
+                            <div class="fs-2 text-info fw-bold">
+                                <span id="grand-total">@Model.TongTien.ToString("N0")</span> đ
+                            </div>
                         </div>
                     </div>
 
-                    <button type="submit" class="glass-btn w-100 py-3 fs-5" style="letter-spacing: 1px;">
-                        Xác nhận đặt hàng
+                    <button type="submit" class="glass-btn w-100 py-3 mt-4 fs-4 fw-bold shadow-lg" style="letter-spacing: 2px;">
+                        XÁC NHẬN ĐẶT HÀNG
                     </button>
 
-                    <div class="text-center mt-4 opacity-50 small">
-                        <i class="bi bi-shield-check me-1"></i>Thông tin của bạn luôn được bảo mật bởi OceanShellCraft
-                    </div>
+                    <p class="text-center mt-3 small opacity-50">
+                        <i class="bi bi-shield-lock me-1"></i> Thanh toán an toàn & Bảo mật thông tin
+                    </p>
                 </div>
             </div>
         </div>
@@ -87,20 +114,72 @@
 
 @section Scripts {
     <script>
-        $(document).ready(function () {
-            $('.input-soluong').on('input change', function () {
-                let grandTotal = 0;
+        document.addEventListener("DOMContentLoaded", function () {
+            const btnApply = document.getElementById('btnApplyVoucher');
+            const inputVoucher = document.getElementById('inputVoucher');
+            const msgArea = document.getElementById('voucherMessage');
 
-                $('.product-row').each(function () {
-                    const price = parseFloat($(this).data('price'));
-                    const quantity = parseInt($(this).find('.input-soluong').val()) || 0;
-                    const lineTotal = price * quantity;
+            // Lấy giá trị tiền gốc từ C# chuyển sang dạng số JS (xử lý vấn đề dấu phẩy/chấm)
+            const tamTinh = parseFloat('@Model.TongTien.ToString(CultureInfo.InvariantCulture)');
 
-                    $(this).find('.line-total').text(lineTotal.toLocaleString('vi-VN'));
-                    grandTotal += lineTotal;
+            btnApply.addEventListener('click', function() {
+                const code = inputVoucher.value.trim();
+
+                if (!code) {
+                    alert("Vui lòng nhập mã ưu đãi!");
+                    return;
+                }
+
+                // Hiệu ứng đang tải cho nút
+                btnApply.disabled = true;
+                btnApply.innerText = "Chờ...";
+
+                // Gọi API kiểm tra mã
+                // URL: /gio-hang/kiem-tra-giam-gia?maCode=...&tamTinh=...
+                fetch(`/gio-hang/kiem-tra-giam-gia?maCode=${encodeURIComponent(code)}&tamTinh=${tamTinh}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]').value
+                    }
+                })
+                .then(res => res.json())
+                .then(data => {
+                    btnApply.disabled = false;
+                    btnApply.innerText = "Áp dụng";
+                    msgArea.style.display = "block";
+
+                    if (data.success) {
+                        msgArea.className = "small mt-2 text-success fw-bold";
+                        msgArea.innerHTML = `<i class="bi bi-check-circle-fill me-1"></i> ${data.message}`;
+
+                        // Hiện dòng giảm giá và cập nhật số tiền
+                        document.getElementById('rowDiscount').style.setProperty('display', 'flex', 'important');
+                        document.getElementById('discountAmount').innerText = data.soTienGiam.toLocaleString('vi-VN');
+                        document.getElementById('grand-total').innerText = data.tongTienMoi.toLocaleString('vi-VN');
+                    } else {
+                        msgArea.className = "small mt-2 text-danger fw-bold";
+                        msgArea.innerHTML = `<i class="bi bi-exclamation-triangle-fill me-1"></i> ${data.message}`;
+
+                        // Ẩn dòng giảm giá và trả về tiền gốc nếu mã lỗi
+                        document.getElementById('rowDiscount').style.setProperty('display', 'none', 'important');
+                        document.getElementById('grand-total').innerText = tamTinh.toLocaleString('vi-VN');
+                    }
+                })
+                .catch(err => {
+                    btnApply.disabled = false;
+                    btnApply.innerText = "Áp dụng";
+                    alert("Lỗi kết nối hệ thống khi kiểm tra mã!");
+                    console.error(err);
                 });
+            });
 
-                $('#grand-total').text(grandTotal.toLocaleString('vi-VN'));
+            // Ngăn phím Enter trong ô voucher làm submit form đặt hàng
+            inputVoucher.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    btnApply.click();
+                }
             });
         });
     </script>

@@ -1,63 +1,108 @@
 ﻿@model OceanShellCraft.Models.NguoiDung
 @{
     Layout = "~/Views/Shared/_AdminLayout.cshtml";
-    ViewData["Title"] = "Cập nhật người dùng";
+    ViewData["Title"] = "Cập nhật hồ sơ";
 }
 
 <div class="container-fluid py-4">
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <div>
-            <a asp-action="NguoiDung" class="text-decoration-none text-muted mb-2 d-inline-block">
-                <i class="bi bi-arrow-left me-1"></i>Quay lại danh sách
-            </a>
-            <h4 class="m-0 fw-normal">@ViewData["Title"]</h4>
-        </div>
+    <div class="mb-4">
+        <a href="/admin/nguoi-dung" class="text-decoration-none text-muted mb-2 d-inline-block small">
+            <i class="bi bi-arrow-left me-1"></i>Quay lại danh sách
+        </a>
+        <h4 class="m-0 fw-normal">Thiết lập tài khoản: <span class="fw-bold">@Model.Email</span></h4>
     </div>
 
     <div class="row justify-content-center">
-        <div class="col-lg-8">
+        <div class="col-lg-10">
             <div class="glass-card p-4">
                 <form asp-action="SuaNguoiDung" method="post">
                     @Html.AntiForgeryToken()
+
+                    @* DỮ LIỆU QUAN TRỌNG CẦN GIỮ LẠI *@
                     <input type="hidden" asp-for="Id" />
-                    @* Giữ lại mật khẩu cũ để không bị ghi đè thành null *@
                     <input type="hidden" asp-for="MatKhau" />
+                    <input type="hidden" asp-for="DiemTichLuy" />
+                    <input type="hidden" asp-for="NgayTao" />
+                    <input type="hidden" asp-for="AnhDaiDien" />
 
                     <div class="row g-4">
-                        @* Email (Tài khoản) - Thường không cho đổi nên để readonly và làm mờ *@
-                        <div class="col-md-6">
-                            <label asp-for="Email" class="form-label opacity-75 small mb-1">Email (Tài khoản đăng nhập)</label>
-                            <input asp-for="Email" class="glass-input form-control opacity-50" readonly />
-                            <div class="form-text opacity-50 small" style="color: var(--text-main);">Không thể thay đổi email.</div>
+                        <div class="col-md-4 text-center border-end border-white border-opacity-10">
+                            <div class="mb-3">
+                                <img src="@(string.IsNullOrEmpty(Model.AnhDaiDien) ? "https://ui-avatars.com/api/?size=150&name=" + Model.HoTen : Model.AnhDaiDien)"
+                                     class="rounded-circle shadow-lg" style="width: 150px; height: 150px; object-fit: cover; border: 3px solid rgba(255,255,255,0.1);">
+                            </div>
+                            <h6 class="mb-1">@Model.HoTen</h6>
+                            <p class="small opacity-50">Ngày tham gia: @Model.NgayTao.ToString("dd/MM/yyyy")</p>
+
+                            <div class="mt-4 p-3 glass-card bg-opacity-10 text-start">
+                                <div class="d-flex justify-content-between mb-2">
+                                    <span class="small opacity-75">Điểm tích lũy:</span>
+                                    <span class="fw-bold text-primary">@Model.DiemTichLuy</span>
+                                </div>
+                                <label class="form-label small opacity-75">Trạng thái tài khoản</label>
+                                <div class="form-check form-switch">
+                                    <input class="form-check-input" type="checkbox" asp-for="IsLocked" id="lockSwitch"
+                                           disabled="@(Model.VaiTro == "Admin" ? "disabled" : null)">
+                                    <label class="form-check-label small" for="lockSwitch">
+                                        @(Model.IsLocked ? "Đang bị khóa" : "Đang hoạt động")
+                                    </label>
+                                </div>
+                            </div>
                         </div>
 
-                        @* Vai trò *@
-                        <div class="col-md-6">
-                            <label asp-for="VaiTro" class="form-label opacity-75 small mb-1">Vai trò hệ thống</label>
-                            <select asp-for="VaiTro" class="glass-input form-select" style="cursor: pointer;">
-                                <option value="KhachHang">Khách hàng (Cơ bản)</option>
-                                <option value="Admin">Quản trị viên (Admin)</option>
-                            </select>
-                        </div>
+                        <div class="col-md-8 ps-md-4">
+                            <div class="row g-3">
+                                <div class="col-12">
+                                    <label class="form-label opacity-75 small mb-1">Email đăng nhập (Cố định)</label>
+                                    <input asp-for="Email" class="glass-input opacity-50" readonly />
+                                </div>
 
-                        @* Họ Tên *@
-                        <div class="col-md-6">
-                            <label asp-for="HoTen" class="form-label opacity-75 small mb-1">Họ và tên</label>
-                            <input asp-for="HoTen" class="glass-input form-control" placeholder="Nhập họ và tên..." />
-                        </div>
+                                <div class="col-md-6">
+                                    <label asp-for="HoTen" class="form-label opacity-75 small mb-1">Họ và tên</label>
+                                    <input asp-for="HoTen" class="glass-input" placeholder="Nhập họ tên..." />
+                                    <span asp-validation-for="HoTen" class="text-danger small"></span>
+                                </div>
 
-                        @* Số điện thoại *@
-                        <div class="col-md-6">
-                            <label asp-for="SoDienThoai" class="form-label opacity-75 small mb-1">Số điện thoại</label>
-                            <input asp-for="SoDienThoai" class="glass-input form-control" placeholder="Nhập số điện thoại..." />
-                        </div>
-                    </div>
+                                <div class="col-md-6">
+                                    <label asp-for="SoDienThoai" class="form-label opacity-75 small mb-1">Số điện thoại</label>
+                                    <input asp-for="SoDienThoai" class="glass-input" placeholder="Nhập SĐT..." />
+                                </div>
 
-                    <div class="mt-5 pt-4 d-flex justify-content-end gap-2" style="border-top: 1px solid rgba(255,255,255,0.1);">
-                        <a asp-action="NguoiDung" class="glass-btn px-4 fw-normal opacity-75">Hủy bỏ</a>
-                        <button type="submit" class="glass-btn px-4 fw-normal">
-                            <i class="bi bi-check-circle me-1"></i>Lưu thay đổi
-                        </button>
+                                <div class="col-md-6">
+                                    <label asp-for="VaiTro" class="form-label opacity-75 small mb-1">Quyền hạn</label>
+                                    <select asp-for="VaiTro" class="glass-input form-select"
+                                            disabled="@(Model.VaiTro == "Admin" ? "disabled" : null)">
+                                        <option value="KhachHang">Khách hàng</option>
+                                        <option value="Admin">Quản trị viên</option>
+                                    </select>
+                                    @if (Model.VaiTro == "Admin")
+                                    {
+                                        <input type="hidden" asp-for="VaiTro" />
+                                    }
+                                </div>
+
+                                <div class="col-md-6">
+                                    <label asp-for="GioiTinh" class="form-label opacity-75 small mb-1">Giới tính</label>
+                                    <select asp-for="GioiTinh" class="glass-input form-select">
+                                        <option value="Nam">Nam</option>
+                                        <option value="Nữ">Nữ</option>
+                                        <option value="Khác">Khác</option>
+                                    </select>
+                                </div>
+
+                                <div class="col-12">
+                                    <label asp-for="DiaChi" class="form-label opacity-75 small mb-1">Địa chỉ thường trú</label>
+                                    <textarea asp-for="DiaChi" class="glass-input" rows="2" placeholder="Số nhà, tên đường..."></textarea>
+                                </div>
+                            </div>
+
+                            <div class="mt-5 pt-3 d-flex justify-content-end gap-2" style="border-top: 1px solid rgba(255,255,255,0.05);">
+                                <a href="/admin/nguoi-dung" class="glass-btn px-4 fw-normal opacity-50">Hủy bỏ</a>
+                                <button type="submit" class="glass-btn px-4 fw-normal border-primary text-primary">
+                                    <i class="bi bi-save me-1"></i> Lưu thay đổi
+                                </button>
+                            </div>
+                        </div>
                     </div>
                 </form>
             </div>
@@ -69,4 +114,9 @@
     @{
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
     }
+    <script>
+        document.getElementById('lockSwitch')?.addEventListener('change', function() {
+            this.nextElementSibling.innerText = this.checked ? "Đang bị khóa" : "Đang hoạt động";
+        });
+    </script>
 }

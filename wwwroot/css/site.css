@@ -1,21 +1,15 @@
 ﻿:root {
     --glass-bg: rgba(255, 255, 255, 0.12);
-    /* Tăng độ nhòe nền từ 15px lên 20px giúp kính có cảm giác dày dặn hơn */
     --glass-blur: blur(20px);
-    /* Tông chữ trắng nhạt dùng chung */
     --text-main: rgba(255, 255, 255, 0.85);
     --text-dim: rgba(255, 255, 255, 0.6);
     --text-pure: #ffffff;
-    /* Màu đổ bóng/viền sáng */
     --shadow-light: rgba(0, 0, 0, 0.5);
 }
 
-/* ================================================================
-   1. CÀI ĐẶT CHUNG (Font, Màu chữ, Nền)
-   ================================================================ */
 * {
     font-family: 'Times New Roman', Times, serif !important;
-    color: var(--text-main) !important; /* Chữ trắng nhạt ở mọi nơi */
+    color: var(--text-main) !important;
     box-sizing: border-box;
 }
 
@@ -26,58 +20,60 @@ body {
     min-height: 100vh;
 }
 
-/* ================================================================
-   2. UI KÍNH DÙNG CHUNG (Dùng cho Header, Footer, Panel)
-   ================================================================ */
 .glass-effect {
     background: var(--glass-bg) !important;
     backdrop-filter: var(--glass-blur);
     -webkit-backdrop-filter: var(--glass-blur);
     border: none !important;
-    box-shadow: 0 4px 15px var(--shadow-light) !important; /* Đổi viền thành đổ bóng */
+    box-shadow: 0 4px 15px var(--shadow-light) !important;
+    border-radius: 24px !important;
 }
 
-/* ================================================================
-   3. NÚT BẤM (Dùng chung cho mọi nút)
-   ================================================================ */
+header.glass-effect,
+footer.glass-effect,
+nav.glass-effect {
+    border-radius: 0 !important;
+    border: none !important;
+}
+
 .glass-btn {
     background: var(--glass-bg) !important;
     backdrop-filter: var(--glass-blur);
     -webkit-backdrop-filter: var(--glass-blur);
     border: none !important;
-    box-shadow: 0 2px 8px var(--shadow-light) !important; /* Đổi viền thành đổ bóng */
+    box-shadow: 0 2px 8px var(--shadow-light) !important;
     color: var(--text-main) !important;
-    border-radius: 30px;
+    border-radius: 20px !important;
     padding: 8px 20px;
-    font-weight: normal; /* Chữ thường */
+    font-weight: normal;
     text-decoration: none;
     display: inline-flex;
     align-items: center;
     justify-content: center;
     outline: none !important;
-    transition: box-shadow 0.3s ease;
+    transition: all 0.3s ease;
 }
 
-/* ================================================================
-   4. Ô NHẬP LIỆU (Input, Textarea)
-   ================================================================ */
+    .glass-btn:hover {
+        background: rgba(255, 255, 255, 0.2) !important;
+        box-shadow: 0 4px 12px var(--shadow-light) !important;
+    }
+
 .glass-input {
     background: transparent !important;
     border: none !important;
-    box-shadow: 0 2px 8px var(--shadow-light) !important; /* Đổi viền đáy thành đổ bóng nhẹ */
+    box-shadow: 0 2px 8px var(--shadow-light) !important;
     color: var(--text-main) !important;
     padding: 10px;
     width: 100%;
     outline: none !important;
     transition: box-shadow 0.3s ease;
+    border-radius: 20px !important;
 }
 
     .glass-input.pill-style {
         background: var(--glass-bg) !important;
-        border: none !important;
-        box-shadow: 0 2px 8px var(--shadow-light) !important;
         border-radius: 50px !important;
-        padding: 12px 20px;
     }
 
     .glass-input::placeholder {
@@ -85,64 +81,48 @@ body {
         opacity: 1;
     }
 
-/* Fix lỗi đổi nền trắng khi trình duyệt tự động điền (Autofill) */
-input:-webkit-autofill,
-input:-webkit-autofill:focus,
-input:-webkit-autofill:active {
+input:-webkit-autofill {
     -webkit-background-clip: text;
     -webkit-text-fill-color: var(--text-main) !important;
     transition: background-color 5000s ease-in-out 0s;
     box-shadow: inset 0 0 20px 20px transparent !important;
+    border-radius: 20px !important;
 }
 
-/* ================================================================
-   5. COMBOBOX / DROPDOWN (Menu sổ xuống)
-   ================================================================ */
 .glass-dropdown {
-    border-radius: 15px !important;
+    border-radius: 20px !important;
     background: var(--glass-bg) !important;
     backdrop-filter: blur(25px) !important;
     -webkit-backdrop-filter: blur(25px) !important;
     border: none !important;
-    box-shadow: 0 8px 25px var(--shadow-light) !important; /* Đổ bóng sâu hơn cho menu nổi */
+    box-shadow: 0 8px 25px var(--shadow-light) !important;
     padding: 10px !important;
     margin-top: 8px !important;
-    animation: dropdownFadeIn 0.3s ease-out;
 }
 
 .glass-dropdown-item {
-    border-radius: 8px !important;
+    border-radius: 12px !important;
     padding: 10px 15px !important;
     background: transparent !important;
     color: var(--text-main) !important;
     border: none !important;
+    transition: background 0.2s ease;
 }
 
-@keyframes dropdownFadeIn {
-    from {
-        opacity: 0;
-        transform: translateY(10px);
+    .glass-dropdown-item:hover {
+        background: rgba(255, 255, 255, 0.1) !important;
     }
 
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-/* ================================================================
-   6. KHUNG CARD / BENTO / LOGIN (Dùng chung cho mọi khối hộp)
-   ================================================================ */
 .glass-card {
     background: var(--glass-bg) !important;
     backdrop-filter: blur(20px);
     -webkit-backdrop-filter: blur(20px);
     border: none !important;
-    box-shadow: 0 8px 32px var(--shadow-light) !important; /* Đổ bóng rộng cho Card */
+    box-shadow: 0 8px 32px var(--shadow-light) !important;
     padding: 20px;
+    border-radius: 24px !important;
 }
 
-/* Layout Grid cho trang Bento */
 .bento-grid {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
@@ -150,86 +130,60 @@ input:-webkit-autofill:active {
     gap: 20px;
 }
 
-.hero-card {
-    grid-column: span 3;
-    min-height: 450px;
-    position: relative;
-}
-
-.legacy-card {
-    grid-column: span 2;
-}
-
-.philosophy-card, .collections-card, .values-card {
-    grid-column: span 1;
-}
-
-.atelier-card {
-    grid-column: span 2;
-}
-
 @media (max-width: 991px) {
     .bento-grid {
         grid-template-columns: 1fr;
     }
-
-    .hero-card, .legacy-card, .philosophy-card, .collections-card, .atelier-card, .values-card {
-        grid-column: span 1;
-    }
 }
 
-/* ================================================================
-   7. BẢNG DỮ LIỆU (Table cho Admin, Bài viết, Trang chủ)
-   ================================================================ */
 .glass-table {
     width: 100%;
-    background: transparent !important;
-    border-collapse: collapse;
+    border-collapse: separate;
+    border-spacing: 0;
+    border-radius: 24px !important;
+    overflow: hidden;
 }
 
-    .glass-table th, .glass-table td, .glass-table tr {
+    .glass-table th, .glass-table td {
         background: transparent !important;
-        color: var(--text-main) !important;
         border: none !important;
-        box-shadow: 0 1px 2px var(--shadow-light) !important; /* Thay viền đáy bằng đổ bóng mảnh phân cách dòng */
+        box-shadow: 0 1px 0px rgba(255, 255, 255, 0.1) !important;
         padding: 12px;
     }
 
-/* ================================================================
-   8. CÁC NÚT TRÒN (Social Icon, Category Circle, Action Icon)
-   ================================================================ */
 .glass-circle {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    width: 40px;
-    height: 40px;
+    width: 45px;
+    height: 45px;
     border: none;
-    box-shadow: 0 2px 8px var(--shadow-light); /* Đổ bóng thay viền */
-    border-radius: 50%;
+    box-shadow: 0 4px 10px var(--shadow-light);
+    border-radius: 50% !important;
     background: var(--glass-bg) !important;
     backdrop-filter: var(--glass-blur);
     color: var(--text-main) !important;
-    text-decoration: none;
+    transition: transform 0.2s ease;
 }
+
+    .glass-circle:hover {
+        transform: scale(1.1);
+    }
 
 .glass-rect {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    /* Bạn có thể thay đổi width/height tùy ý cho hình chữ nhật */
     padding: 10px 20px;
-    min-width: 40px;
-    height: 40px;
+    min-width: 45px;
+    height: 45px;
     border: none;
-    box-shadow: 0 2px 8px var(--shadow-light);
+    box-shadow: 0 4px 10px var(--shadow-light);
     background: var(--glass-bg) !important;
     backdrop-filter: var(--glass-blur);
-    color: var(--text-main) !important;
-    text-decoration: none;
+    border-radius: 20px !important;
 }
 
-/* Ẩn nền và viền/đổ bóng của button */
 .glass-circle-ghost {
     display: inline-flex;
     align-items: center;
@@ -237,30 +191,45 @@ input:-webkit-autofill:active {
     width: 40px;
     height: 40px;
     border: none;
-    box-shadow: none !important; /* Không đổ bóng */
     background: transparent !important;
-    backdrop-filter: none;
-    border-radius: 50%;
+    border-radius: 50% !important;
     color: var(--text-main) !important;
-    text-decoration: none;
+    transition: background 0.3s ease;
 }
 
-/* ================================================================
-   9. TIỆN ÍCH & CHAT MINI & CHỮ CÁI ĐẦU
-   ================================================================ */
-.opacity-50 {
-    opacity: 0.5 !important;
+    .glass-circle-ghost:hover {
+        background: rgba(255,255,255,0.1) !important;
+    }
+
+.chat-bubble-sm {
+    padding: 10px 15px;
+    font-size: 0.85rem;
+    backdrop-filter: var(--glass-blur);
+    box-shadow: 0 2px 8px var(--shadow-light);
+    color: var(--text-main);
+    margin-bottom: 8px;
+    max-width: 80%;
+    border-radius: 20px;
 }
 
-.opacity-75 {
-    opacity: 0.75 !important;
+.received-sm {
+    background: var(--glass-bg);
+    border-radius: 6px 20px 20px 20px !important;
+    border: none;
+}
+
+.sent-sm {
+    background: rgba(255, 255, 255, 0.18);
+    border-radius: 20px 20px 6px 20px !important;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+    border: none;
+    margin-left: auto;
 }
 
 .ls-3 {
     letter-spacing: 3px;
 }
 
-/* Ẩn thanh cuộn */
 .hide-scrollbar::-webkit-scrollbar {
     display: none;
 }
@@ -270,59 +239,10 @@ input:-webkit-autofill:active {
     scrollbar-width: none;
 }
 
-/* Khung cuộn ngang (Câu chuyện đại dương) */
-.ds-scroll-container {
-    background: transparent !important;
-    height: 100vh;
-    overflow-y: auto;
-    scroll-snap-type: y mandatory;
-    scroll-behavior: smooth;
-}
-
-.ds-slider-track {
-    display: flex;
-    width: max-content;
-    animation: ds-infinite-scroll 40s linear infinite;
-}
-
-@keyframes ds-infinite-scroll {
-    0% {
-        transform: translateX(0);
-    }
-
-    100% {
-        transform: translateX(-50%);
-    }
-}
-
-/* Chữ cái đầu bài viết */
 .article-first-letter::first-letter {
     float: left;
     font-size: 4.5rem;
     line-height: 1;
     font-weight: bold;
     margin-right: 12px;
-    color: var(--text-main);
-}
-
-/* Chat Mini */
-.chat-bubble-sm {
-    padding: 8px 12px;
-    font-size: 0.85rem;
-    backdrop-filter: var(--glass-blur);
-    border: none;
-    box-shadow: 0 2px 8px var(--shadow-light); /* Đổ bóng thay viền */
-    color: var(--text-main);
-}
-
-.received-sm {
-    background: var(--glass-bg);
-    border-radius: 0 15px 15px 15px;
-}
-
-.sent-sm {
-    background: rgba(255, 255, 255, 0.15);
-    border-radius: 15px 0 15px 15px;
-    border: none;
-    box-shadow: 0 2px 8px rgba(255, 255, 255, 0.4); /* Đổ bóng sáng hơn cho tin nhắn gửi */
 }

@@ -7,14 +7,11 @@
 
 <div class="row g-4 vh-100 overflow-hidden p-3">
 
-    @* --- DANH SÁCH HÓA ĐƠN (BÊN TRÁI) --- *@
     <div class="col-lg-4 d-flex flex-column h-100 pe-lg-3">
 
-        @* Ô tìm kiếm *@
-        <form method="get" action="@Url.Action("HoaDon", "Admin")" class="mb-3">
+        <form method="get" action="/admin/hoa-don" class="mb-3">
             <div class="d-flex align-items-center px-3 glass-input" style="height: 45px;">
                 <i class="bi bi-search opacity-50"></i>
-                @* Thay type="number" thành type="text" và thêm inputmode/pattern *@
                 <input type="text"
                        inputmode="numeric"
                        pattern="[0-9]*"
@@ -26,12 +23,11 @@
 
                 @if (Context.Request.Query.ContainsKey("id"))
                 {
-                    <a href="@Url.Action("HoaDon", "Admin")" class="opacity-50 ms-2"><i class="bi bi-x-lg"></i></a>
+                    <a href="/admin/hoa-don" class="opacity-50 ms-2"><i class="bi bi-x-lg"></i></a>
                 }
             </div>
         </form>
 
-        @* Danh sách cuộn *@
         <div class="flex-grow-1 overflow-auto hide-scrollbar">
             @foreach (var item in Model)
             {
@@ -54,14 +50,12 @@
         </div>
     </div>
 
-    @* --- CHI TIẾT HÓA ĐƠN (BÊN PHẢI) --- *@
     <div class="col-lg-8 d-flex flex-column h-100 ps-lg-3 overflow-auto hide-scrollbar">
 
         @if (selectedOrder != null)
         {
             <div id="invoice-content" class="p-5 d-flex flex-column mb-5 fw-normal" style="border-radius: 4px;">
 
-                @* Tiêu đề hóa đơn *@
                 <div class="d-flex justify-content-between align-items-start mb-5">
                     <div>
                         <h2 class="m-0 fw-normal" style="letter-spacing: 1px;">Hóa đơn chi tiết</h2>
@@ -75,7 +69,6 @@
                     </div>
                 </div>
 
-                @* Thông tin khách và Đơn hàng *@
                 <div class="row mb-5 g-4">
                     <div class="col-md-6">
                         <h6 class="small mb-3 opacity-70 fw-normal">Người nhận hàng</h6>
@@ -119,7 +112,6 @@
 
                 <h6 class="small mb-3 opacity-70 fw-normal">Danh mục vật phẩm</h6>
 
-                @* Bảng danh sách sản phẩm trong đơn *@
                 <div class="mb-4 border border-dark p-2">
                     <table class="w-100 align-middle m-0 fw-normal" style="font-size: 0.9rem;">
                         <thead>
@@ -151,7 +143,6 @@
                     </table>
                 </div>
 
-                @* Tổng tiền *@
                 <div class="pt-4 text-end mt-auto">
                     <div class="row justify-content-end">
                         <div class="col-md-5">
@@ -166,7 +157,6 @@
                         </div>
                     </div>
 
-                    @* Các nút thao tác *@
                     <div class="d-flex gap-3 mt-5 justify-content-end pb-2" data-html2canvas-ignore="true">
                         <button type="button" onclick="xuatPDF()" class="glass-btn small px-4 py-2 fw-normal"
                                 style="border: 1px solid #000 !important; color: #000 !important; background: transparent !important;">
@@ -175,8 +165,7 @@
 
                         @if (selectedOrder.TrangThai != "Đã thanh toán")
                         {
-                            <form asp-action="CapNhatTrangThai" method="post" class="m-0">
-                                <input type="hidden" name="id" value="@selectedOrder.Id" />
+                            <form action="/admin/cap-nhat-trang-thai/@selectedOrder.Id" method="post" class="m-0">
                                 <button type="submit" class="glass-btn small px-4 py-2 fw-normal"
                                         style="border: 1px solid #000 !important; color: #000 !important; background: transparent !important;">
                                     Xác nhận đã thu tiền
@@ -198,7 +187,6 @@
 </div>
 
 <style>
-    /* Ép buộc màu sắc khi hiển thị khu vực hóa đơn chi tiết */
     #invoice-content {
         background-color: #ffffff !important;
         color: #000000 !important;

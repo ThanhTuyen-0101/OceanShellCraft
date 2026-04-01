@@ -1,4 +1,5 @@
 ﻿@model OceanShellCraft.Models.NguoiDung
+@using OceanShellCraft.Models
 
 @{
     ViewData["Title"] = "Tổng quan hồ sơ";
@@ -7,27 +8,22 @@
     var avatarUrl = (Model == null || string.IsNullOrEmpty(Model.AnhDaiDien))
         ? "/img/meo.jpg"
         : Model.AnhDaiDien;
-
-    // Giữ nguyên định dạng gốc của dữ liệu
-    var hoTen = Model?.HoTen ?? "Khách hàng";
-    var email = Model?.Email ?? "Chưa cập nhật email";
 }
 
-<div class="container-fluid py-4 min-vh-100 hide-scrollbar">
+<div class="container-fluid py-2 hide-scrollbar">
 
     <div class="row g-4 mb-4">
+        @* 1. Profile *@
         <div class="col-xl-3 col-lg-4">
-            <div class="glass-card p-4 d-flex flex-column align-items-center text-center h-100">
-                <div class="position-relative mb-3">
-                    <img id="avatarPreview" src="@avatarUrl"
-                         class="rounded-circle object-fit-cover"
-                         width="130" height="130" style="padding: 4px; border: 1px solid var(--border-light);">
+            <div class="glass-card d-flex flex-column align-items-center text-center h-100">
+                <div class="mb-3">
+                    <img id="avatarPreview" src="@avatarUrl" class="rounded-circle object-fit-cover shadow" width="130" height="130">
                 </div>
-                <h5 class="mb-1" style="letter-spacing: 1px;">@hoTen</h5>
-                <p class="opacity-50 small mb-4">@email</p>
+                <h5 class="mb-1">@Model.HoTen</h5>
+                <p class="text-white opacity-50 small mb-4">@Model.Email</p>
 
                 <div class="w-100 mt-auto">
-                    <label for="AvatarUpload" class="glass-btn w-100 py-2 m-0" style="cursor: pointer;">
+                    <label for="AvatarUpload" class="glass-btn w-100 py-2" style="cursor: pointer;">
                         <i class="bi bi-camera me-2"></i>Đổi ảnh
                     </label>
                     <input type="file" id="AvatarUpload" class="d-none" accept="image/*" onchange="autoUploadAvatar(event)">
@@ -35,40 +31,39 @@
             </div>
         </div>
 
+        @* 2. Form cập nhật *@
         <div class="col-xl-6 col-lg-8">
-            <form asp-action="CapNhatHoSo" asp-controller="KhachHang" method="post" class="glass-card p-4 h-100 d-flex flex-column">
+            <form asp-action="CapNhatHoSo" asp-controller="KhachHang" method="post" class="glass-card h-100">
                 @Html.AntiForgeryToken()
                 <input type="hidden" asp-for="Id" id="UserId" />
 
-                <div class="d-flex justify-content-between align-items-center mb-4 pb-2" style="border-bottom: 1px solid var(--border-light);">
+                <div class="d-flex justify-content-between align-items-center mb-4 pb-2 border-bottom border-white border-opacity-10">
                     <h5 class="mb-0"><i class="bi bi-person-lines-fill me-2"></i>Thông tin cá nhân</h5>
-                    <button type="submit" class="glass-btn small px-4">
-                        <i class="bi bi-pencil-square me-1"></i>Lưu
-                    </button>
+                    <button type="submit" class="glass-btn px-4 border-0">Lưu</button>
                 </div>
 
                 <div class="row g-3">
                     <div class="col-md-6">
-                        <label class="opacity-50 small mb-1 ps-2">Họ và tên</label>
-                        <input asp-for="HoTen" class="glass-input" placeholder="Nhập họ tên">
+                        <label class="opacity-50 small ps-2">Họ và tên</label>
+                        <input asp-for="HoTen" class="glass-input">
                     </div>
                     <div class="col-md-6">
-                        <label class="opacity-50 small mb-1 ps-2">Số điện thoại</label>
-                        <input asp-for="SoDienThoai" class="glass-input" placeholder="Nhập số điện thoại">
+                        <label class="opacity-50 small ps-2">Số điện thoại</label>
+                        <input asp-for="SoDienThoai" class="glass-input">
                     </div>
                     <div class="col-md-6">
-                        <label class="opacity-50 small mb-1 ps-2">Ngày sinh</label>
-                        <input asp-for="NgaySinh" type="date" class="glass-input" style="color-scheme: dark;">
+                        <label class="opacity-50 small ps-2">Ngày sinh</label>
+                        <input asp-for="NgaySinh" type="date" class="glass-input">
                     </div>
                     <div class="col-md-6">
-                        <label class="opacity-50 small mb-1 ps-2">Giới tính</label>
+                        <label class="opacity-50 small ps-2">Giới tính</label>
                         <input type="hidden" asp-for="GioiTinh" id="GioiTinhHidden" />
-                        <div class="dropdown w-100">
-                            <button class="glass-input text-start d-flex justify-content-between align-items-center w-100"
-                                    type="button" data-bs-toggle="dropdown" id="GioiTinhDropdownBtn" style="border: 1px solid var(--border-light) !important;">
-                                @(string.IsNullOrEmpty(Model?.GioiTinh) ? "-- Chọn --" : Model.GioiTinh)
+                        <div class="dropdown">
+                            <button class="glass-input text-start d-flex justify-content-between align-items-center" type="button" data-bs-toggle="dropdown" id="GioiTinhDropdownBtn">
+                                <span>@(Model?.GioiTinh ?? "-- Chọn --")</span>
+                                <i class="bi bi-chevron-down"></i>
                             </button>
-                            <ul class="dropdown-menu glass-dropdown w-100">
+                            <ul class="dropdown-menu glass-dropdown w-100 shadow-lg">
                                 <li><a class="dropdown-item glass-dropdown-item" href="#" data-value="Nam">Nam</a></li>
                                 <li><a class="dropdown-item glass-dropdown-item" href="#" data-value="Nữ">Nữ</a></li>
                                 <li><a class="dropdown-item glass-dropdown-item" href="#" data-value="Khác">Khác</a></li>
@@ -79,37 +74,20 @@
             </form>
         </div>
 
+        @* 3. Thống kê *@
         <div class="col-xl-3 col-lg-12">
-            <div class="glass-card p-4 h-100 d-flex flex-column justify-content-center">
-                <h5 class="mb-4 pb-2" style="border-bottom: 1px solid var(--border-light);">
-                    <i class="bi bi-bar-chart me-2"></i>Tổng quát
-                </h5>
-
-                <div class="d-flex align-items-center justify-content-between mb-4">
+            <div class="glass-card h-100 d-flex flex-column justify-content-center">
+                <h5 class="mb-4 pb-2 border-bottom border-white border-opacity-10">Thống kê</h5>
+                <div class="d-flex justify-content-between mb-4">
                     <div class="d-flex align-items-center gap-3">
-                        <div class="glass-circle" style="width: 45px; height: 45px;">
-                            <i class="bi bi-box2-heart"></i>
-                        </div>
-                        <span class="opacity-75">Đơn đã mua</span>
+                        <div class="glass-circle"><i class="bi bi-box2-heart"></i></div>
+                        <span class="opacity-75">Đã mua</span>
                     </div>
                     <h5 class="mb-0">@(ViewBag.DonDaMua ?? 0)</h5>
                 </div>
-
-                <div class="d-flex align-items-center justify-content-between mb-4">
+                <div class="d-flex justify-content-between">
                     <div class="d-flex align-items-center gap-3">
-                        <div class="glass-circle" style="width: 45px; height: 45px;">
-                            <i class="bi bi-truck"></i>
-                        </div>
-                        <span class="opacity-75">Đang giao</span>
-                    </div>
-                    <h5 class="mb-0">@(ViewBag.DonDangGiao ?? 0)</h5>
-                </div>
-
-                <div class="d-flex align-items-center justify-content-between">
-                    <div class="d-flex align-items-center gap-3">
-                        <div class="glass-circle" style="width: 45px; height: 45px;">
-                            <i class="bi bi-coin"></i>
-                        </div>
+                        <div class="glass-circle"><i class="bi bi-coin"></i></div>
                         <span class="opacity-75">Tích lũy</span>
                     </div>
                     <h5 class="mb-0">@(ViewBag.DiemTichLuy ?? 0)</h5>
@@ -119,75 +97,88 @@
     </div>
 
     <div class="row g-4">
+        @* 4. Đơn hàng gần đây *@
         <div class="col-xl-8">
-            <div class="glass-card p-4 h-100">
-                <div class="d-flex justify-content-between align-items-center mb-4 pb-2" style="border-bottom: 1px solid var(--border-light);">
+            <div class="glass-card h-100">
+                <div class="d-flex justify-content-between align-items-center mb-4 pb-2 border-bottom border-white border-opacity-10">
                     <h5 class="m-0"><i class="bi bi-clock-history me-2"></i>Đơn hàng gần đây</h5>
-                    <a href="/KhachHang/Orders" class="glass-btn small px-4">Xem tất cả</a>
+                    <a href="/khach-hang/don-hang" class="glass-btn py-1 px-3 small">Xem tất cả</a>
                 </div>
 
-                @if (ViewBag.DonHangGanDay != null && ((IEnumerable<OceanShellCraft.Models.DonHang>)ViewBag.DonHangGanDay).Any())
+                @if (ViewBag.DonHangGanDay != null && ((IEnumerable<DonHang>)ViewBag.DonHangGanDay).Any())
                 {
-                    foreach (var donHang in (IEnumerable<OceanShellCraft.Models.DonHang>)ViewBag.DonHangGanDay)
+                    @foreach (var donHang in (IEnumerable<DonHang>)ViewBag.DonHangGanDay)
                     {
-                        var isFinished = donHang.TrangThai == "Đã hoàn thành";
-                        var iconClass = isFinished ? "bi-check2-all" : "bi-bag-check";
-
-                        <div class="d-flex align-items-center justify-content-between py-3 px-3 mb-2" style="border: 1px solid var(--border-light); border-radius: 12px;">
-                            <div class="d-flex align-items-center gap-3" style="width: 30%;">
-                                <div class="glass-circle" style="width: 40px; height: 40px; border-radius: 8px;">
-                                    <i class="bi @iconClass"></i>
-                                </div>
+                        <div class="d-flex align-items-center justify-content-between py-3 px-3 mb-2 border border-white border-opacity-10 rounded-4">
+                            <div class="d-flex align-items-center gap-3 w-50">
+                                <div class="glass-circle" style="width: 40px; height: 40px;"><i class="bi bi-bag-check"></i></div>
                                 <div>
-                                    <h6 class="mb-0">#ORD-@donHang.Id.ToString("D3")</h6>
+                                    <h6 class="mb-0 small fw-bold">#ORD-@donHang.Id.ToString("D3")</h6>
                                     <small class="opacity-50">@donHang.NgayDat.ToString("dd/MM/yyyy")</small>
                                 </div>
                             </div>
-                            <div class="text-center" style="width: 40%;">
-                                <span class="glass-effect px-3 py-1 rounded-pill small">@donHang.TrangThai</span>
-                            </div>
-                            <div class="text-end" style="width: 30%;">
-                                <small class="opacity-50 d-block mb-1">Tổng tiền</small>
+                            <div class="text-end">
                                 <h6 class="m-0">@donHang.TongTien.ToString("N0")đ</h6>
+                                <small class="opacity-75">@donHang.TrangThai</small>
                             </div>
                         </div>
                     }
                 }
                 else
                 {
-                    <div class="text-center opacity-50 py-4">
-                        <i class="bi bi-box2 fs-1 d-block mb-2"></i>
-                        <p>Bạn chưa có đơn hàng nào.</p>
-                    </div>
+                    <div class="text-center opacity-25 py-5"><i class="bi bi-box2 fs-1"></i><p>Chưa có đơn hàng nào.</p></div>
                 }
             </div>
         </div>
 
+        @* 5. PHẦN ƯU ĐÃI: Chỉ sài site.css *@
         <div class="col-xl-4">
-            <div class="glass-card p-4 h-100 d-flex flex-column">
-                <h5 class="mb-4 pb-2" style="border-bottom: 1px solid var(--border-light);">
-                    <i class="bi bi-ticket-perforated me-2"></i>Voucher của bạn
+            <div class="glass-card h-100 d-flex flex-column">
+                <h5 class="mb-4 pb-2 border-bottom border-white border-opacity-10">
+                    <i class="bi bi-ticket-perforated me-2"></i>Ưu đãi cho bạn
                 </h5>
 
-                <div class="hide-scrollbar flex-grow-1" style="overflow-y: auto; max-height: 300px;">
-                    @if (ViewBag.GiamGia != null && ((IEnumerable<OceanShellCraft.Models.GiamGia>)ViewBag.GiamGia).Any())
+                <div class="hide-scrollbar flex-grow-1 overflow-auto" style="max-height: 400px;">
+                    @if (ViewBag.GiamGia != null && ((IEnumerable<GiamGia>)ViewBag.GiamGia).Any())
                     {
-                        foreach (var voucher in (IEnumerable<OceanShellCraft.Models.GiamGia>)ViewBag.GiamGia)
+                        @foreach (var voucher in (IEnumerable<GiamGia>)ViewBag.GiamGia)
                         {
-                            <div class="p-3 mb-3" style="border: 1px solid var(--border-light); border-radius: 12px;">
-                                <h6 class="m-0">@voucher.TenVoucher</h6>
-                                <small class="opacity-50 d-block mb-3">Hết hạn: @voucher.HanSuDung.ToString("dd/MM/yyyy")</small>
-                                <div class="d-flex justify-content-between align-items-center p-2 rounded" style="background: var(--glass-bg); border: 1px solid var(--border-light);">
-                                    <span style="letter-spacing: 2px;" id="voucher-@voucher.Id">@voucher.MaVoucher</span>
-                                    <i class="bi bi-clipboard opacity-50 cursor-pointer" onclick="navigator.clipboard.writeText(document.getElementById('voucher-@voucher.Id').innerText); alert('Đã copy mã: ' + document.getElementById('voucher-@voucher.Id').innerText);"></i>
+                            <div class="glass-effect p-3 mb-3 border-0 shadow-sm">
+                                <div class="d-flex justify-content-between align-items-start mb-2">
+                                    <h6 class="m-0 fw-bold text-truncate">@voucher.TenVoucher</h6>
+                                    <small class="opacity-75">
+                                        @if (voucher.NguoiDungId != null)
+                                        {
+                                            <span><i class="bi bi-gift me-1"></i>Riêng</span>
+                                        }
+                                        else
+                                        {
+
+                                            <span><i class="bi bi-globe me-1"></i>Chung</span>
+                                        }
+                                    </small>
+                                </div>
+
+                                <div class="small opacity-75 mb-3">
+                                    <i class="bi bi-stars text-warning me-1"></i>
+                                    Giảm @(voucher.LoaiGiam == LoaiGiam.PhanTram ? voucher.GiaTriGiam + "%" : voucher.GiaTriGiam.ToString("N0") + "đ")
+                                    <br />
+                                    <i class="bi bi-clock me-1"></i>HSD: @voucher.HanSuDung.ToString("dd/MM/yyyy")
+                                </div>
+
+                                <div class="d-flex justify-content-between align-items-center glass-input pill-style py-1 px-3">
+                                    <span class="fw-bold ls-3 text-uppercase" id="v-@voucher.Id">@voucher.MaVoucher</span>
+                                    <button class="btn p-0 text-white opacity-hover" onclick="copyToClipboard('v-@voucher.Id')">
+                                        <i class="bi bi-clipboard"></i>
+                                    </button>
                                 </div>
                             </div>
                         }
                     }
                     else
                     {
-                        <div class="text-center opacity-50 py-4 flex-grow-1 d-flex align-items-center justify-content-center">
-                            <p class="m-0">Bạn chưa có voucher nào.</p>
+                        <div class="text-center opacity-25 py-5 flex-grow-1 d-flex flex-column justify-content-center">
+                            <i class="bi bi-ticket-detailed fs-1"></i><p>Chưa có mã giảm giá nào.</p>
                         </div>
                     }
                 </div>
@@ -197,10 +188,12 @@
 </div>
 
 @section Scripts {
-    @{
-        await Html.RenderPartialAsync("_ValidationScriptsPartial");
-    }
     <script>
+        function copyToClipboard(id) {
+            const text = document.getElementById(id).innerText;
+            navigator.clipboard.writeText(text).then(() => alert('Đã chép mã: ' + text));
+        }
+
         async function autoUploadAvatar(event) {
             const file = event.target.files[0];
             if (!file) return;
@@ -213,25 +206,19 @@
             formData.append('UserId', document.getElementById('UserId').value);
 
             try {
-                const response = await fetch('/TaiKhoan/UploadAvatarAjax', { method: 'POST', body: formData });
-                const result = await response.json();
-                if(!result.success) alert("Lỗi: " + result.message);
-            } catch (error) { alert('Lỗi kết nối server.'); }
+                const res = await fetch('/TaiKhoan/UploadAvatarAjax', { method: 'POST', body: formData });
+                const data = await res.json();
+                if(!data.success) alert(data.message);
+            } catch (e) { console.log(e); }
         }
 
         document.addEventListener("DOMContentLoaded", function () {
-            const dropdownItems = document.querySelectorAll('.dropdown-item');
-            const hiddenInput = document.getElementById('GioiTinhHidden');
-            const dropdownBtn = document.getElementById('GioiTinhDropdownBtn');
-
-            dropdownItems.forEach(item => {
-                item.addEventListener('click', function (e) {
+            document.querySelectorAll('.glass-dropdown-item').forEach(item => {
+                item.onclick = function (e) {
                     e.preventDefault();
-                    const value = this.getAttribute('data-value');
-                    const text = this.innerText;
-                    hiddenInput.value = value;
-                    dropdownBtn.innerText = text;
-                });
+                    document.getElementById('GioiTinhHidden').value = this.dataset.value;
+                    document.getElementById('GioiTinhDropdownBtn').querySelector('span').innerText = this.innerText;
+                };
             });
         });
     </script>

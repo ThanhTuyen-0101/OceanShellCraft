@@ -11,9 +11,6 @@
         @if (User.IsInRole("Admin"))
         {
             <div class="d-flex gap-2">
-                <a asp-action="TaoMoi" class="glass-btn">
-                    <i class="bi bi-plus-lg me-2"></i>thêm thủ công
-                </a>
                 <a asp-action="NhapExcel" class="glass-btn">
                     <i class="bi bi-file-earmark-excel me-2"></i>nhập excel
                 </a>
@@ -23,7 +20,7 @@
 
     <ul class="list-unstyled d-flex justify-content-center flex-wrap gap-4 mb-5 pb-3" style="border-bottom: 1px solid var(--border-light);">
         <li>
-            <a href="@Url.Action("DanhSach", new { maDanhMuc = (int?)null })"
+            <a href="/san-pham"
                class="text-decoration-none @(ViewBag.CurrentCategory == null ? "opacity-100" : "opacity-50")">
                 tất cả
             </a>
@@ -33,7 +30,7 @@
             foreach (var dm in ViewBag.DanhMucs)
             {
                 <li>
-                    <a href="@Url.Action("DanhSach", new { maDanhMuc = dm.Id })"
+                    <a href="/san-pham?maDanhMuc=@dm.Id"
                        class="text-decoration-none @(ViewBag.CurrentCategory == dm.Id ? "opacity-100" : "opacity-50")">
                         @dm.TenDanhMuc.ToLower()
                     </a>
@@ -64,17 +61,20 @@
 
                     <div class="mt-auto">
                         <h4 class="fs-5 mb-2">@sp.TenSanPham?.ToLower()</h4>
-                        <p class="opacity-50 small mb-2">@sp.ChatLieu?.ToLower()</p>
+
+                        <p class="opacity-50 small mb-2">@(sp.DanhMuc != null ? sp.DanhMuc.TenDanhMuc.ToLower() : "thủ công mỹ nghệ")</p>
+
                         <p class="fs-5 mb-4">@sp.GiaTien.ToString("N0") vnđ</p>
 
                         <div class="d-flex justify-content-center gap-3">
-                            <a asp-controller="SanPham" asp-action="ChiTiet" asp-route-id="@sp.Id" class="glass-btn">
+                            <a asp-controller="SanPham" asp-action="ChiTiet" asp-route-slug="@sp.Slug" class="glass-btn">
                                 chi tiết
                             </a>
 
-                            @if (User.Identity.IsAuthenticated)
+                            @if (User.Identity != null && User.Identity.IsAuthenticated)
                             {
-                                <form asp-controller="GioHang" asp-action="ThemVaoGio" method="get" class="m-0">
+                                @* Bổ sung class "form-add-cart" để JavaScript nhận diện form này *@
+                                <form action="/GioHang/ThemVaoGio" method="get" class="m-0 form-add-cart">
                                     <input type="hidden" name="sanPhamId" value="@sp.Id" />
                                     <button type="submit" class="glass-btn border-0">thêm vào giỏ</button>
                                 </form>
@@ -95,7 +95,7 @@
         <div class="d-flex justify-content-center align-items-center gap-3 mt-5 pt-3">
             @for (int i = 1; i <= ViewBag.TotalPages; i++)
             {
-                <a href="@Url.Action("DanhSach", new { maDanhMuc = ViewBag.CurrentCategory, page = i })"
+                <a href="/san-pham?maDanhMuc=@ViewBag.CurrentCategory&page=@i"
                    class="glass-circle text-decoration-none @(i == ViewBag.CurrentPage ? "opacity-100" : "opacity-50")"
                    style="width: 40px; height: 40px;">
                     @i
@@ -104,3 +104,48 @@
         </div>
     }
 </div>
+
+@section Scripts {
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            // Lấy tất cả các form thêm vào giỏ hàng
+            const addCartForms = document.querySelectorAll('.form-add-cart');
+
+            addCartForms.forEach(form => {
+                form.addEventListener('submit', async function (e) {
+                    // Ngăn chặn trình duyệt tự động chuyển trang
+                    e.preventDefault();
+
+                    const sanPhamId = this.querySelector('input[name="sanPhamId"]').value;
+                    const url = `/GioHang/ThemVaoGio?sanPhamId=${sanPhamId}`;
+
+                    try {
+                        // Gửi request ngầm xuống server
+                        const response = await fetch(url, { method: 'GET' });
+
+                        if (response.ok) {
+                            // 1. Hiển thị thông báo thành công
+                            alert('Đã thêm sản phẩm vào giỏ hàng thành công! 🐚');
+
+                            // 2. Tìm icon giỏ hàng trên Header và cập nhật số lượng (+1)
+                            const cartIcon = document.querySelector('.bi-cart3');
+                            if (cartIcon) {
+                                const badge = cartIcon.nextElementSibling;
+                                if (badge && badge.classList.contains('badge')) {
+                                    let currentCount = parseInt(badge.innerText.trim()) || 0;
+                                    badge.innerText = currentCount + 1;
+                                } else {
+                                    // Nếu giỏ hàng trước đó là 0 (chưa có badge), reload nhẹ để hiện badge
+                                    window.location.reload();
+                                }
+                            }
+                        }
+                    } catch (error) {
+                        console.error('Lỗi khi thêm vào giỏ:', error);
+                        alert('Hệ thống đang bận, vui lòng thử lại sau.');
+                    }
+                });
+            });
+        });
+    </script>
+}

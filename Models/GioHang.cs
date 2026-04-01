@@ -8,7 +8,7 @@ namespace OceanShellCraft.Models
         [Key]
         public int Id { get; set; }
 
-        // MaPhien dùng để nhận diện giỏ hàng của người chưa đăng nhập
+        // MaPhien dùng để nhận diện giỏ hàng của người chưa đăng nhập hoặc qua Cookie
         [Required]
         public string MaPhien { get; set; } = string.Empty;
 

@@ -1,0 +1,273 @@
+﻿@model OceanShellCraft.Models.ViewModels.CaiDatViewModel
+@{
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+    ViewData["Title"] = "Quản lý biến thể";
+}
+<style>
+    .glass-dropdown-item:hover {
+        background-color: rgba(255, 255, 255, 0.1) !important;
+        color: #ffffff !important;
+        opacity: 1 !important;
+    }
+</style>
+<div class="container-fluid py-4">
+    <div class="mb-4">
+        <a href="/admin/cai-dat" class="glass-btn pill-style px-3 small py-2 opacity-75 text-decoration-none">
+            <i class="bi bi-arrow-left me-2"></i>Quay lại cài đặt
+        </a>
+    </div>
+
+    <div class="glass-card mb-4" style="position: relative; z-index: 10;">
+        <div class="row align-items-center">
+            <div class="col-md-5">
+                <div class="dropdown">
+                    <button class="glass-input text-start d-flex justify-content-between align-items-center w-100 opacity-75"
+                            type="button" id="btnProductDropdown" data-bs-toggle="dropdown" aria-expanded="false" style="height: 50px;">
+                        <span id="selectedProductText">-- Bấm để chọn sản phẩm --</span>
+                        <i class="bi bi-chevron-down opacity-50"></i>
+                    </button>
+
+                    <ul class="dropdown-menu w-100 hide-scrollbar p-2 mt-2 shadow-lg"
+                        style="background-color: rgba(25, 30, 36, 0.95) !important; backdrop-filter: blur(15px); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 12px; max-height: 300px; overflow-y: auto;">
+
+                        <li>
+                            <a class="dropdown-item glass-dropdown-item rounded text-white opacity-75 mb-1 d-flex align-items-center" href="javascript:void(0)"
+                               style="padding: 10px 15px;"
+                               onclick="selectProduct(0, '-- Bấm để chọn sản phẩm --', 0, '', '')">
+                                <i class="bi bi-x-circle me-2"></i>-- Hủy chọn --
+                            </a>
+                        </li>
+
+                        @foreach (var sp in Model.SanPhams ?? new List<OceanShellCraft.Models.SanPham>())
+                        {
+                            <li>
+                                <a class="dropdown-item glass-dropdown-item rounded text-white opacity-75" href="javascript:void(0)"
+                                   style="padding: 10px 15px;"
+                                   onclick="selectProduct(@sp.Id, '@sp.TenSanPham', '@sp.GiaTien', '@sp.HinhAnh', 'OSC-@sp.Id')">
+                                    @sp.TenSanPham
+                                </a>
+                            </li>
+                        }
+                    </ul>
+                    <input type="hidden" id="parentProductSelect" value="" data-sku="">
+                </div>
+            </div>
+
+            <div class="col-md-7 d-none" id="parentInfoArea">
+                <div class="d-flex align-items-center opacity-75">
+                    <img id="parentImg" src="" class="rounded me-3 shadow-sm" style="width: 50px; height: 50px; object-fit: cover;">
+                    <div>
+                        <h6 class="m-0 fw-bold" id="parentNameDisplay" style="letter-spacing: 0.5px;">Tên sản phẩm</h6>
+                        <small class="opacity-75">Giá gốc: <span id="parentPriceDisplay">0</span>₫</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-4">
+        <div class="col-xl-4">
+            <div class="glass-card h-100 shadow-lg">
+                <h6 class="fw-bold mb-4 opacity-75" style="letter-spacing: 1px;">Thiết lập phân loại</h6>
+
+                <div id="attributeArea" class="hide-scrollbar mb-3" style="max-height: 400px; overflow-y: auto;">
+                    <div class="position-relative mb-4 animate__animated animate__fadeInUp">
+                        <div class="row g-2">
+                            <div class="col-12">
+                                <input type="text" class="glass-input attr-name opacity-75" placeholder="Tên nhóm (VD: Kích thước)">
+                            </div>
+                            <div class="col-12">
+                                <textarea class="glass-input attr-values opacity-75" rows="2" placeholder="Các tùy chọn (S, M, L...)"></textarea>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row g-2">
+                    <div class="col-3">
+                        <button class="glass-btn w-100 justify-content-center opacity-75" onclick="addNewAttribute()" title="Thêm nhóm phân loại">
+                            <i class="bi bi-plus-lg"></i>
+                        </button>
+                    </div>
+                    <div class="col-9">
+                        <button class="glass-btn w-100 justify-content-center opacity-75" onclick="generateVariants()">
+                            Tạo danh sách biến thể <i class="bi bi-magic ms-2"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-8">
+            <div class="glass-card h-100 shadow-lg p-0 d-flex flex-column">
+
+                <div class="p-4 d-flex justify-content-between align-items-center" style="border-bottom: 1px solid rgba(255,255,255,0.05);">
+                    <h6 class="fw-bold m-0 opacity-75" style="letter-spacing: 1px;">Danh sách SKU</h6>
+                    <span class="small opacity-50" id="variantCount">0 biến thể</span>
+                </div>
+
+                <div class="px-4 py-3 d-none" id="bulkBar" style="background: rgba(0,0,0,0.05);">
+                    <div class="row g-2 align-items-center">
+                        <div class="col-md-4"><input type="number" id="bulkPrice" class="glass-input opacity-75 form-control-sm" placeholder="Giá chung..."></div>
+                        <div class="col-md-4"><input type="number" id="bulkQty" class="glass-input opacity-75 form-control-sm" placeholder="Kho chung..."></div>
+                        <div class="col-md-4"><button class="glass-btn w-100 justify-content-center opacity-75 py-1" onclick="applyBulk()">Áp dụng tất cả</button></div>
+                    </div>
+                </div>
+
+                <div class="table-responsive hide-scrollbar flex-grow-1" style="max-height: 500px;">
+                    <form action="/admin/luu-danh-sach-bien-the" method="post" class="h-100 d-flex flex-column justify-content-between">
+                        <input type="hidden" name="ParentProductId" id="submitParentId" />
+
+                        <table class="glass-table align-middle mb-0" id="variantTable">
+                            <thead class="opacity-75 small" style="letter-spacing: 1px;">
+                                <tr>
+                                    <th scope="col" class="ps-4" style="min-width: 200px;">Phân loại</th>
+                                    <th scope="col" style="min-width: 150px;">Mã SKU</th>
+                                    <th scope="col" class="text-center" style="min-width: 120px;">Giá bán</th>
+                                    <th scope="col" class="text-center" style="min-width: 100px;">Tồn kho</th>
+                                    <th scope="col" class="text-end pe-4"></th>
+                                </tr>
+                            </thead>
+                            <tbody id="variantBody">
+                                <tr>
+                                    <td colspan="5" class="text-center py-5 small opacity-50">
+                                        Vui lòng chọn sản phẩm và tạo phân loại bên trái.
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+
+                        <div class="p-4 text-end d-none mt-auto" id="submitArea" style="border-top: 1px solid rgba(255,255,255,0.05);">
+                            <button type="submit" class="glass-btn px-4 py-2">
+                                <i class="bi bi-save me-2"></i>Lưu dữ liệu
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        function selectProduct(id, name, price, img, sku) {
+            const submitId = document.getElementById('submitParentId');
+            const hiddenSelect = document.getElementById('parentProductSelect');
+            const area = document.getElementById('parentInfoArea');
+            const textDisplay = document.getElementById('selectedProductText');
+
+            textDisplay.innerText = name;
+
+            if(id && id !== 0) {
+                document.getElementById('parentImg').src = img || '/images/no-image.png';
+                document.getElementById('parentNameDisplay').innerText = name;
+                document.getElementById('parentPriceDisplay').innerText = parseFloat(price).toLocaleString();
+
+                submitId.value = id;
+                hiddenSelect.value = id;
+                hiddenSelect.dataset.sku = sku;
+
+                area.classList.remove('d-none');
+            } else {
+                area.classList.add('d-none');
+                submitId.value = "";
+                hiddenSelect.value = "";
+                hiddenSelect.dataset.sku = "";
+            }
+        }
+
+        function addNewAttribute() {
+            const html = `
+                <div class="position-relative mb-4 animate__animated animate__fadeInUp">
+                    <button type="button" class="position-absolute top-0 end-0 glass-circle-ghost opacity-50 p-0" style="width: 24px; height: 24px; z-index: 2; margin-top: -10px; margin-right: -10px;" onclick="this.parentElement.remove();"><i class="bi bi-x-circle-fill"></i></button>
+                    <div class="row g-2">
+                        <div class="col-12">
+                            <input type="text" class="glass-input attr-name opacity-75" placeholder="Tên nhóm mới...">
+                        </div>
+                        <div class="col-12">
+                            <textarea class="glass-input attr-values opacity-75" rows="2" placeholder="Các tùy chọn..."></textarea>
+                        </div>
+                    </div>
+                </div>`;
+            document.getElementById('attributeArea').insertAdjacentHTML('beforeend', html);
+        }
+
+        function generateVariants() {
+            const parentId = document.getElementById('parentProductSelect').value;
+            if(!parentId) { alert("Vui lòng chọn sản phẩm!"); return; }
+
+            const attrNames = Array.from(document.querySelectorAll('.attr-name')).map(i => i.value.trim());
+            const attrValues = Array.from(document.querySelectorAll('.attr-values')).map(i => i.value.split(',').map(v => v.trim()).filter(v => v !== ""));
+
+            if(attrNames.some(n => n === "") || attrValues.some(v => v.length === 0)) {
+                alert("Vui lòng nhập đủ thông tin phân loại!"); return;
+            }
+
+            let combos = [[]];
+            for (let i = 0; i < attrValues.length; i++) {
+                let next = [];
+                for (let j = 0; j < combos.length; j++) {
+                    for (let k = 0; k < attrValues[i].length; k++) {
+                        next.push([...combos[j], { n: attrNames[i], v: attrValues[i][k] }]);
+                    }
+                }
+                combos = next;
+            }
+            renderTable(combos);
+        }
+
+        function renderTable(combos) {
+            const body = document.getElementById('variantBody');
+            const parentSKU = document.getElementById('parentProductSelect').dataset.sku || "SKU";
+            body.innerHTML = "";
+
+            combos.forEach((c, i) => {
+                const fullName = c.map(item => `${item.n}: ${item.v}`).join(' | ');
+                const shortSKU = c.map(item => item.v.substring(0,2).toUpperCase()).join('-');
+
+                body.insertAdjacentHTML('beforeend', `
+                    <tr>
+                        <td class="py-4 ps-4">
+                            <input type="hidden" name="Variants[${i}].TenBienThe" value="${fullName}" />
+                            <span class="d-block mb-1 opacity-75" style="font-size: 1.05rem;">${fullName}</span>
+                        </td>
+
+                        <td class="py-4">
+                            <input type="text" name="Variants[${i}].SKU" class="form-control-plaintext form-control-sm opacity-75 w-100 m-0 p-0" value="${parentSKU}-${shortSKU}">
+                        </td>
+
+                        <td class="text-center py-4">
+                            <input type="text" inputmode="numeric" name="Variants[${i}].GiaRieng" class="form-control-plaintext form-control-sm opacity-75 text-center var-price w-100 m-0 p-0" value="0">
+                        </td>
+
+                        <td class="text-center py-4">
+                            <input type="text" inputmode="numeric" name="Variants[${i}].SoLuongRieng" class="form-control-plaintext form-control-sm opacity-75 text-center var-qty mx-auto m-0 p-0" value="10" style="max-width: 80px;">
+                        </td>
+
+                        <td class="text-end py-4 pe-4">
+                            <button type="button" class="glass-circle border-0 opacity-50" title="Xóa biến thể" style="width: 30px; height: 30px;" onclick="this.closest('tr').remove(); updateCount();">
+                                <i class="bi bi-trash" style="font-size: 0.8rem;"></i>
+                            </button>
+                        </td>
+                    </tr>
+                `);
+            });
+
+            document.getElementById('bulkBar').classList.remove('d-none');
+            document.getElementById('submitArea').classList.remove('d-none');
+            updateCount();
+        }
+
+        function updateCount() {
+            document.getElementById('variantCount').innerText = document.querySelectorAll('#variantBody tr').length + " biến thể";
+        }
+
+        function applyBulk() {
+            const p = document.getElementById('bulkPrice').value;
+            const q = document.getElementById('bulkQty').value;
+            if(p) document.querySelectorAll('.var-price').forEach(i => i.value = p);
+            if(q) document.querySelectorAll('.var-qty').forEach(i => i.value = q);
+        }
+    </script>
+}
